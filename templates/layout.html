@@ -59,6 +59,23 @@
 
     <!-- beginning of HTML inserted by extending template -->
     [[include]]
+
+    <!-- Taken from https://stackoverflow.com/questions/2570877/how-do-i-stick-an-image-to-the-bottom-of-the-visible-screen-and-be-centered  -->
+    <style>
+      .sticky-image-wrapper{
+          position: fixed;
+          bottom: 0;
+          width: 100%;
+      }
+  
+      .sticky-image-wrapper img{
+          display: table;
+          position: relative;
+          margin: auto;
+     }
+     </style>
+    
+
     <!-- end of HTML inserted by extending template -->
     <footer class="footer">
       <div class="content has-text-centered">
@@ -66,6 +83,9 @@
         <a href="https://learn-py4web.github.io">Learn py4web!</a>
       </div>
     </footer>
+      <figure class="image sticky-image-wrapper">
+        <img src="images/waves.png" class="mt-auto">
+      </figure>
   </body>
   <script src="js/sugar.min.js"></script>
   <script src="js/axios.min.js"></script>
