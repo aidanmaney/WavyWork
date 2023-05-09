@@ -38,3 +38,4 @@ url_signer = URLSigner(session)
 def index():
     print("User:", get_user_email())
     return dict()
+
