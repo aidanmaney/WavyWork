@@ -17,11 +17,45 @@
   .blue-background {
     background-color: rgba(0, 208, 255, 0.696);
   }
+
+  .hero-body {
+      flex-grow: 1;
+      display: flex;
+      align-items: flex-end;
+  }
+
+
+  .content {
+    min-height: calc(100vh - 40px); /* Subtract the height of the footer */
+  }
+
+
+  .body {
+      margin: 0;
+      padding: 0;
+      background-image: url("../static/images/wave.png");
+      background-repeat: repeat-x;
+    }
+
 </style>
 
 <section class="section">
   <div class="box blue-background m-6">
     [[=form]]
   </div>
-  Wave image here.
+
+
+
+  <section class="hero is-fullheight">
+    <div class="hero-body">
+      <div class="container has-text-centered">
+        <!-- Wave image here. -->
+
+        <!-- Your content goes here -->
+      </div>
+    </div>
+    <div class="hero-foot">
+      <img src="../static/images/wave.png" alt="Wave Image">
+    </div>
+  </section>
 </section>
