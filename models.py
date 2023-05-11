@@ -21,3 +21,4 @@ def get_time():
 ## always commit your models to avoid problems later
 
 db.commit()
+

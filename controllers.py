@@ -38,3 +38,9 @@ url_signer = URLSigner(session)
 def index():
     print("User:", get_user_email())
     return dict()
+
+# endpoints:
+# timeline: display timeline page, include the user's tasks and their progress
+# add task: creates a new task for specific user 
+# task (task_id): pulls info for individual task. this will be an indivdual page 
+# 
