@@ -42,6 +42,8 @@ db.define_table(
     Field("end_time", "datetime"),
     Field("label"),
     Field("description"),
+    Field("categorization"),         # {"personal", "school", "work"}
+    Field("is_complete", "boolean"),
     Field("is_group", "boolean"),
     Field("group_id", "reference groups")
 )
@@ -49,7 +51,6 @@ db.define_table(
 db.define_table(
     'kanban_cards',
     Field("task_id", "integer", "reference tasks"),
-    Field("board_type"),         # {"personal", "school", "work"}
     Field("column")              # {"backlog", "todo", "in_progress", "stuck", "done"}
 )
 
