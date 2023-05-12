@@ -43,20 +43,28 @@ db.define_table(
     Field("label"),
     Field("description"),
     Field("is_group", "boolean"),
+    Field("is_complete", "boolean"),
+    Field("categorization"),     # {"personal", "school", "work"}
     Field("group_id", "reference groups")
 )
 
 db.define_table(
     'kanban_cards',
     Field("task_id", "integer", "reference tasks"),
-    Field("board_type"),     # {"personal", "school", "work"}
-    Field("column"),         # {"backlog", "todo", "in_progress", "stuck", "done"}
+    Field("column")         # {"backlog", "todo", "in_progress", "stuck", "done"}
 )
 
 db.define_table(
     'task_comments',
     Field("task_id", "reference tasks"),
     Field("comment")
+)
+
+db.define_table(
+    'subtasks',
+    Field("task_id", "reference tasks"),
+    Field("desription"),
+    Field("is_complete", "boolean")
 )
 
 db.define_table(
