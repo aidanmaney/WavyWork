@@ -39,3 +39,8 @@ def index():
     print("User:", get_user_email())
     return dict()
 
+@action('kanban')
+@action.uses('kanban.html', db, auth)
+def kanban():
+    return dict()
+
