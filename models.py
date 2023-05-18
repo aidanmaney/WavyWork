@@ -63,7 +63,7 @@ db.define_table(
 db.define_table(
     'subtasks',
     Field("task_id", "reference tasks"),
-    Field("desription"),
+    Field("description"),
     Field("is_complete", "boolean")
 )
 
