@@ -25,50 +25,79 @@
         background-color: #ccc;
         z-index: -1;
       }
-      
+    
       .timeline-item {
         flex: 0 0 48%;
         position: relative;
-        padding: 20px 30px;
-        border-radius: 4px;
+        padding: 20px;
+        border-radius: 50%;
         background-color: #f5f5f5;
         margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px; /* Adjust the size as needed */
+        height: 60px; /* Adjust the size as needed */
       }
-      
+
+
+      .timeline-circle-green {
+         width: 30px;
+         height: 30px;
+         border-radius: 50%;
+         background-color: #3CB043;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+      }
+
+
+      .timeline-circle-black {
+         width: 30px;
+         height: 30px;
+         border-radius: 50%;
+         background-color: #000;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+      }
+
+      .timeline-circle-red {
+         width: 30px;
+         height: 30px;
+         border-radius: 50%;
+         background-color: #FF2800;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+      }
+    
       .timeline-item:nth-child(even) {
         background-color: #e0e0e0;
       }
-      
+    
       .timeline-item::before {
-        content: attr(data-date);
+        /* content: attr(data-date); */
         position: absolute;
         top: 0;
-        left: -105px;
+        left: 50%;
+        transform: translateX(-50%);
         width: 90px;
-        text-align: right;
+        text-align: center;
         font-size: 14px;
         color: #888;
       }
     </style>
+    
      
 
 
    <div class="container">
       <div class="timeline">
-         <div class="timeline-item" data-date="April 2023">
-           <div class="content">
-             <h3>Event Title</h3>
-             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vitae lorem ipsum.</p>
-           </div>
-         </div>
-         
-         <div class="timeline-item" data-date="May 2023">
-           <div class="content">
-             <h3>Event Title</h3>
-             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vitae lorem ipsum.</p>
-           </div>
-         </div>
-      </div>       
+         <div class="timeline-circle-green"></div>
+         <div class="timeline-circle-black"></div>
+         <div class="timeline-circle-red"></div>
+       </div>       
    </div>
 
 
