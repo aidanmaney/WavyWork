@@ -31,3 +31,7 @@ success!
 success!
 timestamp: 2023-05-23T14:13:32.907901
 ALTER TABLE "kanban_cards" ADD "board_type" CHAR(512);
+success!
+success!
+success!
+success!
