@@ -34,8 +34,14 @@ from .models import get_user_email
 url_signer = URLSigner(session)
 
 @action('index')
-@action.uses('index.html', db, auth)
+@action.uses('index.html', db, auth, url_signer)
 def index():
-    print("User:", get_user_email())
-    return dict()
+    return dict(
+        add_task_url = URL('add_task', signer=url_signer),
+    )
 
+
+@action('add_task', method=["GET", "POST"])
+@action.uses(db, session, auth.user)
+def add():
+    return dict()
