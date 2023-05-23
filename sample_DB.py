@@ -151,22 +151,6 @@ def add_subtasks_for_testing(task_id_list):
     return inserted_subtasks
 
 
-# def add_subtasks_for_testing():
-#     db(db.subtasks).delete()
-#     for t in sample_tasks:
-#         task_label = t[0]
-#         task_subtasks = t[2]
-#         for st in task_subtasks:
-#             task_id = task_id_from_label(task_label)
-#             db.subtasks.insert(task_id=task_id, description=st)
-#     db.commit()
-
-
-# def task_id_from_label(task_label):
-#     task_id = int(db(db.tasks.label.startswith(task_label)).select("id").first())
-#     return task_id
-
-
 def add_task_reflections_for_testing(task_id_list):
     db(db.task_reflections).delete()
 
