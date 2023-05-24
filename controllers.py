@@ -29,12 +29,12 @@ from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from py4web.utils.url_signer import URLSigner
-from .models import get_user_email
+from .models import get_user_email, get_user_id
 
 url_signer = URLSigner(session)
 
 @action('index')
-@action.uses('index.html', db, auth, url_signer)
+@action.uses('index.html', db, auth, auth.user, url_signer)
 def index():
     return dict(
         add_task_url = URL('add_task', signer=url_signer),
@@ -42,6 +42,12 @@ def index():
 
 
 @action('add_task', method=["GET", "POST"])
-@action.uses(db, session, auth.user)
+@action.uses(db, url_signer.verify(), auth.user)
 def add():
-    return dict()
+    id = db.tasks.insert(
+        label = request.json.get("label"),
+        description = request.json.get("description"),
+        categorization = request.json.get("categorization"),
+        is_group = request.json.get("is_group"),
+    )
+    return dict(id=id, created_by=get_user_id())

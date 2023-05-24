@@ -8,7 +8,7 @@
 
 
 <div class="section" id="vue-target" v-cloak>
-   <button class="button is-success is-outlined" v-if="!is_adding_task" @click="add_task">
+   <button class="button is-success is-outlined" v-if="!is_adding_task" @click="set_adding_task">
       <span class="icon is-small">
         <i class="fa fa-check "></i>
       </span>
@@ -20,6 +20,11 @@
       <textarea class="textarea" placeholder="Task Description" v-model="task_description"></textarea>
       <input class="input" type="text" placeholder="Task Start Time" v-model="task_start_time">
       <input class="input" type="text" placeholder="Task End Time" v-model="task_end_time">
+
+      <label class="checkbox">
+         <input type="checkbox" onclick="app.vue.task_is_group = !app.vue.task_is_group">
+          Group Task?
+       </label>
 
       <div class="dropdown is-hoverable">
          <div class="dropdown-trigger">
@@ -48,7 +53,7 @@
          </div>
        </div>
 
-       <button class="button is-success is-outlined" @click="submit_task">
+       <button class="button is-success is-outlined" @click="add_task">
          <span class="icon is-small">
            <i class="fa fa-check "></i>
          </span>

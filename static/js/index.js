@@ -16,6 +16,7 @@ let init = (app) => {
         task_start_time: "",
         task_end_time: "",
         task_category: "",
+        task_is_group: false
         // End data for tasks
     };    
     
@@ -26,18 +27,37 @@ let init = (app) => {
         return a;
     };
 
-    app.add_task = () => {
+    app.set_adding_task = () => {
         app.vue.is_adding_task = true;
     };
 
-    app.submit_task = () => {
-        app.vue.is_adding_task = false;
+    app.add_task = () => {
+        axios.post(add_task_url,
+            {
+                label: app.vue.task_label,
+                description: app.vue.task_description,
+                categorization: app.vue.task_category,
+                is_group: app.vue.task_is_group
+            }).then(function (response) {
+                app.vue.tasks.push({
+                    id: response.data.id,
+                    label: app.vue.task_label,
+                    description: app.vue.task_description,
+                    categorization: app.vue.task_category,
+                    is_group: app.vue.task_is_group,
+                    created_by: response.data.created_by
+                    //no start or end time yet
+                    //will implement groups soon
+                })
+                app.enumerate(app.vue.tasks)
+                app.vue.is_adding_task = false;
+            })
     }; 
 
     // This contains all the methods.
     app.methods = {
-        add_task: app.add_task,
-        submit_task: app.submit_task
+        set_adding_task: app.set_adding_task,
+        add_task: app.add_task
     };
 
     // This creates the Vue instance.
