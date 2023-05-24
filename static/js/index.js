@@ -15,7 +15,7 @@ let init = (app) => {
         task_description: "",
         task_start_time: "",
         task_end_time: "",
-        task_category: ""
+        task_category: "",
         // End data for tasks
     };    
     
@@ -27,12 +27,17 @@ let init = (app) => {
     };
 
     app.add_task = () => {
-
+        app.vue.is_adding_task = true;
     };
+
+    app.submit_task = () => {
+        app.vue.is_adding_task = false;
+    }; 
 
     // This contains all the methods.
     app.methods = {
-        add_task: app.add_task
+        add_task: app.add_task,
+        submit_task: app.submit_task
     };
 
     // This creates the Vue instance.
@@ -44,7 +49,7 @@ let init = (app) => {
 
     // And this initializes it.
     app.init = () => {
-
+        app.vue.is_adding_task = false
     };
 
     // Call to the initializer.

@@ -1,6 +1,13 @@
 [[extend 'layout.html']]
 
-<div class="section">
+<style>
+   [v-cloak] {
+        display: none;
+   }
+</style>
+
+
+<div class="section" id="vue-target" v-cloak>
    <button class="button is-success is-outlined" v-if="!is_adding_task" @click="add_task">
       <span class="icon is-small">
         <i class="fa fa-check "></i>
@@ -8,42 +15,46 @@
       <span>Add Task</span>
     </button>
 
-    <div class="section" v-if="is_adding-task">
+    <div class="section" v-if="is_adding_task">
       <input class="input" type="text" placeholder="Task Label" v-model="task_label">
       <textarea class="textarea" placeholder="Task Description" v-model="task_description"></textarea>
       <input class="input" type="text" placeholder="Task Start Time" v-model="task_start_time">
       <input class="input" type="text" placeholder="Task End Time" v-model="task_end_time">
 
-      <div class="dropdown is-active">
+      <div class="dropdown is-hoverable">
          <div class="dropdown-trigger">
-           <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+           <button class="button" 
+                   onclick="javascript:document.querySelector('.dropdown').classList.toggle('is-active')" 
+                   onblur="javascript:document.querySelector('.dropdown').classList.toggle('is-active')"
+                   aria-haspopup="true" aria-controls="dropdown-menu">
              <span>Category</span>
              <span class="icon is-small">
-               <i class="fas fa-angle-down" aria-hidden="true"></i>
+               <i class="fa fa-angle-down" aria-hidden="true"></i>
              </span>
            </button>
          </div>
          <div class="dropdown-menu" id="dropdown-menu" role="menu">
            <div class="dropdown-content">
-             <a href="#" class="dropdown-item">
-               Dropdown item
+             <a onmousedown="app.vue.task_category = 'school'; console.log('School');" href="javascript:void(0);" class="dropdown-item">
+               School
              </a>
-             <a class="dropdown-item">
-               Other dropdown item
+             <a onmousedown="app.vue.task_category = 'work'; console.log('Work');" href="javascript:void(0);" class="dropdown-item">
+               Work
              </a>
-             <a href="#" class="dropdown-item is-active">
-               Active dropdown item
-             </a>
-             <a href="#" class="dropdown-item">
-               Other dropdown item
-             </a>
-             <hr class="dropdown-divider">
-             <a href="#" class="dropdown-item">
-               With a divider
+             <a onmousedown="app.vue.task_category = 'personal'; console.log('Personal');" href="javascript:void(0);" class="dropdown-item">
+               Personal
              </a>
            </div>
          </div>
        </div>
+
+       <button class="button is-success is-outlined" @click="submit_task">
+         <span class="icon is-small">
+           <i class="fa fa-check "></i>
+         </span>
+         <span>Submit Task</span>
+       </button>
+
     </div>
 </div>
 
@@ -52,5 +63,6 @@
 <script>
   let add_task_url = "[[=XML(add_task_url)]]";
 </script>
+
 <script src="js/index.js"></script>
 [[end]]
