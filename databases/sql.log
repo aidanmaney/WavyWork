@@ -92,3 +92,5 @@ CREATE TABLE "daily_journal"(
     "entry" CHAR(512)
 );
 success!
+success!
+success!
