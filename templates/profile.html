@@ -1,0 +1,68 @@
+[[extend 'layout.html']]
+
+<style>
+	[v-cloak] {
+		display: none;
+	}
+	.square {
+		width: 5em;
+		height: 5em;
+	}
+	.table.is-borderless td,
+	/* References https://github.com/jmaczan/bulma-helpers/issues/3 */
+	.table.is-borderless th {
+		border: 0;
+	}
+	/* References https://github.com/jgthms/bulma/issues/1513 */
+	.table {
+		margin-left: auto;
+		margin-right: auto;
+	}
+</style>
+
+<div class="section" id="vue-target">
+	<div class="section">Profile and goals goes here!</div>
+	<div class="container is-centered">
+		<table class="table is-borderless is-narrow has-text-centered">
+			<thead>
+				<tr>
+					<th v-for="day in days_of_the_week">{{day}}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td v-for="day in days_of_the_week">
+						<div
+							class="notification button square is-success mb-2"
+						></div>
+					</td>
+				</tr>
+				<tr>
+					<td v-for="day in days_of_the_week">
+						<div
+							class="notification button square is-success mb-2"
+						></div>
+					</td>
+				</tr>
+				<tr>
+					<td v-for="day in days_of_the_week">
+						<div
+							class="notification button square is-success mb-2"
+						></div>
+					</td>
+				</tr>
+				<tr>
+					<td v-for="day in days_of_the_week">
+						<div
+							class="notification button square is-success mb-2"
+						></div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+[[block page_scripts]]
+<script src="js/profile.js"></script>
+[[end]]
