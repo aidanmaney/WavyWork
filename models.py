@@ -133,5 +133,5 @@ db.define_table(
 
 
 db.commit()
-populate_sample_DB()
+# populate_sample_DB()
  
