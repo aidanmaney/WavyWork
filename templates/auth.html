@@ -1,0 +1,46 @@
+[[extend "layout.html"]]
+
+<style>
+  .auth-container {
+    max-width: 80%;
+    min-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #e1e1e1;
+    border-radius: 10px;
+    padding: 20px;
+  }
+  a.button {
+      margin-left: 10px;
+  }
+
+  .blue-background {
+    background-color: rgba(0, 208, 255, 0.696);
+  }
+
+  .hero-body {
+      flex-grow: 1;
+      display: flex;
+      align-items: flex-end;
+  }
+
+
+  .content {
+    min-height: calc(100vh - 40px); /* Subtract the height of the footer */
+  }
+
+
+  .body {
+      margin: 0;
+      padding: 0;
+      background-image: url("../static/images/wave.png");
+      background-repeat: repeat-x;
+    }
+
+</style>
+
+<section class="section">
+  <div class="box blue-background m-6">
+    [[=form]]
+  </div>
+</section>
