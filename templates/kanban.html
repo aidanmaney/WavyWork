@@ -11,7 +11,7 @@
    }
 </style>
 
-<section class="hero has-background-grey-light is-fullheight">
+<section class="hero has-background-grey-light is-fullheight" id="vue-target" v-cloak>
    <div class="hero-head">
       <nav class="tabs is-boxed is-fullwidth is-large">
          <div class="container">
@@ -165,3 +165,9 @@
       </div>
    <div class="hero-foot"></div>
 </section>
+
+[[block page_scripts]]
+<script>
+  // URLS
+</script>
+<script src="js/kanban.js"></script>
