@@ -55,7 +55,7 @@
               <label class="checkbox block">
                 <input
                   type="checkbox"
-                  onclick="app.vue.task_is_group = !app.vue.task_is_group"
+                  onclick="app.vue.task_is_group = !app.vue.task_is_group;"
                 />
                 Group Task
               </label>
@@ -63,7 +63,7 @@
           </div>
           <div class="column is-half">
             <div class="container has-text-right">
-              <div class="dropdown is-hoverable block">
+              <div class="dropdown is-hoverable is-up block">
                 <div class="dropdown-trigger">
                   <button
                     class="button"
@@ -72,7 +72,7 @@
                     aria-haspopup="true"
                     aria-controls="dropdown-menu"
                   >
-                    <span>Category</span>
+                    <span id="drop_label">Category</span>
                     <span class="icon is-small">
                       <i class="fa fa-angle-down" aria-hidden="true"></i>
                     </span>
@@ -81,25 +81,25 @@
                 <div class="dropdown-menu" id="dropdown-menu" role="menu">
                   <div class="dropdown-content">
                     <a
-                      onmousedown="app.vue.task_category = 'school'; console.log('School');"
+                      onmousedown="app.vue.task_category = 'school'; document.getElementById('drop_label').innerHTML = 'School';"
                       href="javascript:void(0);"
                       class="dropdown-item"
                     >
-                      School
+                      <div class="container has-text-left">School</div>
                     </a>
                     <a
-                      onmousedown="app.vue.task_category = 'work'; console.log('Work');"
+                      onmousedown="app.vue.task_category = 'work'; document.getElementById('drop_label').innerHTML = 'Work';"
                       href="javascript:void(0);"
                       class="dropdown-item"
                     >
-                      Work
+                      <div class="container has-text-left">Work</div>
                     </a>
                     <a
-                      onmousedown="app.vue.task_category = 'personal'; console.log('Personal');"
+                      onmousedown="app.vue.task_category = 'personal'; document.getElementById('drop_label').innerHTML = 'Personal';"
                       href="javascript:void(0);"
                       class="dropdown-item"
                     >
-                      Personal
+                      <div class="container has-text-left">Personal</div>
                     </a>
                   </div>
                 </div>
