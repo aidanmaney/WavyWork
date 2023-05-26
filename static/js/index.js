@@ -27,9 +27,11 @@ let init = (app) => {
         return a;
     };
 
-    app.set_adding_task = () => {
-        app.vue.is_adding_task = true;
+    app.set_adding_task = function (state)  {
+        let modal = document.getElementById("add_task_modal");
+        state ? modal.classList.add("is-active") : modal.classList.remove("is-active");
     };
+
 
     app.add_task = () => {
         axios.post(add_task_url,
@@ -50,7 +52,7 @@ let init = (app) => {
                     //will implement groups soon
                 })
                 app.enumerate(app.vue.tasks)
-                app.vue.is_adding_task = false;
+                //app.vue.is_adding_task = false;
             })
     }; 
 

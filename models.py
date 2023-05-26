@@ -5,6 +5,7 @@ This file defines the database models
 import datetime
 from .common import db, Field, auth
 from pydal.validators import *
+from .sample_DB import populate_sample_DB
 
 
 def get_user_email():
@@ -130,5 +131,6 @@ db.define_table(
     Field("entry"),
 )
 
+populate_sample_DB()
 
 db.commit()
