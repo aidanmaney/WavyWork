@@ -5,6 +5,7 @@ This file defines the database models
 import datetime
 from .common import db, Field, auth
 from pydal.validators import *
+from .sample_DB import populate_sample_DB
 
 
 def get_user_email():
@@ -23,10 +24,10 @@ db.define_table(
     "groups",
     Field("group_name", required=True),
     # Need one user to start a group, can't count two users twice:
-    Field("assoc_user_1", "integer", "reference auth_user", required=True, unique=True),
-    Field("assoc_user_2", "integer", "reference auth_user", unique=True),
-    Field("assoc_user_3", "integer", "reference auth_user", unique=True),
-    Field("assoc_user_4", "integer", "reference auth_user", unique=True),
+    Field("assoc_user_1", "integer", "reference auth_user", required=True),
+    Field("assoc_user_2", "integer", "reference auth_user"),
+    Field("assoc_user_3", "integer", "reference auth_user"),
+    Field("assoc_user_4", "integer", "reference auth_user"),
 )
 
 db.define_table(
@@ -130,5 +131,6 @@ db.define_table(
     Field("entry"),
 )
 
+populate_sample_DB()
 
 db.commit()

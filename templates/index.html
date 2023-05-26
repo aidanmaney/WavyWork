@@ -1,5 +1,132 @@
 [[extend 'layout.html']]
 
-<div class="section">
-   Hello.
+<style>
+  [v-cloak] {
+    display: none;
+  }
+</style>
+
+<div class="section" id="vue-target" v-cloak>
+  <button class="button is-success is-outlined" @click="set_adding_task(true)">
+    <span class="icon is-small">
+      <i class="fa fa-check"></i>
+    </span>
+    <span>Add Task</span>
+  </button>
+
+  <div id="add_task_modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title" style="text-align: center">Add a Task</p>
+        <button
+          class="modal-close is-large"
+          @click="set_adding_task(false)"
+        ></button>
+      </header>
+      <section class="modal-card-body">
+        <input
+          class="input block"
+          type="text"
+          placeholder="Task Label"
+          v-model="task_label"
+        />
+        <textarea
+          class="textarea block"
+          placeholder="Task Description"
+          v-model="task_description"
+        ></textarea>
+        <input
+          class="input block"
+          type="text"
+          placeholder="Task Start Time"
+          v-model="task_start_time"
+        />
+        <input
+          class="input block"
+          type="text"
+          placeholder="Task End Time"
+          v-model="task_end_time"
+        />
+
+        <div class="columns">
+          <div class="column is-half">
+            <div class="container has-text-left">
+              <label class="checkbox block">
+                <input
+                  type="checkbox"
+                  onclick="app.vue.task_is_group = !app.vue.task_is_group;"
+                />
+                Group Task
+              </label>
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="container has-text-right">
+              <div class="dropdown is-hoverable is-up block">
+                <div class="dropdown-trigger">
+                  <button
+                    class="button"
+                    onclick="javascript:document.querySelector('.dropdown').classList.toggle('is-active')"
+                    onblur="javascript:document.querySelector('.dropdown').classList.toggle('is-active')"
+                    aria-haspopup="true"
+                    aria-controls="dropdown-menu"
+                  >
+                    <span id="drop_label">Category</span>
+                    <span class="icon is-small">
+                      <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                  <div class="dropdown-content">
+                    <a
+                      onmousedown="app.vue.task_category = 'school'; document.getElementById('drop_label').innerHTML = 'School';"
+                      href="javascript:void(0);"
+                      class="dropdown-item"
+                    >
+                      <div class="container has-text-left">School</div>
+                    </a>
+                    <a
+                      onmousedown="app.vue.task_category = 'work'; document.getElementById('drop_label').innerHTML = 'Work';"
+                      href="javascript:void(0);"
+                      class="dropdown-item"
+                    >
+                      <div class="container has-text-left">Work</div>
+                    </a>
+                    <a
+                      onmousedown="app.vue.task_category = 'personal'; document.getElementById('drop_label').innerHTML = 'Personal';"
+                      href="javascript:void(0);"
+                      class="dropdown-item"
+                    >
+                      <div class="container has-text-left">Personal</div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <div class="container has-text-centered">
+          <button class="button is-success is-outlined block" @click="add_task">
+            <span class="icon is-small">
+              <i class="fa fa-check"></i>
+            </span>
+            <span>Submit Task</span>
+          </button>
+        </div>
+      </footer>
+    </div>
+  </div>
 </div>
+
+[[block page_scripts]]
+<!-- Loads the index-specific js for Vue -->
+<script>
+  let add_task_url = "[[=XML(add_task_url)]]";
+</script>
+
+<script src="js/index.js"></script>
+[[end]]
