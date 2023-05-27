@@ -8,7 +8,7 @@ from .common import db, Field, auth
 sample_tasks = [
     {
         "task_label": "finish my history essay",
-        "task_category": "school",
+        "task_category": "personal",
         "task_subtasks": [
             "read chapter 5",
             "find good quotes",
@@ -19,7 +19,7 @@ sample_tasks = [
     },
     {
         "task_label": "find a slug",
-        "task_category": "school",
+        "task_category": "personal",
         "task_subtasks": [
             "get my boots on",
             "find an umbrella",
@@ -29,7 +29,7 @@ sample_tasks = [
     },
     {
         "task_label": "submit those TPS reports",
-        "task_category": "work",
+        "task_category": "personal",
         "task_subtasks": [
             "go to work",
             "open my computer",
@@ -40,7 +40,7 @@ sample_tasks = [
     },
     {
         "task_label": "prep for the accounting interview",
-        "task_category": "work",
+        "task_category": "personal",
         "task_subtasks": [
             "email my boss",
             "email the potential new hire",
@@ -176,18 +176,22 @@ def add_task_reflections_for_testing(task_id_list):
 def add_kanban_cards_for_testing(task_id_list):
     db(db.kanban_cards).delete()
 
-    kanban_categories = ["backlog", "todo", "in_progress", "stuck", "done"]
+    kanban_categories = ["todo", "in_progress", "stuck", "done"]
+    i = 0
 
     # Arbitrary subset of tasks
-    kanban_tasks = task_id_list[2:5]
+    # kanban_tasks = task_id_list[2:5]
+    kanban_tasks = task_id_list
 
     inserted_kanban_card_ids = []
 
     for task_id in kanban_tasks:
         kanban_task_id = db.kanban_cards.insert(
-            task_id=task_id, column=kanban_categories[random.randint(0, 4)]
+            # task_id=task_id, column=kanban_categories[random.randint(0, 4)]
+            task_id=task_id, column=kanban_categories[i]
         )
         inserted_kanban_card_ids.append(kanban_task_id)
+        i = (i+1)%4
 
     db.commit()
     return inserted_kanban_card_ids

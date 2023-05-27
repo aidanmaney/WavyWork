@@ -11,7 +11,7 @@
    }
 </style>
 
-<section class="hero has-background-grey-light is-fullheight" id="vue-target" v-cloak>
+<section class="hero has-background-grey-light is-fullheight" id="vue-target">
    <div class="hero-head">
       <nav class="tabs is-boxed is-fullwidth is-large">
          <div class="container">
@@ -26,149 +26,120 @@
    </div>
    <div class="hero-body">
       <div class="columns is-mobile is-variable is-4">
-         <div class="column is-one-fifth">
+         <div class="column is-one-fourth">
             <h1 class="title kanban_title">To-Do</h1>
+            <button v-if="show_new_column" @click="move_task_2('todo')">+</button>
             <div class="box kanban_col">
-               <div class="card">
+          
+               <div class="card" v-for="obj in task_arrays['todo']">
                   <header class="card-header">
                     <p class="card-header-title">
-                      Task Name
+                      {{obj["tasks"]["label"]}}
                     </p>
-                    <button class="card-header-icon" aria-label="more options">
+                    <button class="card-header-icon" aria-label="more options" @click="move_task_1(obj._idx, obj.kanban_cards.column)">
                       <span class="icon">
                         <i class="fa fa-angle-down" aria-hidden="true"></i>
                       </span>
                     </button>
                   </header>
                   <div class="card-content">
-                    <div class="content">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
-                      <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
+                    <div class="content $card-content-padding">
+                      {{obj["tasks"]["description"]}}
+                      
                       <br>
-                      <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+                      <time>{{obj["tasks"]["start_time"]}} - {{obj["tasks"]["end_time"]}}</time>
                     </div>
                   </div>
-                  <footer class="card-footer">
-                    <a href="#" class="card-footer-item">Save</a>
-                    <a href="#" class="card-footer-item">Edit</a>
-                    <a href="#" class="card-footer-item">Delete</a>
-                  </footer>
-               </div>
-
-               <br><br>
-               <div class="card">
-                  <header class="card-header">
-                    <p class="card-header-title">
-                      Task Name
-                    </p>
-                    <button class="card-header-icon" aria-label="more options">
-                      <span class="icon">
-                        <i class="fa fa-angle-down" aria-hidden="true"></i>
-                      </span>
-                    </button>
-                  </header>
-                  <div class="card-content">
-                    <div class="content">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
-                      <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
-                      <br>
-                      <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
-                    </div>
-                  </div>
-                  <footer class="card-footer">
-                    <a href="#" class="card-footer-item">Save</a>
-                    <a href="#" class="card-footer-item">Edit</a>
-                    <a href="#" class="card-footer-item">Delete</a>
-                  </footer>
-               </div>
-
-               <br><br>
-               <div class="card">
-                  <header class="card-header">
-                    <p class="card-header-title">
-                      Task Name
-                    </p>
-                    <button class="card-header-icon" aria-label="more options">
-                      <span class="icon">
-                        <i class="fa fa-angle-down" aria-hidden="true"></i>
-                      </span>
-                    </button>
-                  </header>
-                  <div class="card-content">
-                    <div class="content">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
-                      <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
-                      <br>
-                      <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
-                    </div>
-                  </div>
-                  <footer class="card-footer">
-                    <a href="#" class="card-footer-item">Save</a>
-                    <a href="#" class="card-footer-item">Edit</a>
-                    <a href="#" class="card-footer-item">Delete</a>
-                  </footer>
-               </div>
-
-               <br><br>
-               <div class="card">
-                  <header class="card-header">
-                    <p class="card-header-title">
-                      Task Name
-                    </p>
-                    <button class="card-header-icon" aria-label="more options">
-                      <span class="icon">
-                        <i class="fa fa-angle-down" aria-hidden="true"></i>
-                      </span>
-                    </button>
-                  </header>
-                  <div class="card-content">
-                    <div class="content">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
-                      <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
-                      <br>
-                      <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
-                    </div>
-                  </div>
-                  <footer class="card-footer">
-                    <a href="#" class="card-footer-item">Save</a>
-                    <a href="#" class="card-footer-item">Edit</a>
-                    <a href="#" class="card-footer-item">Delete</a>
-                  </footer>
                </div>
 
             </div>
          </div>
-         <div class="column is-one-fifth">
+         <div class="column is-one-fourth">
             <h1 class="title kanban_title">In Progress</h1>
+            <button v-if="show_new_column" @click="move_task_2('in_progress')">+</button>
             <div class="box kanban_col">
-               col2
+              <div class="card" v-for="obj in task_arrays['in_progress']">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    {{obj["tasks"]["label"]}}
+                  </p>
+                  <button class="card-header-icon clickable" aria-label="more options" @click="move_task_1(obj._idx, obj.kanban_cards.column)">
+                    <span class="icon">
+                      <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </header>
+                <div class="card-content">
+                  <div class="content $card-content-padding">
+                    {{obj["tasks"]["description"]}}
+                    
+                    <br>
+                    <time>{{obj["tasks"]["start_time"]}} - {{obj["tasks"]["end_time"]}}</time>
+                  </div>
+                </div>
+             </div>
             </div>
          </div>
-         <div class="column is-one-fifth">
+         <div class="column is-one-fourth">
             <h1 class="title kanban_title">Stuck</h1>
+            <button v-if="show_new_column" @click="move_task_2('stuck')">+</button>
             <div class="box kanban_col">
-               col3
+              <div class="card" v-for="obj in task_arrays['stuck']">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    {{obj["tasks"]["label"]}}
+                  </p>
+                  <button class="card-header-icon" aria-label="more options" @click="move_task_1(obj._idx, obj.kanban_cards.column)">
+                    <span class="icon">
+                      <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </header>
+                <div class="card-content">
+                  <div class="content $card-content-padding">
+                    {{obj["tasks"]["description"]}}
+                    
+                    <br>
+                    <time">{{obj["tasks"]["start_time"]}} - {{obj["tasks"]["end_time"]}}</time>
+                  </div>
+                </div>
+             </div>
             </div>
          </div>
-         <div class="column is-one-fifth">
+         <div class="column is-one-fourth">
             <h1 class="title kanban_title">Done</h1>
+            <button v-if="show_new_column" @click="move_task_2('done')">+</button>
             <div class="box kanban_col">
-               col4
+              <div class="card" v-for="obj in task_arrays['done']">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    {{obj["tasks"]["label"]}}
+                  </p>
+                  <button class="card-header-icon" aria-label="more options" @click="move_task_1(obj._idx, obj.kanban_cards.column)">
+                    <span class="icon">
+                      <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </header>
+                <div class="card-content">
+                  <div class="content $card-content-padding">
+                    {{obj["tasks"]["description"]}}
+                    
+                    <br>
+                    <time>{{obj["tasks"]["start_time"]}} - {{obj["tasks"]["end_time"]}}</time>
+                  </div>
+                </div>
+             </div>
             </div>
          </div>
-         <div class="column is-one-fifth">
-            <h1 class="title kanban_title">Backlog</h1>
-            <div class="box kanban_col">
-               col5
-            </div>
-         </div>
+         
       </div>
    <div class="hero-foot"></div>
 </section>
 
 [[block page_scripts]]
 <script>
-  // URLS
+  let get_tasks_url = "[[=XML(get_tasks_url)]]";
 </script>
-<script src="js/kanban.js"></script>
+<script src="../static/js/kanban.js"></script>
 [[end]]
