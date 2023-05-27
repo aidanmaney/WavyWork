@@ -1,5 +1,9 @@
 [[extend 'layout.html']]
 
+[[block page_head]]
+<link rel="stylesheet" href="css/custom.scss">
+[[end]]
+
 <div class="section" id="vue-target">
    <div class="section">
       Hello.
@@ -23,6 +27,18 @@
         type="number"
         v-model="year"
         placeholder="yyyy">
+      <span class="FormDate__divider">|</span>
+      <input
+        class="FormDate__input FormDate__input--year"
+        type="number"
+        v-model="year"
+        placeholder="hour">
+      <span class="FormDate__divider">:</span>
+      <input
+        class="FormDate__input FormDate__input--year"
+        type="number"
+        v-model="year"
+        placeholder="minute">
    </div>
 </div>
 
