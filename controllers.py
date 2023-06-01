@@ -30,12 +30,31 @@ from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from py4web.utils.url_signer import URLSigner
 from .models import get_user_email
+from .models import get_user_id
 
 url_signer = URLSigner(session)
 
 @action('index')
-@action.uses('index.html', db, auth.user)
+@action.uses('index.html', db, auth.user, url_signer)
 def index():
     print("User is:", get_user_email())
-    return dict()
+    print('ID:', get_user_id())
+    return dict(
+        timeline_stage_url = URL('timeline_stage', signer=url_signer)
+    )
 
+
+@action('timeline_stage')
+@action.uses(db, auth.user)
+def timeline_stage():
+    print('timeline controller')
+
+    task_list = db(db.tasks.created_by == get_user_id()).select().as_list()
+
+    print(task_list)
+    return dict(task_list=task_list)
+
+
+
+    # task_list = db(db.tasks).select().as_list()
+    # return(task_list=task_list)
