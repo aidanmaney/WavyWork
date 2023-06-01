@@ -27,7 +27,7 @@
 		left: 0;
 		width: 100%;
 		height: 2px;
-		background-color: #757171;
+		background-color: #000;
 		z-index: -1;
 	}
 
@@ -58,6 +58,16 @@
 		height: 20px;
 		border-radius: 50%;
 		background-color: #FF2800;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.timeline-circle-grey {
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		background-color: #808080;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -127,9 +137,14 @@
 
 			<div class="container">
 				<div class="timeline">
+					<!-- <div class="timeline-circle-black"></div>
+					<div class="timeline-circle-red"></div> -->
 					<div class="timeline-circle-green"></div>
-					<div class="timeline-circle-black"></div>
-					<div class="timeline-circle-red"></div>
+					<div class="timeline-circle-green"></div>
+					<div class="timeline-circle-green"></div>
+					<div class="timeline-circle-grey"></div>
+					<div class="timeline-circle-grey"></div>
+					<div class="timeline-circle-grey"></div>
 				</div>
 			</div>
 
@@ -160,7 +175,7 @@
 [[block page_scripts]]
 <!-- Loads the index-specific js for Vue -->
 <script>
-
+	let timeline_stage_url = "[[=XML(timeline_stage_url)]]";
 </script>
 
 <script src="js/index.js"></script>

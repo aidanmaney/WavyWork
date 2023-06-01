@@ -10,6 +10,7 @@ let init = (app) => {
     app.data = {
         // Complete as you see fit.
         // content: [],
+        tasks: [],
     };    
     
     app.enumerate = (a) => {
@@ -28,12 +29,23 @@ let init = (app) => {
     // }
 
 
+    app.timeline_stage = function () {
+        console.log('time callled')
+
+        axios.get(timeline_stage_url).then(
+            function(response) {
+                console.log('in then')
+                app.tasks = response.task_list
+            });
+    }
+
  
 
     // This contains all the methods.
     app.methods = {
         // Complete as you see fit.
         // get_users: app.get_users,
+        timeline_stage: app.timeline_stage,
     };
 
     // This creates the Vue instance.
@@ -46,6 +58,7 @@ let init = (app) => {
     // And this initializes it.
     app.init = () => {
         console.log("Top of init()")
+        app.timeline_stage();
         // app.search()
         // app.get_users()
         
