@@ -1,4 +1,6 @@
-[[extend 'layout.html']]
+[[extend 'layout.html']] [[block page_head]]
+<link rel="stylesheet" href="css/slider.css" />
+[[end]]
 
 <style>
   [v-cloak] {
@@ -36,18 +38,6 @@
           placeholder="Task Description"
           v-model="task_description"
         ></textarea>
-        <input
-          class="input block"
-          type="text"
-          placeholder="Task Start Time"
-          v-model="task_start_time"
-        />
-        <input
-          class="input block"
-          type="text"
-          placeholder="Task End Time"
-          v-model="task_end_time"
-        />
 
         <div class="columns">
           <div class="column is-half">
@@ -115,6 +105,74 @@
               <i class="fa fa-check"></i>
             </span>
             <span>Submit Task</span>
+          </button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <div id="reflection_modal" class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head" style="background-color: #b0b0b0">
+        <p class="modal-card-title is-1" style="text-align: center">
+          <b>Task # Reflection</b>
+        </p>
+        <button class="modal-close is-large"></button>
+      </header>
+      <section class="modal-card-body" style="background-color: #d5d5d5">
+        <div class="section">
+          <p class="title block" style="text-align: center">Attentiveness</p>
+          <div class="slider block">
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value="1"
+              oninput="rangeValue1.innerText = this.value"
+            />
+            <p id="rangeValue1">1</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <p class="title block" style="text-align: center">Emotion</p>
+          <div class="slider block">
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value="1"
+              oninput="rangeValue2.innerText = this.value"
+            />
+            <p id="rangeValue2">1</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <p class="title block" style="text-align: center">Efficiency</p>
+          <div class="slider block">
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value="1"
+              oninput="rangeValue3.innerText = this.value"
+            />
+            <p id="rangeValue3">1</p>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot" style="background-color: #b0b0b0">
+        <div class="container has-text-centered">
+          <button
+            class="button is-success block"
+            onclick="this.closest('.modal').classList.toggle('is-active')"
+          >
+            <span class="icon is-small">
+              <i class="fa fa-check"></i>
+            </span>
+            <span>Submit Reflection</span>
           </button>
         </div>
       </footer>
