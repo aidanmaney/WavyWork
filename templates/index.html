@@ -36,18 +36,8 @@
           placeholder="Task Description"
           v-model="task_description"
         ></textarea>
-        <input
-          class="input block"
-          type="text"
-          placeholder="Task Start Time"
-          v-model="task_start_time"
-        />
-        <input
-          class="input block"
-          type="text"
-          placeholder="Task End Time"
-          v-model="task_end_time"
-        />
+        <input class="input block" type="date" v-model="task_start_time" />
+        <input class="input block" type="date" v-model="task_end_time" />
 
         <div class="columns">
           <div class="column is-half">
