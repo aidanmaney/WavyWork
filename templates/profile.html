@@ -21,38 +21,43 @@
 </style>
 
 <div class="section" id="vue-target">
-	<div class="section">Profile and goals goes here!</div>
+	<div class="section">
+		Profile and goals goes here!
+		<button class="button is-primary" @click="get_reflections">
+			Get reflections
+		</button>
+	</div>
 	<div class="container is-centered">
 		<table class="table is-borderless is-narrow has-text-centered">
 			<thead>
 				<tr>
-					<th v-for="day in days_of_the_week">{{day}}</th>
+					<th v-for="day in daysOfTheWeek">{{day}}</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td v-for="day in days_of_the_week">
+					<td v-for="day in daysOfTheWeek">
 						<div
 							class="notification button square is-success mb-2"
 						></div>
 					</td>
 				</tr>
 				<tr>
-					<td v-for="day in days_of_the_week">
+					<td v-for="day in daysOfTheWeek">
 						<div
 							class="notification button square is-success mb-2"
 						></div>
 					</td>
 				</tr>
 				<tr>
-					<td v-for="day in days_of_the_week">
+					<td v-for="day in daysOfTheWeek">
 						<div
 							class="notification button square is-success mb-2"
 						></div>
 					</td>
 				</tr>
 				<tr>
-					<td v-for="day in days_of_the_week">
+					<td v-for="day in daysOfTheWeek">
 						<div
 							class="notification button square is-success mb-2"
 						></div>
@@ -64,5 +69,8 @@
 </div>
 
 [[block page_scripts]]
+<script>
+	let get_reflections_url = "[[=XML(get_reflections_url)]]";
+</script>
 <script src="js/profile.js"></script>
 [[end]]
