@@ -16,6 +16,17 @@
     <span>Add Task</span>
   </button>
 
+  <button
+    class="button is-warning is-outlined"
+    @click="get_active_tasks"
+    v-if="reflections_available"
+  >
+    <span class="icon is-small">
+      <i class="fa fa-plus"></i>
+    </span>
+    <span>Daily Reflections</span>
+  </button>
+
   <div id="add_task_modal" class="modal">
     <div class="modal-background"></div>
     <div class="modal-card">
@@ -38,15 +49,14 @@
           placeholder="Task Description"
           v-model="task_description"
         ></textarea>
+        <input class="input block" type="date" v-model="task_start_time" />
+        <input class="input block" type="date" v-model="task_end_time" />
 
         <div class="columns">
           <div class="column is-half">
             <div class="container has-text-left">
               <label class="checkbox block">
-                <input
-                  type="checkbox"
-                  onclick="app.vue.task_is_group = !app.vue.task_is_group;"
-                />
+                <input type="checkbox" v-model="task_is_group" />
                 Group Task
               </label>
             </div>
@@ -111,14 +121,21 @@
     </div>
   </div>
 
-  <div id="reflection_modal" class="modal is-active">
+  <div
+    id="reflection_modal"
+    class="modal is-active"
+    v-for="t in reflection_modal_tasks"
+  >
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head" style="background-color: #b0b0b0">
         <p class="modal-card-title is-1" style="text-align: center">
-          <b>Task # Reflection</b>
+          <b style="text-transform: capitalize">{{t.label}}</b>
         </p>
-        <button class="modal-close is-large"></button>
+        <button
+          class="modal-close is-large"
+          onclick="this.closest('.modal').classList.remove('is-active')"
+        ></button>
       </header>
       <section class="modal-card-body" style="background-color: #d5d5d5">
         <div class="section">
@@ -129,9 +146,9 @@
               min="1"
               max="10"
               value="1"
-              oninput="rangeValue1.innerText = this.value"
+              v-model="reflection_attentiveness"
             />
-            <p id="rangeValue1">1</p>
+            <p>{{reflection_attentiveness}}</p>
           </div>
         </div>
 
@@ -143,9 +160,9 @@
               min="1"
               max="10"
               value="1"
-              oninput="rangeValue2.innerText = this.value"
+              v-model="reflection_emotion"
             />
-            <p id="rangeValue2">1</p>
+            <p>{{reflection_emotion}}</p>
           </div>
         </div>
 
@@ -157,9 +174,9 @@
               min="1"
               max="10"
               value="1"
-              oninput="rangeValue3.innerText = this.value"
+              v-model="reflection_efficiency"
             />
-            <p id="rangeValue3">1</p>
+            <p>{{reflection_efficiency}}</p>
           </div>
         </div>
       </section>
@@ -167,16 +184,126 @@
         <div class="container has-text-centered">
           <button
             class="button is-success block"
-            onclick="this.closest('.modal').classList.toggle('is-active')"
+            onclick="this.closest('.modal').classList.toggle('is-active'); app.spawn_next_reflection_modal();"
+            @click="submit_task_reflection(t.id)"
           >
             <span class="icon is-small">
               <i class="fa fa-check"></i>
             </span>
             <span>Submit Reflection</span>
           </button>
+          <button
+            class="button is-danger block"
+            onclick="this.closest('.modal').classList.remove('is-active'); app.spawn_next_reflection_modal();"
+          >
+            <span>Did not work on Task</span>
+            <span class="icon is-right">
+              <i class="fa fa-times"></i>
+            </span>
+          </button>
         </div>
       </footer>
     </div>
+  </div>
+
+  <div id="add_group_modal" v-if="task_is_group" class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="box">
+        <div class="field">
+          <p class="control">
+            <input
+              class="input"
+              type="text"
+              placeholder="Enter Group Name"
+              v-model="group_name"
+            />
+          </p>
+        </div>
+      </div>
+      <div class="box">
+        <div class="field">
+          <p class="control has-icons-right">
+            <input
+              class="input"
+              type="text"
+              placeholder="Search users"
+              v-model="search_query"
+              @keyup="search"
+            />
+            <span class="icon is-small is-right clickable" @click="clear">
+              <i class="fa fa-times-circle"></i>
+            </span>
+          </p>
+        </div>
+        <div
+          class="field has-addons"
+          v-if="!is_displaying_search"
+          v-for="u in all_users"
+        >
+          <p class="control">
+            <button
+              class="button"
+              v-if="!u.is_group_member"
+              @click="add_to_group(u._idx)"
+            >
+              <span>{{u.first_name}} {{u.last_name}}</span>
+            </button>
+
+            <button
+              class="button is-success"
+              v-if="u.is_group_member"
+              @click="remove_from_group(u._idx)"
+            >
+              <span>{{u.first_name}} {{u.last_name}}</span>
+            </button>
+          </p>
+        </div>
+        <div
+          class="field has-addons"
+          v-if="is_displaying_search"
+          v-for="u in search_users"
+        >
+          <p class="control">
+            <button
+              class="button"
+              v-if="!u.is_group_member"
+              @click="add_to_group(u._idx)"
+            >
+              <span>{{u.first_name}} {{u.last_name}}</span>
+            </button>
+
+            <button
+              class="button is-success"
+              v-if="u.is_group_member"
+              @click="remove_from_group(u._idx)"
+            >
+              <span>{{u.first_name}} {{u.last_name}}</span>
+            </button>
+          </p>
+        </div>
+      </div>
+      <div class="box" style="position: sticky; bottom: 0">
+        <div class="level">
+          <div class="level-item has-text-centered">
+            <button
+              class="button is-success is-centered"
+              onclick="this.closest('.modal').classList.toggle('is-active')"
+            >
+              <span class="icon is-small">
+                <i class="fa fa-plus"></i>
+              </span>
+              <span>Create Group</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button
+      class="modal-close is-large"
+      aria-label="close"
+      onclick="app.vue.task_is_group=false"
+    ></button>
   </div>
 </div>
 
@@ -184,6 +311,11 @@
 <!-- Loads the index-specific js for Vue -->
 <script>
   let add_task_url = "[[=XML(add_task_url)]]";
+  let get_active_tasks_url = "[[=XML(get_active_tasks_url)]]";
+  let submit_task_reflection_url = "[[=XML(submit_task_reflection_url)]]";
+  let get_users_url = "[[=XML(get_users_url)]]";
+  let check_for_submitted_reflections_url =
+    "[[=XML(check_for_submitted_reflections_url)]]";
 </script>
 
 <script src="js/index.js"></script>

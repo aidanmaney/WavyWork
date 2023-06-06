@@ -5,6 +5,10 @@ import datetime
 from py4web.utils.populate import FIRST_NAMES, LAST_NAMES
 from .common import db, Field, auth
 
+def get_today():
+    dt = datetime.datetime.utcnow().today()
+    return datetime.datetime(dt.year, dt.month, dt.day)
+
 sample_tasks = [
     {
         "task_label": "finish my history essay",
@@ -121,7 +125,7 @@ def add_tasks_for_testing():
         task_id = db.tasks.insert(
             label=label,
             description="I need to " + label,
-            end_time=datetime.datetime.today() + datetime.timedelta(days=1),
+            end_time=get_today() + datetime.timedelta(days=1),
             categorization=task_category,
             is_group=False,
             created_by=id_user_johndoe,

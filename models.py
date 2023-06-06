@@ -19,22 +19,22 @@ def get_user_id():
 def get_time():
     return datetime.datetime.utcnow()
 
+def get_today():
+    dt = datetime.datetime.utcnow().today()
+    return datetime.datetime(dt.year, dt.month, dt.day)
+
 
 db.define_table(
     "groups",
     Field("group_name", required=True),
-    # Need one user to start a group, can't count two users twice:
-    Field("assoc_user_1", "integer", "reference auth_user", required=True),
-    Field("assoc_user_2", "integer", "reference auth_user"),
-    Field("assoc_user_3", "integer", "reference auth_user"),
-    Field("assoc_user_4", "integer", "reference auth_user"),
+    Field("members", "list:reference auth_user")
 )
 
 db.define_table(
     "tasks",
     Field("created_by", "integer", "reference auth_user", default=get_user_id),
-    Field("start_time", "datetime", default=get_time().today),
-    Field("end_time", "datetime", default=get_time().today),
+    Field("start_time", "datetime", default=get_today()),
+    Field("end_time", "datetime", default=get_today()),
     Field("label"),
     Field("description"),
     Field(
@@ -110,7 +110,7 @@ db.define_table(
     Field(
         "day",
         "datetime",
-        default=get_time().today,
+        default=get_today(),
         label="Date of reflection",
     ),
 )
@@ -126,7 +126,7 @@ db.define_table(
     Field(
         "day",
         "datetime",
-        default=get_time().today,
+        default=get_today(),
     ),
     Field("entry"),
 )
