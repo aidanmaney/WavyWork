@@ -120,6 +120,12 @@ def check_for_submitted_reflections():
 # If instead I wanted to access the time the reflection was created, is ask for row.task_reflections.day
 # Below is another example that gets all in progress kanban cards that are associated with the logged in user
 
-#test_query = db((db.tasks.created_by == get_user_id()) &
-#                (db.kanban_cards.task_id == db.tasks.id) &
-#                (db.kanban_cards.column == "in_progress")).select()
+# test_query = db((db.tasks.created_by == get_user_id()) &
+#                 (db.kanban_cards.task_id == db.tasks.id) &
+#                 (db.kanban_cards.column == "in_progress")).select()
+
+# all_tasks = db((db.tasks.created_by == get_user_id()) | 
+#              ( (db.tasks.created_by != get_user_id()) &
+#                (db.groups.members.contains(get_user_id())) &
+#                (db.groups.id == db.tasks.id) )
+#                )
