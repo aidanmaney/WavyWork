@@ -46,7 +46,7 @@ def index():
 @action.uses(db)
 def get_tasks():
     board_query = "personal"
-    print('HELLO')
+    # print('HELLO')
     # user_tasks = db(db.tasks.created_by == 6  and db.kanban_cards.task_id == db.tasks.id).select(db.tasks.id).as_list() # HARD CODING THE USER ID # and db.tasks.categorization == board_query
     # user_tasks = db(db.tasks.created_by == 6  and db.kanban_cards.task_id == db.tasks.id).select()
     uncategorized = db.executesql("SELECT 'tasks'.'id' FROM 'tasks' WHERE 'tasks'.'id' NOT IN (SELECT 'kanban_cards'.'task_id' FROM 'kanban_cards')", as_dict=True)
@@ -65,15 +65,32 @@ def get_tasks():
         # print(id)
     # print("USER TASKS", user_tasks)
     # print("SQL", db._lastsql)
-    print("DONE")
+    # print("DONE")
     return dict(todo_tasks=todo_tasks, in_progress_tasks=in_progress_tasks, stuck_tasks=stuck_tasks, done_tasks=done_tasks)
 
 
 @action('kanban')
 @action.uses('kanban.html', db, auth.user)
 def kanban():
-    print("HI")
+    # print("HI")
     return dict(
-        get_tasks_url = URL("get_tasks")
+        get_tasks_url = URL("get_tasks"),
+        update_kanban_url = URL("update_kanban")
     )
 
+   
+@action("update_kanban", method="POST")
+@action.uses(db) # url_signer.verify()
+def update_kanban():
+    # print("RECEIVED HERE")
+
+    task_id = request.params.get("task_id")
+    new_column = request.params.get("new_column")
+
+    kanban_task = db.kanban_cards[task_id]
+
+    # print("kanban task", kanban_task)
+
+    db(db.kanban_cards.task_id == task_id).validate_and_update(column=new_column)
+
+    return dict()

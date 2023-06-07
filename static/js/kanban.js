@@ -63,18 +63,28 @@ let init = (app) => {
     }
 
     app.move_task_2 = function(post_column) {
-        task = task_arrays[app.vue.moving_task_pre_column][app.vue.moving_task_id]
-        // add to post column
-        task_arrays[post_column].push(task)
-        // removing from pre column
-        task_arrays[app.vue.moving_task_pre_column].splice(app.vue.moving_task_id, 1)
+        task = app.vue.task_arrays[app.vue.moving_task_pre_column][app.vue.moving_task_id]
+        task.kanban_cards.column = post_column
 
-        task_arrays[post_column] = app.enumerate(task_arrays[post_column])
-        task_arrays[app.vue.moving_task_pre_column] = app.enumerate(task_arrays[app.vue.moving_task_pre_column])
+        console.log("MOVE TASK 2")
 
-        app.vue.show_new_column = false
-        app.vue.moving_task_id = 0
-        app.vue.moving_task_pre_column = ""
+        axios.post(update_kanban_url, {task_id: task.kanban_cards.task_id, new_column: post_column}).then(function(response) {
+            // SEND KANBAN ID 
+       
+            // add to post column
+            app.vue.task_arrays[post_column].unshift(task)
+            // // removing from pre column
+            app.vue.task_arrays[app.vue.moving_task_pre_column].splice(app.vue.moving_task_id, 1)
+
+            app.vue.task_arrays[post_column] = app.enumerate(app.vue.task_arrays[post_column])
+            app.vue.task_arrays[app.vue.moving_task_pre_column] = app.enumerate(app.vue.task_arrays[app.vue.moving_task_pre_column])
+
+            app.vue.show_new_column = false
+            app.vue.moving_task_id = 0
+            app.vue.moving_task_pre_column = ""
+        })
+
+        
     }
 
     // This contains all the methods.
