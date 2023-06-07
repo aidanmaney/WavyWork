@@ -43,16 +43,62 @@ from .common import (
     flash,
 )
 from py4web.utils.url_signer import URLSigner
-from .models import get_user_email
+import datetime
+from .models import get_user_email, get_user_id, get_time, get_today
 
 url_signer = URLSigner(session)
 
 
 @action("index")
-@action.uses("index.html", db, auth, url_signer)
+@action.uses("index.html", db, auth, auth.user, url_signer)
 def index():
-    print("User:", get_user_email())
-    return dict()
+    return dict(
+        add_task_url=URL("add_task", signer=url_signer),
+        get_active_tasks_url=URL("get_active_tasks", signer=url_signer),
+        submit_task_reflection_url=URL("submit_task_reflection", signer=url_signer),
+        get_users_url=URL("get_users", signer=url_signer),
+        check_for_submitted_reflections_url=URL(
+            "check_for_submitted_reflections", signer=url_signer
+        ),
+    )
+
+
+@action("get_users")
+@action.uses(db, auth.user, url_signer.verify())
+def get_users():
+    all_users = (
+        db(db.auth_user.id != get_user_id())
+        .select(orderby=db.auth_user.first_name)
+        .as_list()
+    )
+    return dict(all_users=all_users)
+
+
+@action("add_task", method=["GET", "POST"])
+@action.uses(db, url_signer.verify(), auth.user)
+def add_task():
+    if request.json.get("is_group") and len(request.json.get("members")) > 0:
+        members = request.json.get("members") + [get_user_id()]
+        group_id = db.groups.insert(
+            group_name=request.json.get("group_name"), members=members
+        )
+
+    date_str_start_time = request.json.get("start_time")
+    datetime_start_time = datetime.datetime.strptime(date_str_start_time, "%Y-%m-%d")
+
+    date_str_end_time = request.json.get("end_time")
+    datetime_end_time = datetime.datetime.strptime(date_str_end_time, "%Y-%m-%d")
+
+    id = db.tasks.insert(
+        label=request.json.get("label"),
+        description=request.json.get("description"),
+        categorization=request.json.get("categorization"),
+        is_group=request.json.get("is_group"),
+        start_time=datetime_start_time,
+        end_time=datetime_end_time,
+        group_id=group_id,
+    )
+    return dict(id=id, created_by=get_user_id())
 
 
 @action("get_reflections")
