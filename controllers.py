@@ -48,19 +48,15 @@ def index():
 @action.uses(db, auth.user)
 def timeline_stage():
     print('timeline controller')
-
-    task_list = db(db.tasks.created_by == get_user_id()
-                   and db.tasks.id == db.subtasks.task_id
-                   ).select().as_list()
     
-    tasks = db(db.tasks.created_by == get_user_id()).select().as_list()
+    users_tasks = db(db.tasks.created_by == get_user_id()).select().as_list()
 
 
-    sub_tasks = []
-    for task in tasks:
+    subtasks_list = []
+    for task in users_tasks:
         subtask = db(db.subtasks.task_id == task['id']).select().as_list()
         print(subtask)
-        sub_tasks.append(subtask)
+        subtasks_list.append(subtask)
         # print('TASK',task)
     
     # print('DB', task_list)
@@ -69,8 +65,8 @@ def timeline_stage():
     #     print(task)
 
     print('DEBUG')
-    print(sub_tasks)
-    return dict(task_list=task_list)
+    print(subtasks_list)
+    return dict(subtasks_list=subtasks_list)
 
 
 
