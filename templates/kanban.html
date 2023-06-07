@@ -16,9 +16,9 @@
       <nav class="tabs is-boxed is-fullwidth is-large">
          <div class="container">
            <ul>
-             <li><a>Personal</a></li>
-             <li><a>School</a></li>
-             <li><a>Work</a></li>
+             <li :class="{'is-active': current_board == 'personal'}" @click="set_board('personal')"><a>Personal</a></li>
+             <li :class="{'is-active': current_board == 'school'}" @click="set_board('school')"><a>School</a></li>
+             <li :class="{'is-active': current_board == 'work'}" @click="set_board('work')"><a>Work</a></li>
            </ul>
          </div>
       </nav>
@@ -37,7 +37,7 @@
                 </div>
               </div>
 
-               <div class="card" v-for="obj in task_arrays['todo']">
+               <div class="card block" v-for="obj in task_arrays['todo']">
                   <header class="card-header">
                     <p class="card-header-title">
                       {{obj["tasks"]["label"]}}
@@ -71,7 +71,7 @@
                 </div>
               </div>
               
-              <div class="card" v-for="obj in task_arrays['in_progress']">
+              <div class="card block" v-for="obj in task_arrays['in_progress']">
                 <header class="card-header">
                   <p class="card-header-title">
                     {{obj["tasks"]["label"]}}
@@ -104,7 +104,7 @@
                 </div>
               </div>
 
-              <div class="card" v-for="obj in task_arrays['stuck']">
+              <div class="card block" v-for="obj in task_arrays['stuck']">
                 <header class="card-header">
                   <p class="card-header-title">
                     {{obj["tasks"]["label"]}}
@@ -136,7 +136,7 @@
                   </p>
                 </div>
               </div>
-              <div class="card" v-for="obj in task_arrays['done']">
+              <div class="card block" v-for="obj in task_arrays['done']">
                 <header class="card-header">
                   <p class="card-header-title">
                     {{obj["tasks"]["label"]}}

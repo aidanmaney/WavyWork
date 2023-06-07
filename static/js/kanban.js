@@ -19,7 +19,7 @@ let init = (app) => {
        current_board: "personal",
        show_new_column: false,
        moving_task_id: 0,
-       moving_task_pre_column: ""
+       moving_task_pre_column: "",
     };    
     
     app.enumerate = (a) => {
@@ -32,13 +32,18 @@ let init = (app) => {
         return a;
     };    
 
-    // each task should have a true or false for reveal morid   e
+    app.set_board = function(board) {
+        console.log("here here")
+
+        app.vue.current_board = board
+        app.get_tasks()
+    }
 
     // get tasks (board)
     // should return five arrays (todo, in_progress, etc) with the task in each array
     app.get_tasks = function (){
-        console.log("ENTERED")
-        axios.get(get_tasks_url).then(function (response) { // {params: {board: app.vue.current_board}}
+        // console.log("ENTERED")
+        axios.get(get_tasks_url, {params: {board: app.vue.current_board}}).then(function (response) { // {params: {board: app.vue.current_board}}
             app.vue.task_arrays["todo"] = app.enumerate(response.data.todo_tasks)
             app.vue.task_arrays["in_progress"] = app.enumerate(response.data.in_progress_tasks)
             app.vue.task_arrays["stuck"] = app.enumerate(response.data.stuck_tasks)
@@ -92,6 +97,7 @@ let init = (app) => {
         get_tasks: app.get_tasks,
         move_task_1: app.move_task_1,
         move_task_2: app.move_task_2,
+        set_board: app.set_board,
     };
 
     // This creates the Vue instance.
@@ -108,8 +114,6 @@ let init = (app) => {
         app.get_tasks()
 
         console.log("HELLO HI")
-        
-        app.vue.current_board = "yo"
     };
 
     // Call to the initializer.

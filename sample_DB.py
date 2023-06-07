@@ -19,7 +19,7 @@ sample_tasks = [
     },
     {
         "task_label": "find a slug",
-        "task_category": "personal",
+        "task_category": "school",
         "task_subtasks": [
             "get my boots on",
             "find an umbrella",
@@ -29,7 +29,7 @@ sample_tasks = [
     },
     {
         "task_label": "submit those TPS reports",
-        "task_category": "personal",
+        "task_category": "work",
         "task_subtasks": [
             "go to work",
             "open my computer",
@@ -49,12 +49,12 @@ sample_tasks = [
     },
     {
         "task_label": "do a grocery run",
-        "task_category": "personal",
+        "task_category": "school",
         "task_subtasks": ["buy apples", "buy oranges", "buy milk", "buy bread"],
     },
     {
         "task_label": "open an ice-cream shop",
-        "task_category": "personal",
+        "task_category": "work",
         "task_subtasks": [
             "get a restaurant license",
             "find lease",

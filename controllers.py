@@ -45,7 +45,7 @@ def index():
 @action("get_tasks")
 @action.uses(db)
 def get_tasks():
-    board_query = "personal"
+    board_query = request.params.get("board")
     # print('HELLO')
     # user_tasks = db(db.tasks.created_by == 6  and db.kanban_cards.task_id == db.tasks.id).select(db.tasks.id).as_list() # HARD CODING THE USER ID # and db.tasks.categorization == board_query
     # user_tasks = db(db.tasks.created_by == 6  and db.kanban_cards.task_id == db.tasks.id).select()
