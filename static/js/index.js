@@ -10,7 +10,7 @@ let init = (app) => {
     app.data = {
         // Complete as you see fit.
         // content: [],
-        tasks: [],
+        sub_tasks: [],
     };    
     
     app.enumerate = (a) => {
@@ -35,7 +35,8 @@ let init = (app) => {
         axios.get(timeline_stage_url).then(
             function(response) {
                 console.log('in then')
-                app.tasks = response.task_list
+                app.data.sub_tasks = response.data.subtasks_list
+                console.log(app.data.sub_tasks)
             });
     }
 
