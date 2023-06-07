@@ -109,7 +109,7 @@
 
 					<!-- Iterate over tasks rows for user and
 						display button for each task -->
-					<button class="button is-primary">
+					<!-- <button class="button is-primary">
 						Task 1
 					</button>
 
@@ -119,7 +119,15 @@
 
 					<button class="button is-danger">
 						Task 3
-					</button>
+					</button> -->
+
+          <div v-for="task in sub_tasks">
+            <button class="button is-primary">
+              Task 2
+            </button>
+          </div>
+
+
 
 			</div>
 		</div>
@@ -127,18 +135,26 @@
 		<div class="column is-one-fifth p-3">
 
 			<!-- Iterate over each task for user, and create timeline for each task -->
-			<div class="container">
-				<div class="timeline">
-					<div class="timeline-circle-green"></div>
-					<!-- Iterate over completed subtasks and add black dot -->
-					<div class="timeline-circle-red"></div>
+
+
+      <div v-for="task in sub_tasks">
+        <div class="container">
+          <div class="timeline">
+            <div v-for="subtask in task">
+              <!-- {{subtask['is_complete']}} -->
+              <div v-if="subtask['is_complete']">
+                <div class="timeline-circle-green"></div>
+              </div>
+              <div v-else>
+                <div class="timeline-circle-grey"></div>
+              </div>
+            </div>
+          </div>
 				</div>
 			</div>
 
-			<div class="container">
+			<!-- <div class="container">
 				<div class="timeline">
-					<!-- <div class="timeline-circle-black"></div>
-					<div class="timeline-circle-red"></div> -->
 					<div class="timeline-circle-green"></div>
 					<div class="timeline-circle-green"></div>
 					<div class="timeline-circle-green"></div>
@@ -146,10 +162,10 @@
 					<div class="timeline-circle-grey"></div>
 					<div class="timeline-circle-grey"></div>
 				</div>
-			</div>
+			</div> -->
 
 
-			<div class="container">
+			<!-- <div class="container">
 				<div class="timeline">
 					<div class="timeline-circle-green"></div>
 					<div class="timeline-circle-black"></div>
@@ -157,7 +173,7 @@
 					<div class="timeline-circle-black"></div>
 					<div class="timeline-circle-red"></div>
 				</div>
-			</div>
+			</div> -->
 
 		</div>
 	</div>
