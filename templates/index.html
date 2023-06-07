@@ -121,9 +121,9 @@
 						Task 3
 					</button> -->
 
-          <div v-for="task in sub_tasks">
+          <div v-for="(task, index) in sub_tasks">
             <button class="button is-primary">
-              Task 2
+              Task {{index+1}}
             </button>
           </div>
 
