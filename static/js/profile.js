@@ -26,12 +26,6 @@ const init = (app) => {
         return a;
     };
 
-    // app.goForwardMonth = () => {
-    //   if (app.vue.data.prevMonthOffset >= 1) {
-    //     app.vue.data.prevMonthOffset -= 1;
-    //   }
-    // };
-
     app.get_reflections = () => {
         axios
             .get(get_reflections_url, {
@@ -53,23 +47,24 @@ const init = (app) => {
                 app.data.week4 = app.data.reflection_blocks.slice(21, 28);
                 app.data.week5 = app.data.reflection_blocks.slice(28, 35);
                 app.data.week6 = app.data.reflection_blocks.slice(35);
-
-                // for (var i = 0; i < response.data.start_of_month_offset; i++) {
-                //     app.data.reflection_blocks.unshift({
-                //         day: null,
-                //         prod_lvl: null,
-                //     });
-                // }
             });
     };
 
-    // app.generate_blocks = () => {
-    //     app.data.reflection_blocks;
-    // };
+    app.goBackMonth = () => {
+        app.data.prevMonthOffset += 1;
+        app.get_reflections();
+    };
+
+    app.goForwardMonth = () => {
+        if (app.data.prevMonthOffset >= 1) {
+            app.data.prevMonthOffset -= 1;
+            app.get_reflections();
+        }
+    };
 
     app.methods = {
-        // goForwardMonth: app.goForwardMonth,
-        // goBackMonth: app.goBackMonth,
+        goForwardMonth: app.goForwardMonth,
+        goBackMonth: app.goBackMonth,
         get_reflections: app.get_reflections,
     };
 

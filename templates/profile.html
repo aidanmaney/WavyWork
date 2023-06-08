@@ -28,32 +28,58 @@
         </button> -->
     </div>
     <div class="container is-centered">
-        <table class="table is-borderless is-narrow has-text-centered">
-            <thead>
-                <tr>
-                    <th v-for="day in daysOfTheWeek">{{day}}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="week in [week1, week2, week3, week4, week5, week6]">
-                    <td v-for="day in week">
-                        <div
-                            :class="[
-                                {'has-background-danger' : day.prod_lvl == 1}, 
-                                {'has-background-warning': day.prod_lvl == 2}, 
-                                {'has-background-success': day.prod_lvl == 3},
-                                {'is-hidden': day.prod_lvl == null},
-                            ]"
-                            class="block button square m-2"
+        <div class="columns is-mobile">
+            <div class="column is-2">
+                <div class="button is-link icon-text" @click="goBackMonth()">
+                    <span class="icon">
+                        <i class="fa fa-arrow-left"></i>
+                    </span>
+                    <span> Prior month </span>
+                </div>
+            </div>
+            <div class="column">
+                <table class="table is-borderless is-narrow has-text-centered">
+                    <thead>
+                        <tr>
+                            <th v-for="day in daysOfTheWeek">{{day}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            v-for="week in [week1, week2, week3, week4, week5, week6]"
                         >
-                            <div class="container">
-                                <span class="title"> {{day.day}} </span>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                            <td v-for="day in week">
+                                <div
+                                    :class="[
+                                        {'has-background-danger' : day.prod_lvl == 1}, 
+                                        {'has-background-warning': day.prod_lvl == 2}, 
+                                        {'has-background-success': day.prod_lvl == 3},
+                                        {'is-hidden': day.prod_lvl == null},
+                                    ]"
+                                    class="block button square m-2"
+                                >
+                                    <div class="container">
+                                        <span class="title"> {{day.day}} </span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="column is-2">
+                <div
+                    class="button icon-text"
+                    :class="[(prevMonthOffset == 0) ? 'has-background-light' : 'is-link']"
+                    @click="goForwardMonth()"
+                >
+                    <span> Next month </span>
+                    <span class="icon">
+                        <i class="fa fa-arrow-right"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

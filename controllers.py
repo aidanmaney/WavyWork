@@ -103,6 +103,9 @@ def add_task():
     return dict(id=id, created_by=get_user_id())
 
 
+counts = [0, 0]
+
+
 @action("get_reflections")
 @action.uses(db, auth.user, session, url_signer.verify())
 def get_reflections():
@@ -174,10 +177,14 @@ def get_reflections():
         day_idx = group[0] - 1
 
         prod_metrics_for_day = [productivity_metric(x) for x in group[1]]
-        day_avg_productivity = sum(prod_metrics_for_day) // len(prod_metrics_for_day)
+        day_avg_productivity = round(
+            sum(prod_metrics_for_day) / len(prod_metrics_for_day)
+        )
+        # print(day_avg_productivity)
         reflections_in_month[day_idx]["prod_lvl"] = day_avg_productivity
 
     start_of_month_offset = first_of_month.weekday()
+    print(arbitrary_day_in_month.month)
 
     return dict(
         reflections=reflections_in_month, start_of_month_offset=start_of_month_offset
