@@ -19,6 +19,17 @@ let init = (app) => {
         task_group_id: null,
         // END TASK DATA
 
+        // EXPANDED TASK VIEW DATA
+        current_task: null,
+        task_view_subtasks: [],
+        task_view_group_members: [],
+        task_view_label: "",
+        task_view_description: "",
+        task_view_is_group: "",
+        is_adding_subtask: false,
+        new_subtask_description: "",
+        // END EXPANDED TASK VIEW DATA
+
         // GROUP DATA
         all_users: [],
         search_users: [],
@@ -179,7 +190,6 @@ let init = (app) => {
     app.check_if_reflections_available = () => {
         let today = new Date();
         let time = today.getHours();
-        console.log(time)
         axios.get(check_for_submitted_reflections_url).then( (res) => {
             app.vue.TEST_current_reflections = res.data.todays_reflections
             if ((time >= 18 || time < 8) && res.data.todays_reflections.length <= 0) {
@@ -188,6 +198,18 @@ let init = (app) => {
                 app.vue.reflections_available = false;
             }
         })
+    }
+
+    app.toggle_substask_complete = (t_idx) => {
+        app.vue.task_view_subtasks[t_idx].is_complete = !app.vue.task_view_subtasks[t_idx].is_complete;
+        //Need to reflect this in backend once Evin merges
+    }
+
+    app.add_subtask = () => {
+        app.vue.task_view_subtasks.push({"is_complete": false, "description": app.vue.new_subtask_description});
+        app.enumerate(app.vue.task_view_subtasks);
+        app.vue.is_adding_subtask = false;
+        app.vue.new_subtask_description = "";
     }
 
     // This contains all the methods.
@@ -199,7 +221,9 @@ let init = (app) => {
         search: app.search,
         clear: app.clear,
         add_to_group: app.add_to_group,
-        remove_from_group: app.remove_from_group
+        remove_from_group: app.remove_from_group,
+        toggle_substask_complete: app.toggle_substask_complete,
+        add_subtask: app.add_subtask
     };
 
     // This creates the Vue instance.
@@ -213,6 +237,14 @@ let init = (app) => {
     app.init = () => {
         app.get_users();
         app.check_if_reflections_available();
+
+        // TEMP
+        app.vue.task_view_label = "do CSE 183 project";
+        app.vue.task_view_description = "qowiedfn qwodin e2fpo q wdspojrvr we ferj2wdin12e d24fb qowiedfn qwodin e2fpo q wdspojrvr we ferj2wdin12e d24fb qowiedfn qwodin e2fpo q wdspojrvr we ferj2wdin12e d24fb qowiedfn qwodin e2fpo q wdspojrvr we ferj2wdin12e d24fb qowiedfn qwodin e2fpo q wdspojrvr we ferj2wdin12e d24fb qowiedfn qwodin e2fpo q wdspojrvr we ferj2wdin12e d24fb";
+        app.vue.task_view_group_members = app.vue.all_users;
+        app.vue.task_view_is_group = true;
+        app.vue.task_view_subtasks = app.enumerate([{"is_complete": true, "description": "oinwd"}, {"is_complete": false, "description": "qsqj"}])
+        // TEMP
     };
 
     // Call to the initializer.

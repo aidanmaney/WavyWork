@@ -305,6 +305,110 @@
       onclick="app.vue.task_is_group=false"
     ></button>
   </div>
+
+  <div id="expanded_task_view_modal" class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-card" style="width: 80%">
+      <header class="modal-card-head">
+        <p class="modal-card-title is-1" style="text-align: center">
+          <b style="text-transform: capitalize">{{task_view_label}}</b>
+        </p>
+      </header>
+      <section class="modal-card-body">
+        <div class="columns">
+          <div class="column">
+            <div class="box" style="background-color: #b0b0b0">
+              <b>Task Description:</b>
+              <p>{{task_view_description}}</p>
+            </div>
+            <div class="box" style="background-color: #b0b0b0">
+              <b class="block">Subtasks:</b>
+              <br />
+              <br />
+              <div class="box" v-for="s in task_view_subtasks">
+                <div class="level">
+                  <div class="level-left">
+                    <div class="level-item">
+                      <button
+                        class="button is-rounded is-small"
+                        :class="{'is-success': s.is_complete}"
+                        @click="toggle_substask_complete(s._idx)"
+                      >
+                        <span class="icon is-large">
+                          <i class="fa fa-check"></i>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="level-item">
+                      <span><p class="block">{{s.description}}</p></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="box" style="background-color: #b0b0b0">
+                <textarea
+                  class="textarea block"
+                  placeholder="New Subtask..."
+                  rows="2"
+                  v-model="new_subtask_description"
+                  v-if="is_adding_subtask"
+                ></textarea>
+                <div style="text-align: center">
+                  <button
+                    class="button is-success block"
+                    style="width: 100%"
+                    v-if="!is_adding_subtask"
+                    onclick="app.vue.is_adding_subtask = true"
+                  >
+                    <span class="icon is-large">
+                      <i class="fa fa-plus"></i>
+                    </span>
+                    <span><p>New Subtask</p></span>
+                  </button>
+                  <button
+                    class="button is-success block"
+                    style="width: 100%"
+                    v-if="is_adding_subtask"
+                    @click="add_subtask"
+                  >
+                    <span class="icon is-large">
+                      <i class="fa fa-check"></i>
+                    </span>
+                    <span><p>Add Subtask</p></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="column is-4" v-if="task_view_is_group">
+            <div class="box" style="background-color: #b0b0b0; height: 100%">
+              <p class="title is-4">Collaborators:</p>
+              <div class="box" v-for="m in task_view_group_members">
+                <div class="level">
+                  <div class="level-left">
+                    <div class="level-item">
+                      <span class="icon">
+                        <i class="fa fa-user"></i>
+                      </span>
+                    </div>
+                    <div class="level-item">
+                      <span>
+                        <p>{{m.first_name}} {{m.last_name}}</p>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-success">Complete Task!</button>
+      </footer>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+  </div>
 </div>
 
 [[block page_scripts]]
