@@ -42,7 +42,8 @@ def index():
         get_active_tasks_url = URL('get_active_tasks', signer=url_signer),
         submit_task_reflection_url = URL('submit_task_reflection', signer=url_signer),
         get_users_url = URL('get_users', signer=url_signer),
-        check_for_submitted_reflections_url = URL('check_for_submitted_reflections', signer=url_signer)
+        check_for_submitted_reflections_url = URL('check_for_submitted_reflections', signer=url_signer),
+        timeline_stage_url = URL('timeline_stage', signer=url_signer),
     )
 
 

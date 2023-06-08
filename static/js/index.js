@@ -10,6 +10,7 @@ let init = (app) => {
     app.data = {
         // TASK DATA
         tasks: [],
+        sub_tasks: [],
         task_label: "",
         task_description: "",
         task_start_time: "",
@@ -212,7 +213,8 @@ let init = (app) => {
         search: app.search,
         clear: app.clear,
         add_to_group: app.add_to_group,
-        remove_from_group: app.remove_from_group
+        remove_from_group: app.remove_from_group,
+        timeline_stage: app.timeline_stage,
     };
 
     // This creates the Vue instance.
@@ -226,6 +228,7 @@ let init = (app) => {
     app.init = () => {
         app.get_users();
         app.check_if_reflections_available();
+        app.timeline_stage();
     };
 
     // Call to the initializer.
