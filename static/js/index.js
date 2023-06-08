@@ -8,6 +8,7 @@ let init = (app) => {
 
     // This is the Vue data.
     app.data = {
+        cols: 13,
         // TASK DATA
         tasks: [],
         sub_tasks: [],
@@ -40,6 +41,11 @@ let init = (app) => {
         TEST_current_reflections: [],
         sub_tasks: [],
         // END REFLECTION DATA
+
+        // DATE DATA
+        today: "",
+        twoWeeksLater: "",
+        // END DATE DATA
     };    
     
     app.enumerate = (a) => {
@@ -204,6 +210,25 @@ let init = (app) => {
             });
     }
 
+
+    app.get_date = function () {
+        const today = new Date();
+        const twoWeeksLater = new Date()
+        twoWeeksLater.setDate(today.getDate() + 14);
+        const options = {month: 'long', day: 'numeric'};
+        const formatted_today = today.toLocaleDateString('en-US', options);
+        const formatted_twoWeeksLater = twoWeeksLater.toLocaleDateString('en-US',options)
+
+        app.data.today = formatted_today;
+        app.data.twoWeeksLater = formatted_twoWeeksLater;
+
+        // console.log('Todays date:', formatted_today);
+        // console.log('Two Weeks out is', formatted_twoWeeksLater);
+        console
+    }
+
+
+
     // This contains all the methods.
     app.methods = {
         set_adding_task: app.set_adding_task,
@@ -215,6 +240,7 @@ let init = (app) => {
         add_to_group: app.add_to_group,
         remove_from_group: app.remove_from_group,
         timeline_stage: app.timeline_stage,
+        get_date: app.get_date,
     };
 
     // This creates the Vue instance.
@@ -227,6 +253,7 @@ let init = (app) => {
     // And this initializes it.
     app.init = () => {
         app.get_users();
+        app.get_date();
         app.check_if_reflections_available();
         app.timeline_stage();
     };
