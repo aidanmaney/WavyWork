@@ -55,8 +55,19 @@ def timeline_stage():
     subtasks_list = []
     for task in users_tasks:
         subtask = db(db.subtasks.task_id == task['id']).select().as_list()
-        print(subtask)
-        subtasks_list.append(subtask)
+        # print(subtask[0]['is_complete'])
+        print('SUB', subtask)
+        # if (subtask[0]['is_complete']):
+        #     subtasks_list.append(subtask)
+        #     print('True')
+        # else:
+        #     subtasks_list.insert(0, subtask)
+        #     print("False")
+
+        sorted_list = sorted(subtask, key=lambda sub: not sub['is_complete'])
+        print('SORTED', sorted_list)
+        subtasks_list.append(sorted_list)
+        
         # print('TASK',task)
     
     # print('DB', task_list)
