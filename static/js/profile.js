@@ -15,6 +15,7 @@ const init = (app) => {
         week3: [],
         week4: [],
         week5: [],
+        week6: [],
     };
 
     app.enumerate = (a) => {
@@ -38,13 +39,28 @@ const init = (app) => {
             })
             .then(function (response) {
                 app.data.reflection_blocks = response.data.reflections;
+
+                for (var i = 0; i < response.data.start_of_month_offset; i++) {
+                    app.data.reflection_blocks.unshift({
+                        day: null,
+                        prod_lvl: null,
+                    });
+                }
+
                 app.data.week1 = app.data.reflection_blocks.slice(0, 7);
                 app.data.week2 = app.data.reflection_blocks.slice(7, 14);
                 app.data.week3 = app.data.reflection_blocks.slice(14, 21);
                 app.data.week4 = app.data.reflection_blocks.slice(21, 28);
-                app.data.week5 = app.data.reflection_blocks.slice(28, 31);
+                app.data.week5 = app.data.reflection_blocks.slice(28, 35);
+                app.data.week6 = app.data.reflection_blocks.slice(35);
+
+                // for (var i = 0; i < response.data.start_of_month_offset; i++) {
+                //     app.data.reflection_blocks.unshift({
+                //         day: null,
+                //         prod_lvl: null,
+                //     });
+                // }
             });
-        // TODO
     };
 
     // app.generate_blocks = () => {

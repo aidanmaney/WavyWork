@@ -106,7 +106,6 @@ def add_task():
 @action("get_reflections")
 @action.uses(db, auth.user, session, url_signer.verify())
 def get_reflections():
-    colors = [0, 0, 0]
     prev_month_offset = int(request.params.get("pmo"))
 
     def day_n_months_ago(day, n):
@@ -118,19 +117,18 @@ def get_reflections():
         # Normalize to percentage
         productivity_level /= 30
 
+        # Range from [0, 4]
         productivity_level *= 4
 
+        # First quartile
         if productivity_level >= 0 and productivity_level < 1:
             productivity_level = 1
-            colors[0] += 1
+        # Second quartile
         elif productivity_level >= 1 and productivity_level < 2:
             productivity_level = 2
-            colors[1] += 1
+        # Third and fourth quartile
         else:
             productivity_level = 3
-            colors[2] += 1
-
-        print(colors)
 
         return productivity_level
 
@@ -142,6 +140,9 @@ def get_reflections():
     # The plus (+) denotes an update operation rather than summing
     first_of_month = arbitrary_day_in_month + relativedelta(day=1)
     last_of_month = arbitrary_day_in_month + relativedelta(day=31)
+
+    if last_of_month > today:
+        last_of_month = today
 
     n_days_in_month = 1 + (
         calendar_day_in_month(last_of_month) - calendar_day_in_month(first_of_month)
@@ -163,9 +164,7 @@ def get_reflections():
         .as_list()
     )
 
-    reflections_in_month = [
-        dict(day=i + 1, prod_lvl=None) for i in range(n_days_in_month)
-    ]
+    reflections_in_month = [dict(day=i + 1, prod_lvl=0) for i in range(n_days_in_month)]
 
     groups = groupby(
         reflections_in_month_rows, lambda x: calendar_day_in_month(x["day"])
@@ -178,7 +177,11 @@ def get_reflections():
         day_avg_productivity = sum(prod_metrics_for_day) // len(prod_metrics_for_day)
         reflections_in_month[day_idx]["prod_lvl"] = day_avg_productivity
 
-    return dict(reflections=reflections_in_month)
+    start_of_month_offset = first_of_month.weekday()
+
+    return dict(
+        reflections=reflections_in_month, start_of_month_offset=start_of_month_offset
+    )
 
 
 @action("profile")

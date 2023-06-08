@@ -35,10 +35,15 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="week in [week1, week2, week3, week4, week5]">
+                <tr v-for="week in [week1, week2, week3, week4, week5, week6]">
                     <td v-for="day in week">
                         <div
-                            :class="[{'has-background-danger' : day.prod_lvl == 1}, {'has-background-warning': day.prod_lvl == 2}, {'has-background-success': day.prod_lvl == 3}]"
+                            :class="[
+                                {'has-background-danger' : day.prod_lvl == 1}, 
+                                {'has-background-warning': day.prod_lvl == 2}, 
+                                {'has-background-success': day.prod_lvl == 3},
+                                {'is-hidden': day.prod_lvl == null},
+                            ]"
                             class="block button square m-2"
                         >
                             <div class="container">
