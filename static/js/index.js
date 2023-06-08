@@ -10,7 +10,10 @@ let init = (app) => {
     app.data = {
         // Complete as you see fit.
         // content: [],
+<<<<<<< HEAD
         sub_tasks: [],
+=======
+>>>>>>> index.js file
     };    
     
     app.enumerate = (a) => {
@@ -29,6 +32,7 @@ let init = (app) => {
     // }
 
 
+<<<<<<< HEAD
     app.timeline_stage = function () {
         console.log('time callled')
 
@@ -40,13 +44,18 @@ let init = (app) => {
             });
     }
 
+=======
+>>>>>>> index.js file
  
 
     // This contains all the methods.
     app.methods = {
         // Complete as you see fit.
         // get_users: app.get_users,
+<<<<<<< HEAD
         timeline_stage: app.timeline_stage,
+=======
+>>>>>>> index.js file
     };
 
     // This creates the Vue instance.
@@ -59,7 +68,10 @@ let init = (app) => {
     // And this initializes it.
     app.init = () => {
         console.log("Top of init()")
+<<<<<<< HEAD
         app.timeline_stage();
+=======
+>>>>>>> index.js file
         // app.search()
         // app.get_users()
         
