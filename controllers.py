@@ -106,6 +106,7 @@ def add_task():
 @action("get_reflections")
 @action.uses(db, auth.user, session, url_signer.verify())
 def get_reflections():
+    colors = [0, 0, 0]
     prev_month_offset = int(request.params.get("pmo"))
 
     def day_n_months_ago(day, n):
@@ -116,14 +117,20 @@ def get_reflections():
         productivity_level = ref["attentiveness"] + ref["efficiency"] + ref["emotion"]
         # Normalize to percentage
         productivity_level /= 30
-        # Expand to range of width 5
-        productivity_level *= 5
-        # Move range down one unit
-        productivity_level -= 1
-        # Turn into integer
-        productivity_level = math.floor(productivity_level)
 
-        # print(productivity_level)
+        productivity_level *= 4
+
+        if productivity_level >= 0 and productivity_level < 1:
+            productivity_level = 1
+            colors[0] += 1
+        elif productivity_level >= 1 and productivity_level < 2:
+            productivity_level = 2
+            colors[1] += 1
+        else:
+            productivity_level = 3
+            colors[2] += 1
+
+        print(colors)
 
         return productivity_level
 

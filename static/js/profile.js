@@ -9,7 +9,12 @@ const init = (app) => {
         daysOfTheWeek: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         // How many months *back* is the user looking
         prevMonthOffset: 0,
-        reflections_day_level: [],
+        reflection_blocks: [],
+        week1: [],
+        week2: [],
+        week3: [],
+        week4: [],
+        week5: [],
     };
 
     app.enumerate = (a) => {
@@ -32,10 +37,19 @@ const init = (app) => {
                 params: { pmo: app.data.prevMonthOffset },
             })
             .then(function (response) {
-                app.data.reflections_day_level = response.data.reflections;
-                // TODO
+                app.data.reflection_blocks = response.data.reflections;
+                app.data.week1 = app.data.reflection_blocks.slice(0, 7);
+                app.data.week2 = app.data.reflection_blocks.slice(7, 14);
+                app.data.week3 = app.data.reflection_blocks.slice(14, 21);
+                app.data.week4 = app.data.reflection_blocks.slice(21, 28);
+                app.data.week5 = app.data.reflection_blocks.slice(28, 31);
             });
+        // TODO
     };
+
+    // app.generate_blocks = () => {
+    //     app.data.reflection_blocks;
+    // };
 
     app.methods = {
         // goForwardMonth: app.goForwardMonth,
@@ -53,7 +67,8 @@ const init = (app) => {
 
     app.init = () => {
         app.data.prevMonthOffset = 0;
-        app.data.reflections_day_level = [];
+        app.data.reflection_blocks = [];
+        app.get_reflections();
     };
 
     app.init();
