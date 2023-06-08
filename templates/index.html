@@ -8,6 +8,16 @@
   }
 </style>
 
+
+<style>
+  table.is-no-lines,
+  table.is-no-lines th,
+  table.is-no-lines td {
+    border: none;
+  }
+</style>
+
+
 <style>
 	.timeline {
 		position: relative;
@@ -387,11 +397,12 @@
   </div>
 
 
+
   <section class="section">
     <div class="container">
       <div class="columns is-centered">
         <div class="column is-four-fifths">
-          <table class="table is-borderless is-fullwidth">
+          <table class="table is-no-lines is-fullwidth">
             <thead>
               <tr>
                 <th>{{today}}</th>
@@ -410,6 +421,15 @@
                 <th>{{twoWeeksLater}}</th>
               </tr>
             </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <button class="button is-link">
+                    Task
+                  </button>
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
