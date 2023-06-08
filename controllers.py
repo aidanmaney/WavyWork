@@ -38,10 +38,14 @@ url_signer = URLSigner(session)
 @action.uses('index.html', db, auth.user, url_signer)
 def index():
     print("User is:", get_user_email())
+<<<<<<< HEAD
     print('ID:', get_user_id())
     return dict(
         timeline_stage_url = URL('timeline_stage', signer=url_signer)
     )
+=======
+    return dict()
+>>>>>>> Double check auth.user enforces login
 
 
 @action('timeline_stage')

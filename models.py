@@ -271,6 +271,11 @@ db.define_table(
 
 
 db.commit()
+<<<<<<< HEAD
 populate_sample_DB()
  
 >>>>>>> Populates DB
+=======
+# populate_sample_DB()
+ 
+>>>>>>> Double check auth.user enforces login
