@@ -1,15 +1,13 @@
-[[extend 'layout.html']]
-
+[[extend 'layout.html']] [[block page_head]]
+<link rel="stylesheet" href="css/slider.css" />
+[[end]]
 
 <style>
-	[v-cloak] {
-		display: none;
-	}
+  [v-cloak] {
+    display: none;
+  }
 </style>
-	
 
-
-<!-- Starter code from chatgpt -->
 <style>
 	.timeline {
 		position: relative;
@@ -86,112 +84,351 @@
 	}
 </style>
 
+
+
+
+
 <div class="section" id="vue-target" v-cloak>
-<!-- Put here your Vue.js template -->
-	
-		
-	<!-- <div class="columns">
-		<div class="column is-flex-direction-column">
-			<button class="button is-link">
-				Task n
-			</button>
+  <button class="button is-success is-outlined" @click="set_adding_task(true)">
+    <span class="icon is-small">
+      <i class="fa fa-check"></i>
+    </span>
+    <span>Add Task</span>
+  </button>
 
-			<button class="button is-primary">
-				Task n
-			</button>
-		</div>
-	</div> -->
+  <button
+    class="button is-warning is-outlined"
+    @click="get_active_tasks"
+    v-if="reflections_available"
+  >
+    <span class="icon is-small">
+      <i class="fa fa-plus"></i>
+    </span>
+    <span>Daily Reflections</span>
+  </button>
 
-	
-	<div class="columns">
-		<div class="column is-one-fifth p-6">
-			<div class="button-column">
+  <div id="add_task_modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title" style="text-align: center">Add a Task</p>
+        <button
+          class="modal-close is-large"
+          @click="set_adding_task(false)"
+        ></button>
+      </header>
+      <section class="modal-card-body">
+        <input
+          class="input block"
+          type="text"
+          placeholder="Task Label"
+          v-model="task_label"
+        />
+        <textarea
+          class="textarea block"
+          placeholder="Task Description"
+          v-model="task_description"
+        ></textarea>
+        <input class="input block" type="date" v-model="task_start_time" />
+        <input class="input block" type="date" v-model="task_end_time" />
 
-					<!-- Iterate over tasks rows for user and
-						display button for each task -->
-					<!-- <button class="button is-primary">
-						Task 1
-					</button>
-
-					<button class="button is-danger">
-						Task 2
-					</button>
-
-					<button class="button is-danger">
-						Task 3
-					</button> -->
-
-          <div v-for="(task, index) in sub_tasks">
-            <button class="button is-primary">
-              Task {{index+1}}
-            </button>
+        <div class="columns">
+          <div class="column is-half">
+            <div class="container has-text-left">
+              <label class="checkbox block">
+                <input type="checkbox" v-model="task_is_group" />
+                Group Task
+              </label>
+            </div>
           </div>
-
-
-
-			</div>
-		</div>
-
-		<div class="column is-one-fifth p-3">
-
-			<!-- Iterate over each task for user, and create timeline for each task -->
-
-
-      <div v-for="task in sub_tasks">
-        <div class="container">
-          <div class="timeline">
-            <div v-for="subtask in task">
-              <!-- {{subtask['is_complete']}} -->
-              <div v-if="subtask['is_complete']">
-                <div class="timeline-circle-green"></div>
-              </div>
-              <div v-else>
-                <div class="timeline-circle-grey"></div>
+          <div class="column is-half">
+            <div class="container has-text-right">
+              <div class="dropdown is-hoverable is-up block">
+                <div class="dropdown-trigger">
+                  <button
+                    class="button"
+                    onclick="javascript:document.querySelector('.dropdown').classList.toggle('is-active')"
+                    onblur="javascript:document.querySelector('.dropdown').classList.toggle('is-active')"
+                    aria-haspopup="true"
+                    aria-controls="dropdown-menu"
+                  >
+                    <span id="drop_label">Category</span>
+                    <span class="icon is-small">
+                      <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                  <div class="dropdown-content">
+                    <a
+                      onmousedown="app.vue.task_category = 'school'; document.getElementById('drop_label').innerHTML = 'School';"
+                      href="javascript:void(0);"
+                      class="dropdown-item"
+                    >
+                      <div class="container has-text-left">School</div>
+                    </a>
+                    <a
+                      onmousedown="app.vue.task_category = 'work'; document.getElementById('drop_label').innerHTML = 'Work';"
+                      href="javascript:void(0);"
+                      class="dropdown-item"
+                    >
+                      <div class="container has-text-left">Work</div>
+                    </a>
+                    <a
+                      onmousedown="app.vue.task_category = 'personal'; document.getElementById('drop_label').innerHTML = 'Personal';"
+                      href="javascript:void(0);"
+                      class="dropdown-item"
+                    >
+                      <div class="container has-text-left">Personal</div>
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <div class="container has-text-centered">
+          <button class="button is-success is-outlined block" @click="add_task">
+            <span class="icon is-small">
+              <i class="fa fa-check"></i>
+            </span>
+            <span>Submit Task</span>
+          </button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <div
+    id="reflection_modal"
+    class="modal is-active"
+    v-for="t in reflection_modal_tasks"
+  >
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head" style="background-color: #b0b0b0">
+        <p class="modal-card-title is-1" style="text-align: center">
+          <b style="text-transform: capitalize">{{t.label}}</b>
+        </p>
+        <button
+          class="modal-close is-large"
+          onclick="this.closest('.modal').classList.remove('is-active')"
+        ></button>
+      </header>
+      <section class="modal-card-body" style="background-color: #d5d5d5">
+        <div class="section">
+          <p class="title block" style="text-align: center">Attentiveness</p>
+          <div class="slider block">
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value="1"
+              v-model="reflection_attentiveness"
+            />
+            <p>{{reflection_attentiveness}}</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <p class="title block" style="text-align: center">Emotion</p>
+          <div class="slider block">
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value="1"
+              v-model="reflection_emotion"
+            />
+            <p>{{reflection_emotion}}</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <p class="title block" style="text-align: center">Efficiency</p>
+          <div class="slider block">
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value="1"
+              v-model="reflection_efficiency"
+            />
+            <p>{{reflection_efficiency}}</p>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot" style="background-color: #b0b0b0">
+        <div class="container has-text-centered">
+          <button
+            class="button is-success block"
+            onclick="this.closest('.modal').classList.toggle('is-active'); app.spawn_next_reflection_modal();"
+            @click="submit_task_reflection(t.id)"
+          >
+            <span class="icon is-small">
+              <i class="fa fa-check"></i>
+            </span>
+            <span>Submit Reflection</span>
+          </button>
+          <button
+            class="button is-danger block"
+            onclick="this.closest('.modal').classList.remove('is-active'); app.spawn_next_reflection_modal();"
+          >
+            <span>Did not work on Task</span>
+            <span class="icon is-right">
+              <i class="fa fa-times"></i>
+            </span>
+          </button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <div id="add_group_modal" v-if="task_is_group" class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="box">
+        <div class="field">
+          <p class="control">
+            <input
+              class="input"
+              type="text"
+              placeholder="Enter Group Name"
+              v-model="group_name"
+            />
+          </p>
+        </div>
+      </div>
+      <div class="box">
+        <div class="field">
+          <p class="control has-icons-right">
+            <input
+              class="input"
+              type="text"
+              placeholder="Search users"
+              v-model="search_query"
+              @keyup="search"
+            />
+            <span class="icon is-small is-right clickable" @click="clear">
+              <i class="fa fa-times-circle"></i>
+            </span>
+          </p>
+        </div>
+        <div
+          class="field has-addons"
+          v-if="!is_displaying_search"
+          v-for="u in all_users"
+        >
+          <p class="control">
+            <button
+              class="button"
+              v-if="!u.is_group_member"
+              @click="add_to_group(u._idx)"
+            >
+              <span>{{u.first_name}} {{u.last_name}}</span>
+            </button>
+
+            <button
+              class="button is-success"
+              v-if="u.is_group_member"
+              @click="remove_from_group(u._idx)"
+            >
+              <span>{{u.first_name}} {{u.last_name}}</span>
+            </button>
+          </p>
+        </div>
+        <div
+          class="field has-addons"
+          v-if="is_displaying_search"
+          v-for="u in search_users"
+        >
+          <p class="control">
+            <button
+              class="button"
+              v-if="!u.is_group_member"
+              @click="add_to_group(u._idx)"
+            >
+              <span>{{u.first_name}} {{u.last_name}}</span>
+            </button>
+
+            <button
+              class="button is-success"
+              v-if="u.is_group_member"
+              @click="remove_from_group(u._idx)"
+            >
+              <span>{{u.first_name}} {{u.last_name}}</span>
+            </button>
+          </p>
+        </div>
+      </div>
+      <div class="box" style="position: sticky; bottom: 0">
+        <div class="level">
+          <div class="level-item has-text-centered">
+            <button
+              class="button is-success is-centered"
+              onclick="this.closest('.modal').classList.toggle('is-active')"
+            >
+              <span class="icon is-small">
+                <i class="fa fa-plus"></i>
+              </span>
+              <span>Create Group</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button
+      class="modal-close is-large"
+      aria-label="close"
+      onclick="app.vue.task_is_group=false"
+    ></button>
+  </div>
+
+	<div class="columns">
+		<div class="column is-one-fifth p-6">
+			<div class="button-column">
+				<div v-for="(task, index) in sub_tasks">
+					<button class="button is-primary">
+					Task {{index+1}}
+					</button>
+				</div>
+
+			</div>
+		</div>
+		<div class="column is-one-fifth p-3">
+			<!-- Iterate over each task for user, and create timeline for each task -->
+			<div v-for="task in sub_tasks">
+				<div class="container">
+					<div class="timeline">
+						<div v-for="subtask in task">
+							<div v-if="subtask['is_complete']">
+								<div class="timeline-circle-green"></div>
+							</div>
+							<div v-else>
+								<div class="timeline-circle-grey"></div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
-
-			<!-- <div class="container">
-				<div class="timeline">
-					<div class="timeline-circle-green"></div>
-					<div class="timeline-circle-green"></div>
-					<div class="timeline-circle-green"></div>
-					<div class="timeline-circle-grey"></div>
-					<div class="timeline-circle-grey"></div>
-					<div class="timeline-circle-grey"></div>
-				</div>
-			</div> -->
-
-
-			<!-- <div class="container">
-				<div class="timeline">
-					<div class="timeline-circle-green"></div>
-					<div class="timeline-circle-black"></div>
-					<div class="timeline-circle-black"></div>
-					<div class="timeline-circle-black"></div>
-					<div class="timeline-circle-red"></div>
-				</div>
-			</div> -->
 
 		</div>
 	</div>
 
-	<!-- <div class="container">
-		<div class="timeline">
-			<div class="timeline-circle-green"></div>
-			<div class="timeline-circle-black"></div>
-			<div class="timeline-circle-red"></div>
-		</div>       
-	</div> -->
 
 </div>
 
 [[block page_scripts]]
 <!-- Loads the index-specific js for Vue -->
 <script>
-	let timeline_stage_url = "[[=XML(timeline_stage_url)]]";
+  let add_task_url = "[[=XML(add_task_url)]]";
+  let get_active_tasks_url = "[[=XML(get_active_tasks_url)]]";
+  let submit_task_reflection_url = "[[=XML(submit_task_reflection_url)]]";
+  let get_users_url = "[[=XML(get_users_url)]]";
+  let check_for_submitted_reflections_url = "[[=XML(check_for_submitted_reflections_url)]]";
+  let timeline_stage_url = "[[=XML(timeline_stage_url)]]";
 </script>
 
 <script src="js/index.js"></script>
