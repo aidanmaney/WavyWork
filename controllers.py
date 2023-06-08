@@ -39,19 +39,26 @@ url_signer = URLSigner(session)
 def index():
     print("User is:", get_user_email())
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> started controller for getting tasks & subtasks for a specific user
     print('ID:', get_user_id())
     return dict(
         timeline_stage_url = URL('timeline_stage', signer=url_signer)
     )
+<<<<<<< HEAD
 =======
     return dict()
 >>>>>>> Double check auth.user enforces login
+=======
+>>>>>>> started controller for getting tasks & subtasks for a specific user
 
 
 @action('timeline_stage')
 @action.uses(db, auth.user)
 def timeline_stage():
     print('timeline controller')
+<<<<<<< HEAD
     
     users_tasks = db(db.tasks.created_by == get_user_id()).select().as_list()
 
@@ -82,6 +89,13 @@ def timeline_stage():
     print('DEBUG')
     print(subtasks_list)
     return dict(subtasks_list=subtasks_list)
+=======
+
+    task_list = db(db.tasks.created_by == get_user_id()).select().as_list()
+
+    print(task_list)
+    return dict(task_list=task_list)
+>>>>>>> started controller for getting tasks & subtasks for a specific user
 
 
 
