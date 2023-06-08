@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 """
 This file defines actions, i.e. functions the URLs are mapped into
 The @action(path) decorator exposed the function at URL:
@@ -158,3 +160,6 @@ def timeline_stage():
     print('DEBUG')
     print(subtasks_list)
     return dict(subtasks_list=subtasks_list)
+
+
+>>>>>>> start_merge_from_here
