@@ -27,9 +27,11 @@ Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app w
 
 import datetime  # TODO
 import random
+import math
 from .dateutil.relativedelta import relativedelta
 
 from py4web import action, request, abort, redirect, URL
+from itertools import groupby
 from yatl.helpers import *
 from .common import (
     db,
@@ -109,40 +111,65 @@ def get_reflections():
     def day_n_months_ago(day, n):
         return day + relativedelta(months=(-1 * n))
 
-    def productivity_metric(attentiveness, efficiency, emotion):
-        # TODO implement
-        return random.randint(0, 4)
+    def productivity_metric(ref):
+        # Sum across constituents
+        productivity_level = ref["attentiveness"] + ref["efficiency"] + ref["emotion"]
+        # Normalize to percentage
+        productivity_level /= 30
+        # Expand to range of width 5
+        productivity_level *= 5
+        # Move range down one unit
+        productivity_level -= 1
+        # Turn into integer
+        productivity_level = math.floor(productivity_level)
+
+        # print(productivity_level)
+
+        return productivity_level
+
+    def calendar_day_in_month(day):
+        return int(day.strftime("%d"))
 
     today = datetime.datetime.today()
-    day_in_month = day_n_months_ago(day=today, n=prev_month_offset)
-    first_of_month = day_in_month + relativedelta(day=1)
-    last_of_month = day_in_month + relativedelta(day=31)
+    arbitrary_day_in_month = day_n_months_ago(day=today, n=prev_month_offset)
+    # The plus (+) denotes an update operation rather than summing
+    first_of_month = arbitrary_day_in_month + relativedelta(day=1)
+    last_of_month = arbitrary_day_in_month + relativedelta(day=31)
 
-    reflections_in_month_rows = db(
-        (db.task_reflections.day >= first_of_month)
-        & (db.task_reflections.day <= last_of_month)
-    ).select(
-        db.task_reflections.day,
-        db.task_reflections.attentiveness,
-        db.task_reflections.emotion,
-        db.task_reflection.efficiency,
-        orderby=db.task_reflections.day,
+    n_days_in_month = 1 + (
+        calendar_day_in_month(last_of_month) - calendar_day_in_month(first_of_month)
+    )
+
+    reflections_in_month_rows = (
+        db(
+            (db.task_reflections.day >= first_of_month)
+            & (db.task_reflections.day <= last_of_month)
+        )
+        .select(
+            db.task_reflections.id,
+            db.task_reflections.day,
+            db.task_reflections.attentiveness,
+            db.task_reflections.emotion,
+            db.task_reflections.efficiency,
+            orderby=db.task_reflections.day,
+        )
+        .as_list()
     )
 
     reflections_in_month = [
-        (
-            x["day"],
-            productivity_metric(
-                x["attentiveness"],
-                x["emotion"],
-                x["efficiency"],
-            ),
-        )
-        for x in reflections_in_month_rows.as_list()
+        dict(day=i + 1, prod_lvl=None) for i in range(n_days_in_month)
     ]
-    print(reflections_in_month)
 
-    print("REFLECTIONS_IN_MONTH:", reflections_in_month)
+    groups = groupby(
+        reflections_in_month_rows, lambda x: calendar_day_in_month(x["day"])
+    )
+
+    for group in groups:
+        day_idx = group[0] - 1
+
+        prod_metrics_for_day = [productivity_metric(x) for x in group[1]]
+        day_avg_productivity = sum(prod_metrics_for_day) // len(prod_metrics_for_day)
+        reflections_in_month[day_idx]["prod_lvl"] = day_avg_productivity
 
     return dict(reflections=reflections_in_month)
 
@@ -151,5 +178,5 @@ def get_reflections():
 @action.uses("profile.html", db, auth.user, session, url_signer)
 def profile():
     get_reflections_url = URL("get_reflections", signer=url_signer)
-    print(get_reflections_url)
+    # print(get_reflections_url)
     return dict(get_reflections_url=get_reflections_url)
