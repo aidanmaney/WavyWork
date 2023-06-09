@@ -321,7 +321,14 @@
               <b>Task Description:</b>
               <p>{{task_view_description}}</p>
             </div>
-            <div class="box" style="background-color: #b0b0b0">
+            <div
+              class="box"
+              style="
+                background-color: #b0b0b0;
+                height: 40.5vh;
+                overflow-y: scroll;
+              "
+            >
               <b class="block">Subtasks:</b>
               <br />
               <br />
@@ -345,7 +352,10 @@
                   </div>
                 </div>
               </div>
-              <div class="box" style="background-color: #b0b0b0">
+              <div
+                class="box"
+                style="background-color: #b0b0b0; position: sticky; bottom: 0"
+              >
                 <textarea
                   class="textarea block"
                   placeholder="New Subtask..."
@@ -381,7 +391,14 @@
             </div>
           </div>
           <div class="column is-4" v-if="task_view_is_group">
-            <div class="box" style="background-color: #b0b0b0; height: 100%">
+            <div
+              class="box"
+              style="
+                background-color: #b0b0b0;
+                height: 63.8vh;
+                overflow-y: scroll;
+              "
+            >
               <p class="title is-4">Collaborators:</p>
               <div class="box" v-for="m in task_view_group_members">
                 <div class="level">
@@ -407,7 +424,11 @@
         <button class="button is-success">Complete Task!</button>
       </footer>
     </div>
-    <button class="modal-close is-large" aria-label="close"></button>
+    <button
+      class="modal-close is-large"
+      aria-label="close"
+      onclick="this.closest('.modal').classList.remove('is-active')"
+    ></button>
   </div>
 </div>
 
