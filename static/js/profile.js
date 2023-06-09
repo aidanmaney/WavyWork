@@ -16,6 +16,7 @@ const init = (app) => {
         week4: [],
         week5: [],
         week6: [],
+        month: "",
     };
 
     app.enumerate = (a) => {
@@ -41,12 +42,24 @@ const init = (app) => {
                     });
                 }
 
+                console.log(app.data.reflection_blocks);
+
+                n_padding_blocks = 42 - app.data.reflection_blocks.length;
+                for (var i = 0; i < n_padding_blocks; i++) {
+                    app.data.reflection_blocks.push({
+                        day: null,
+                        prod_lvl: null,
+                    });
+                }
+
                 app.data.week1 = app.data.reflection_blocks.slice(0, 7);
                 app.data.week2 = app.data.reflection_blocks.slice(7, 14);
                 app.data.week3 = app.data.reflection_blocks.slice(14, 21);
                 app.data.week4 = app.data.reflection_blocks.slice(21, 28);
                 app.data.week5 = app.data.reflection_blocks.slice(28, 35);
                 app.data.week6 = app.data.reflection_blocks.slice(35);
+
+                app.data.month = response.data.month;
             });
     };
 
@@ -78,6 +91,7 @@ const init = (app) => {
 
     app.init = () => {
         app.data.prevMonthOffset = 0;
+        app.data.month = "";
         app.data.reflection_blocks = [];
         app.get_reflections();
     };

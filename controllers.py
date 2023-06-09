@@ -183,11 +183,13 @@ def get_reflections():
         # print(day_avg_productivity)
         reflections_in_month[day_idx]["prod_lvl"] = day_avg_productivity
 
+    month_str = arbitrary_day_in_month.strftime("%B")
     start_of_month_offset = first_of_month.weekday()
-    print(arbitrary_day_in_month.month)
 
     return dict(
-        reflections=reflections_in_month, start_of_month_offset=start_of_month_offset
+        reflections=reflections_in_month,
+        start_of_month_offset=start_of_month_offset,
+        month=month_str,
     )
 
 
