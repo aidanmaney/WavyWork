@@ -9,9 +9,12 @@
    .kanban_title {
       justify-content: center;
    }
+   [v-cloak] {
+     display: none;
+    }
 </style>
 
-<section class="hero has-background-grey-light is-fullheight" id="vue-target">
+<section class="hero has-background-grey-light is-fullheight" id="vue-target" v-cloak>
    <div class="hero-head">
       <nav class="tabs is-boxed is-fullwidth is-large">
          <div class="container">
@@ -25,12 +28,12 @@
       <hr style="height:2px;border-width:0;color:gray;background-color:gray">
    </div>
    <div class="hero-body">
-      <div class="columns is-mobile is-variable is-4">
-         <div class="column is-one-fourth">
+      <div class="columns is-mobile is-variable is-4"  style="width: 100%">
+         <div class="column">
             <h1 class="title kanban_title">To-Do</h1>
             <div class="box kanban_col">
-              <div class="card has-background-success" v-if="show_new_column" @click="move_task_2('todo')">
-                <div class="card-content">
+              <div class="card has-background-success pt-3 pb-3 mb-3" v-if="show_new_column" @click="move_task_2('todo')">
+                <div class="card-content ">
                   <p class="columns is-centered">
                     Move here
                   </p>
@@ -57,13 +60,14 @@
                     </div>
                   </div>
                </div>
+               
 
             </div>
          </div>
-         <div class="column is-one-fourth">
+         <div class="column">
             <h1 class="title kanban_title">In Progress</h1>
             <div class="box kanban_col">
-              <div class="card has-background-success" v-if="show_new_column" @click="move_task_2('in_progress')">
+              <div class="card has-background-success pt-3 pb-3 mb-3" v-if="show_new_column" @click="move_task_2('in_progress')">
                 <div class="card-content">
                   <p class="columns is-centered">
                     Move here
@@ -91,12 +95,13 @@
                   </div>
                 </div>
              </div>
+
             </div>
          </div>
-         <div class="column is-one-fourth">
+         <div class="column">
             <h1 class="title kanban_title">Stuck</h1>
             <div class="box kanban_col">
-              <div class="card has-background-success" v-if="show_new_column" @click="move_task_2('stuck')">
+              <div class="card has-background-success pt-3 pb-3 mb-3" v-if="show_new_column" @click="move_task_2('stuck')">
                 <div class="card-content">
                   <p class="columns is-centered">
                     Move here
@@ -120,16 +125,18 @@
                     {{obj["tasks"]["description"]}}
                     
                     <br>
-                    <time">{{obj["tasks"]["start_time"]}} - {{obj["tasks"]["end_time"]}}</time>
+                    <time>{{obj["tasks"]["start_time"]}} - {{obj["tasks"]["end_time"]}}</time>
                   </div>
                 </div>
              </div>
+
+             
             </div>
          </div>
-         <div class="column is-one-fourth">
+         <div class="column">
             <h1 class="title kanban_title">Done</h1>
             <div class="box kanban_col">
-              <div class="card has-background-success" v-if="show_new_column" @click="move_task_2('done')">
+              <div class="card has-background-success pt-3 pb-3 mb-3" v-if="show_new_column" @click="move_task_2('done')">
                 <div class="card-content">
                   <p class="columns is-centered">
                     Move here
@@ -156,6 +163,7 @@
                   </div>
                 </div>
               </div>
+
             </div>
          </div>
          

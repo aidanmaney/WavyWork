@@ -77,6 +77,41 @@ sample_tasks = [
     },
 ]
 
+group_tasks = [
+    {
+        "task_label": "working on personal group project",
+        "task_category": "personal",
+        "task_subtasks": [
+            "read chapter 5",
+            "find good quotes",
+            "sharpen my pencil",
+            "write the paper",
+            "turn in the essay",
+        ],
+    },
+    {
+        "task_label": "working on work group project",
+        "task_category": "work",
+        "task_subtasks": [
+            "read chapter 5",
+            "find good quotes",
+            "sharpen my pencil",
+            "write the paper",
+            "turn in the essay",
+        ],
+    },
+    {
+        "task_label": "working on school group project",
+        "task_category": "school",
+        "task_subtasks": [
+            "read chapter 5",
+            "find good quotes",
+            "sharpen my pencil",
+            "write the paper",
+            "turn in the essay",
+        ],
+    },
+]
 
 # References hw5 starter code (Credit: Luca de Alfaro)
 def add_users_for_testing(num_users):
@@ -95,15 +130,61 @@ def add_users_for_testing(num_users):
         )
         auth.register(user, send=False)
     # Add *consistent* dummy user
-    user = dict(
+    user_1 = dict(
         email="_johndoe" + "@ucsc.edu",
         first_name="John",
         last_name="Doe",
         password="johndoe",
     )
-    auth.register(user, send=False)
+    user_2 = dict(
+        email="_matjos" + "@ucsc.edu",
+        first_name="Mat",
+        last_name="Jos",
+        password="matjos",
+    )
+    user_3 = dict(
+        email="_alexaidan" + "@ucsc.edu",
+        first_name="Alex",
+        last_name="Aidan",
+        password="alexaidan",
+    )
+    auth.register(user_1, send=False)
+    auth.register(user_2, send=False)
+    auth.register(user_3, send=False)
     db.commit()
 
+def add_group_tasks_for_testing():
+    db(db.groups).delete()
+
+    id_user_1 = (
+        db(db.auth_user.email.startswith("_johndoe@ucsc.edu")).select("id").first()
+    )
+    id_user_2 = (
+        db(db.auth_user.email.startswith("_matjos@ucsc.edu")).select("id").first()
+    )
+    id_user_3 = (
+        db(db.auth_user.email.startswith("_alexaidan@ucsc.edu")).select("id").first()
+    )
+
+    group_id = db.groups.insert(
+        group_name="test_group",
+        members=[id_user_1, id_user_2, id_user_3]
+    )
+
+    inserted_tasks = []
+    for t in group_tasks:
+        task_id = db.tasks.insert(
+            label = t["task_label"],
+            description = "I need to " + t["task_label"],
+            end_time=datetime.datetime.today() + datetime.timedelta(days=1),
+            categorization=t["task_category"],
+            is_group=True,
+            group_id=group_id,
+            created_by=id_user_2,
+        )
+        inserted_tasks.append(task_id)
+    db.commit()
+    return inserted_tasks
 
 def add_tasks_for_testing():
     db(db.tasks).delete()
@@ -173,8 +254,9 @@ def add_task_reflections_for_testing(task_id_list):
     return inserted_task_reflections
 
 
-def add_kanban_cards_for_testing(task_id_list):
-    db(db.kanban_cards).delete()
+def add_kanban_cards_for_testing(task_id_list, delete=True):
+    if delete: 
+        db(db.kanban_cards).delete()
 
     kanban_categories = ["todo", "in_progress", "stuck", "done"]
     i = 0
@@ -201,9 +283,11 @@ def populate_sample_DB():
     add_users_for_testing(5)
 
     added_tasks = add_tasks_for_testing()
+    group_added_tasks = add_group_tasks_for_testing()
 
     add_subtasks_for_testing(added_tasks)
     add_task_reflections_for_testing(added_tasks)
     add_kanban_cards_for_testing(added_tasks)
+    add_kanban_cards_for_testing(group_added_tasks, False)
 
     db.commit()

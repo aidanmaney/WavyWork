@@ -22,11 +22,7 @@ def get_time():
 db.define_table(
     "groups",
     Field("group_name", required=True),
-    # Need one user to start a group, can't count two users twice:
-    Field("assoc_user_1", "integer", "reference auth_user", required=True, unique=True),
-    Field("assoc_user_2", "integer", "reference auth_user", unique=True),
-    Field("assoc_user_3", "integer", "reference auth_user", unique=True),
-    Field("assoc_user_4", "integer", "reference auth_user", unique=True),
+    Field("members", "list:reference auth_user")
 )
 
 db.define_table(

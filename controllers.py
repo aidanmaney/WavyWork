@@ -39,58 +39,49 @@ url_signer = URLSigner(session)
 def index():
     print("User:", get_user_email())
     return dict(
-        # get_tasks_url = URL("get_tasks")
+        get_tasks_url = URL("get_tasks")
     )
 
 @action("get_tasks")
-@action.uses(db)
+@action.uses(db, auth.user, url_signer.verify())
 def get_tasks():
     board_query = request.params.get("board")
-    # print('HELLO')
-    # user_tasks = db(db.tasks.created_by == 6  and db.kanban_cards.task_id == db.tasks.id).select(db.tasks.id).as_list() # HARD CODING THE USER ID # and db.tasks.categorization == board_query
-    # user_tasks = db(db.tasks.created_by == 6  and db.kanban_cards.task_id == db.tasks.id).select()
-    uncategorized = db.executesql("SELECT 'tasks'.'id' FROM 'tasks' WHERE 'tasks'.'id' NOT IN (SELECT 'kanban_cards'.'task_id' FROM 'kanban_cards')", as_dict=True)
-    # print("uncategorized", uncategorized)
-    # kanban_categories = ["backlog", "todo", "in_progress", "stuck", "done"]
-    # i = 2
-    # for task_id in uncategorized:
-    #     task_id = task_id["id"]
-    #     db.kanban_cards.insert(task_id=task_id, column=kanban_categories[i])
-    #     i = (i+1)%5
+    
+    personal_todo_query = (db.kanban_cards.task_id == db.tasks.id) & (db.tasks.categorization == board_query) & (db.kanban_cards.column == "todo") & (db.tasks.created_by == get_user_id())
+    group_todo_query = (db.kanban_cards.task_id == db.tasks.id) & (db.tasks.categorization == board_query) & (db.kanban_cards.column == "todo") & (db.tasks.created_by != get_user_id()) & (db.groups.members.contains(get_user_id())) & (db.groups.id == db.tasks.group_id)
+    todo_tasks =  db(personal_todo_query | group_todo_query).select().as_list()
 
-    todo_tasks =  db((db.kanban_cards.task_id == db.tasks.id) & (db.tasks.categorization == board_query) & (db.kanban_cards.column == "todo")).select().as_list()
-    in_progress_tasks = db((db.kanban_cards.task_id == db.tasks.id) & (db.tasks.categorization == board_query) & (db.kanban_cards.column == "in_progress")).select().as_list()
-    stuck_tasks = db((db.kanban_cards.task_id == db.tasks.id) & (db.tasks.categorization == board_query) & (db.kanban_cards.column == "stuck")).select().as_list()
-    done_tasks = db( (db.kanban_cards.task_id == db.tasks.id) & (db.tasks.categorization == board_query) & (db.kanban_cards.column == "done")).select().as_list() #  (db.tasks.created_by == 108) & 
-        # print(id)
-    # print("USER TASKS", user_tasks)
-    # print("SQL", db._lastsql)
-    # print("DONE")
+    personal_inprog_query = (db.kanban_cards.task_id == db.tasks.id) & (db.tasks.categorization == board_query) & (db.kanban_cards.column == "in_progress") & (db.tasks.created_by == get_user_id())
+    group_inprog_query = (db.kanban_cards.task_id == db.tasks.id) & (db.tasks.categorization == board_query) & (db.kanban_cards.column == "in_progress") & (db.tasks.created_by != get_user_id()) & (db.groups.members.contains(get_user_id())) & (db.groups.id == db.tasks.group_id)
+    in_progress_tasks = db(personal_inprog_query | group_inprog_query).select().as_list()
+
+    personal_stuck_query = (db.kanban_cards.task_id == db.tasks.id) & (db.tasks.categorization == board_query) & (db.kanban_cards.column == "stuck") & (db.tasks.created_by == get_user_id())
+    group_stuck_query = (db.kanban_cards.task_id == db.tasks.id) & (db.tasks.categorization == board_query) & (db.kanban_cards.column == "stuck") & (db.tasks.created_by != get_user_id()) & (db.groups.members.contains(get_user_id())) & (db.groups.id == db.tasks.group_id)
+    stuck_tasks = db(personal_stuck_query | group_stuck_query).select().as_list()
+
+    personal_done_query = (db.kanban_cards.task_id == db.tasks.id) & (db.tasks.categorization == board_query) & (db.kanban_cards.column == "done") & (db.tasks.created_by == get_user_id())
+    group_done_query = (db.kanban_cards.task_id == db.tasks.id) & (db.tasks.categorization == board_query) & (db.kanban_cards.column == "done") & (db.tasks.created_by != get_user_id()) & (db.groups.members.contains(get_user_id())) & (db.groups.id == db.tasks.group_id)
+    done_tasks = db(personal_done_query | group_done_query).select().as_list()
+    
     return dict(todo_tasks=todo_tasks, in_progress_tasks=in_progress_tasks, stuck_tasks=stuck_tasks, done_tasks=done_tasks)
 
 
 @action('kanban')
-@action.uses('kanban.html', db, auth.user)
+@action.uses('kanban.html', db, auth.user, url_signer)
 def kanban():
-    # print("HI")
     return dict(
-        get_tasks_url = URL("get_tasks"),
-        update_kanban_url = URL("update_kanban")
+        get_tasks_url = URL("get_tasks", signer=url_signer),
+        update_kanban_url = URL("update_kanban", signer=url_signer)
     )
 
    
 @action("update_kanban", method="POST")
-@action.uses(db) # url_signer.verify()
+@action.uses(db, auth.user, url_signer.verify())
 def update_kanban():
-    # print("RECEIVED HERE")
-
     task_id = request.params.get("task_id")
     new_column = request.params.get("new_column")
 
     kanban_task = db.kanban_cards[task_id]
-
-    # print("kanban task", kanban_task)
-
     db(db.kanban_cards.task_id == task_id).validate_and_update(column=new_column)
 
     return dict()
