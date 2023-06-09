@@ -7,6 +7,7 @@ from .common import db, Field, auth
 from pydal.validators import *
 from .sample_DB import populate_sample_DB
 
+
 def get_user_email():
     return auth.current_user.get("email") if auth.current_user else None
 
@@ -18,6 +19,10 @@ def get_user_id():
 def get_time():
     return datetime.datetime.utcnow()
 
+def get_today():
+    dt = datetime.datetime.utcnow().today()
+    return datetime.datetime(dt.year, dt.month, dt.day)
+
 
 db.define_table(
     "groups",
@@ -28,8 +33,8 @@ db.define_table(
 db.define_table(
     "tasks",
     Field("created_by", "integer", "reference auth_user", default=get_user_id),
-    Field("start_time", "datetime", default=get_time().today),
-    Field("end_time", "datetime", default=get_time().today),
+    Field("start_time", "datetime", default=get_today()),
+    Field("end_time", "datetime", default=get_today()),
     Field("label"),
     Field("description"),
     Field(
@@ -105,7 +110,7 @@ db.define_table(
     Field(
         "day",
         "datetime",
-        default=get_time().today,
+        default=get_today(),
         label="Date of reflection",
     ),
 )
@@ -121,7 +126,7 @@ db.define_table(
     Field(
         "day",
         "datetime",
-        default=get_time().today,
+        default=get_today(),
     ),
     Field("entry"),
 )
