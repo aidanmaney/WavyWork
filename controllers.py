@@ -42,7 +42,8 @@ def index():
         get_active_tasks_url = URL('get_active_tasks', signer=url_signer),
         submit_task_reflection_url = URL('submit_task_reflection', signer=url_signer),
         get_users_url = URL('get_users', signer=url_signer),
-        check_for_submitted_reflections_url = URL('check_for_submitted_reflections', signer=url_signer)
+        check_for_submitted_reflections_url = URL('check_for_submitted_reflections', signer=url_signer),
+        submit_journal_entry_url = URL('submit_journal_entry', signer=url_signer)
     )
 
 
@@ -99,6 +100,15 @@ def submit_task_reflection():
         attentiveness = request.json.get("attentiveness"),
         emotion = request.json.get("emotion"),
         efficiency = request.json.get("efficiency")
+    )
+    return dict(id=id)
+
+
+@action('submit_journal_entry', method=["POST"])
+@action.uses(db, auth.user, url_signer.verify())
+def submit_journal_entry():
+    id = db.daily_journal.insert(
+        entry = request.json.get("entry")
     )
     return dict(id=id)
 

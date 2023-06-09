@@ -206,6 +206,47 @@
     </div>
   </div>
 
+  <div id="journal_modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head" style="background-color: #b0b0b0">
+        <p
+          id="journal_modal_title"
+          class="modal-card-title"
+          style="text-align: center"
+        >
+          Daily Reflection for
+        </p>
+        <button
+          class="modal-close is-large"
+          onclick="this.closest('.modal').classList.remove('is-active')"
+        ></button>
+      </header>
+      <section class="modal-card-body" style="background-color: #d5d5d5">
+        <textarea
+          class="textarea block"
+          placeholder="Daily Journal Entry..."
+          v-model="reflection_journal"
+          rows="10"
+        ></textarea>
+      </section>
+      <footer class="modal-card-foot" style="background-color: #b0b0b0">
+        <div class="container has-text-centered">
+          <button
+            class="button is-success block"
+            onclick="this.closest('.modal').classList.toggle('is-active');"
+            @click="submit_journal_entry"
+          >
+            <span class="icon is-small">
+              <i class="fa fa-check"></i>
+            </span>
+            <span>Submit Journal</span>
+          </button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
   <div id="add_group_modal" v-if="task_is_group" class="modal is-active">
     <div class="modal-background"></div>
     <div class="modal-content">
@@ -316,6 +357,7 @@
   let get_users_url = "[[=XML(get_users_url)]]";
   let check_for_submitted_reflections_url =
     "[[=XML(check_for_submitted_reflections_url)]]";
+  let submit_journal_entry_url = "[[=XML(submit_journal_entry_url)]]";
 </script>
 
 <script src="js/index.js"></script>
