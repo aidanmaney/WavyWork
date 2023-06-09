@@ -55,12 +55,14 @@ url_signer = URLSigner(session)
 @action.uses("index.html", db, auth, auth.user, url_signer)
 def index():
     return dict(
-        add_task_url = URL('add_task', signer=url_signer),
-        get_active_tasks_url = URL('get_active_tasks', signer=url_signer),
-        submit_task_reflection_url = URL('submit_task_reflection', signer=url_signer),
-        get_users_url = URL('get_users', signer=url_signer),
-        check_for_submitted_reflections_url = URL('check_for_submitted_reflections', signer=url_signer),
-        submit_journal_entry_url = URL('submit_journal_entry', signer=url_signer)
+        add_task_url=URL("add_task", signer=url_signer),
+        get_active_tasks_url=URL("get_active_tasks", signer=url_signer),
+        submit_task_reflection_url=URL("submit_task_reflection", signer=url_signer),
+        get_users_url=URL("get_users", signer=url_signer),
+        check_for_submitted_reflections_url=URL(
+            "check_for_submitted_reflections", signer=url_signer
+        ),
+        submit_journal_entry_url=URL("submit_journal_entry", signer=url_signer),
     )
 
 
@@ -102,9 +104,6 @@ def add_task():
     return dict(id=id, created_by=get_user_id())
 
 
-counts = [0, 0]
-
-
 @action("get_reflections")
 @action.uses(db, auth.user, session, url_signer.verify())
 def get_reflections():
@@ -143,6 +142,11 @@ def get_reflections():
     first_of_month = arbitrary_day_in_month + relativedelta(day=1)
     last_of_month = arbitrary_day_in_month + relativedelta(day=31)
 
+    month = arbitrary_day_in_month.month
+    year = arbitrary_day_in_month.year
+
+    month_str = arbitrary_day_in_month.strftime("%B")
+
     if last_of_month > today:
         last_of_month = today
 
@@ -165,8 +169,16 @@ def get_reflections():
         )
         .as_list()
     )
-    
-    reflections_in_month = [dict(day=i + 1, prod_lvl=0) for i in range(n_days_in_month)]
+
+    reflections_in_month = [
+        dict(
+            day=i + 1,
+            prod_lvl=0,
+            # Interpolate dates
+            day_datetime=datetime.date(year=year, month=month, day=i + 1),
+        )
+        for i in range(n_days_in_month)
+    ]
 
     groups = groupby(
         reflections_in_month_rows, lambda x: calendar_day_in_month(x["day"])
@@ -181,7 +193,6 @@ def get_reflections():
         )
         reflections_in_month[day_idx]["prod_lvl"] = day_avg_productivity
 
-    month_str = arbitrary_day_in_month.strftime("%B")
     start_of_month_offset = first_of_month.weekday()
 
     return dict(
@@ -198,21 +209,26 @@ def profile():
     # print(get_reflections_url)
     return dict(get_reflections_url=get_reflections_url)
 
-@action('submit_journal_entry', method=["POST"])
+
+@action("submit_journal_entry", method=["POST"])
 @action.uses(db, auth.user, url_signer.verify())
 def submit_journal_entry():
-    id = db.daily_journal.insert(
-        entry = request.json.get("entry")
-    )
+    id = db.daily_journal.insert(entry=request.json.get("entry"))
     return dict(id=id)
 
 
-@action('check_for_submitted_reflections')
+@action("check_for_submitted_reflections")
 @action.uses(db, auth.user, url_signer.verify())
 def check_for_submitted_reflections():
-    todays_reflections = db((db.tasks.created_by == get_user_id()) & 
-                            (db.task_reflections.task_id == db.tasks.id) &
-                            (db.task_reflections.day == get_today())).select().as_list()
+    todays_reflections = (
+        db(
+            (db.tasks.created_by == get_user_id())
+            & (db.task_reflections.task_id == db.tasks.id)
+            & (db.task_reflections.day == get_today())
+        )
+        .select()
+        .as_list()
+    )
 
     print(todays_reflections)
     return dict(todays_reflections=todays_reflections)
@@ -241,7 +257,7 @@ def get_journal_entry_by_day():
 #                 (db.kanban_cards.task_id == db.tasks.id) &
 #                 (db.kanban_cards.column == "in_progress")).select()
 
-# all_tasks = db((db.tasks.created_by == get_user_id()) | 
+# all_tasks = db((db.tasks.created_by == get_user_id()) |
 #              ( (db.tasks.created_by != get_user_id()) &
 #                (db.groups.members.contains(get_user_id())) &
 #                (db.groups.id == db.tasks.id) )
