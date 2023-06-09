@@ -25,7 +25,7 @@ session, db, T, auth, and templates are examples of Fixtures.
 Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app will result in undefined behavior
 """
 
-import datetime  # TODO
+import datetime
 import random
 import math
 from .dateutil.relativedelta import relativedelta
@@ -55,13 +55,12 @@ url_signer = URLSigner(session)
 @action.uses("index.html", db, auth, auth.user, url_signer)
 def index():
     return dict(
-        add_task_url=URL("add_task", signer=url_signer),
-        get_active_tasks_url=URL("get_active_tasks", signer=url_signer),
-        submit_task_reflection_url=URL("submit_task_reflection", signer=url_signer),
-        get_users_url=URL("get_users", signer=url_signer),
-        check_for_submitted_reflections_url=URL(
-            "check_for_submitted_reflections", signer=url_signer
-        ),
+        add_task_url = URL('add_task', signer=url_signer),
+        get_active_tasks_url = URL('get_active_tasks', signer=url_signer),
+        submit_task_reflection_url = URL('submit_task_reflection', signer=url_signer),
+        get_users_url = URL('get_users', signer=url_signer),
+        check_for_submitted_reflections_url = URL('check_for_submitted_reflections', signer=url_signer),
+        submit_journal_entry_url = URL('submit_journal_entry', signer=url_signer)
     )
 
 
@@ -166,7 +165,7 @@ def get_reflections():
         )
         .as_list()
     )
-
+    
     reflections_in_month = [dict(day=i + 1, prod_lvl=0) for i in range(n_days_in_month)]
 
     groups = groupby(
@@ -198,3 +197,39 @@ def profile():
     get_reflections_url = URL("get_reflections", signer=url_signer)
     # print(get_reflections_url)
     return dict(get_reflections_url=get_reflections_url)
+
+@action('submit_journal_entry', method=["POST"])
+@action.uses(db, auth.user, url_signer.verify())
+def submit_journal_entry():
+    id = db.daily_journal.insert(
+        entry = request.json.get("entry")
+    )
+    return dict(id=id)
+
+
+@action('check_for_submitted_reflections')
+@action.uses(db, auth.user, url_signer.verify())
+def check_for_submitted_reflections():
+    todays_reflections = db((db.tasks.created_by == get_user_id()) & 
+                            (db.task_reflections.task_id == db.tasks.id) &
+                            (db.task_reflections.day == get_today())).select().as_list()
+
+    print(todays_reflections)
+    return dict(todays_reflections=todays_reflections)
+
+# NOTES ON JOIN QUERIES (like above)
+# This is technically a query on two separate db tables, so rows will have the data from both tables include
+# This means that, in this case, each element in todays_reflections will have access to all task attributes and all task_reflection attributes
+# For example, if I wanted the creator, that is stored in the tasks db, so I would write row.tasks.created_by
+# If instead I wanted to access the time the reflection was created, is ask for row.task_reflections.day
+# Below is another example that gets all in progress kanban cards that are associated with the logged in user
+
+# test_query = db((db.tasks.created_by == get_user_id()) &
+#                 (db.kanban_cards.task_id == db.tasks.id) &
+#                 (db.kanban_cards.column == "in_progress")).select()
+
+# all_tasks = db((db.tasks.created_by == get_user_id()) | 
+#              ( (db.tasks.created_by != get_user_id()) &
+#                (db.groups.members.contains(get_user_id())) &
+#                (db.groups.id == db.tasks.id) )
+#                )
