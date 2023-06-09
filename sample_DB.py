@@ -3,11 +3,14 @@ import datetime
 
 # References hw5 start code (Credit: Luca de Alfaro)
 from py4web.utils.populate import FIRST_NAMES, LAST_NAMES
+from .dateutil.relativedelta import relativedelta
 from .common import db, Field, auth
+
 
 def get_today():
     dt = datetime.datetime.utcnow().today()
     return datetime.datetime(dt.year, dt.month, dt.day)
+
 
 sample_tasks = [
     {
@@ -125,7 +128,7 @@ def add_tasks_for_testing():
         task_id = db.tasks.insert(
             label=label,
             description="I need to " + label,
-            end_time=get_today() + datetime.timedelta(days=1),
+            end_time=get_today() + relativedelta(day=random.randrange(1, 32)),
             categorization=task_category,
             is_group=False,
             created_by=id_user_johndoe,
@@ -161,17 +164,22 @@ def add_task_reflections_for_testing(task_id_list):
     inserted_task_reflections = []
 
     # Arbitrary subset of tasks
-    reflecting_task_ids = task_id_list[:3]
+    reflecting_task_ids = task_id_list
 
     for task_id in reflecting_task_ids:
         db(db.tasks.id == task_id).update(is_complete=True)
-        task_reflection_id = db.task_reflections.insert(
-            task_id=task_id,
-            attentiveness=random.randint(1, 10),
-            emotion=random.randint(1, 10),
-            efficiency=random.randint(1, 10),
-        )
-        inserted_task_reflections = task_reflection_id
+        for _ in range(0, 100):
+            task_reflection_id = db.task_reflections.insert(
+                task_id=task_id,
+                attentiveness=random.randint(0, 10),
+                emotion=random.randint(0, 10),
+                efficiency=random.randint(0, 10),
+                day=get_today()
+                + relativedelta(
+                    day=(random.randrange(1, 32)), month=(random.randrange(1, 12))
+                ),
+            )
+            inserted_task_reflections = task_reflection_id
 
     db.commit()
     return inserted_task_reflections
