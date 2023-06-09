@@ -124,7 +124,7 @@ def get_reflections():
         productivity_level *= 4
 
         # First quartile
-        if productivity_level >= 0 and productivity_level < 1:
+        if productivity_level < 1:
             productivity_level = 1
         # Second quartile
         elif productivity_level >= 1 and productivity_level < 2:
@@ -180,7 +180,6 @@ def get_reflections():
         day_avg_productivity = round(
             sum(prod_metrics_for_day) / len(prod_metrics_for_day)
         )
-        # print(day_avg_productivity)
         reflections_in_month[day_idx]["prod_lvl"] = day_avg_productivity
 
     month_str = arbitrary_day_in_month.strftime("%B")
