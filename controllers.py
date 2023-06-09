@@ -217,6 +217,19 @@ def check_for_submitted_reflections():
     print(todays_reflections)
     return dict(todays_reflections=todays_reflections)
 
+
+@action('get_journal_entry_by_day')
+@action.uses(db, auth.user, url_signer.verify())
+def get_journal_entry_by_day():
+    journal_day = request.json.get("day")
+    entries = db((db.daily_journal.user == get_user_id()) &
+               (db.task_reflections.day == journal_day)).select(db.daily_journal.entry).as_list()
+    
+    entry = "" if len(entries) <= 0 else entries[0]
+    return dict(entry=entry)
+
+
+
 # NOTES ON JOIN QUERIES (like above)
 # This is technically a query on two separate db tables, so rows will have the data from both tables include
 # This means that, in this case, each element in todays_reflections will have access to all task attributes and all task_reflection attributes
