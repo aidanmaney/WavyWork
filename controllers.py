@@ -62,7 +62,7 @@ def index():
         check_for_submitted_reflections_url=URL(
             "check_for_submitted_reflections", signer=url_signer
         ),
-        submit_journal_entry_url=URL("submit_journal_entry", signer=url_signer),
+        submit_journal_entry_url=URL("submit_journal_entry", signer=url_signer)
     )
 
 
@@ -206,14 +206,16 @@ def get_reflections():
 @action.uses("profile.html", db, auth.user, session, url_signer)
 def profile():
     get_reflections_url = URL("get_reflections", signer=url_signer)
+    get_journal_entry_by_day_url=URL("get_journal_entry_by_day", signer=url_signer)
     # print(get_reflections_url)
-    return dict(get_reflections_url=get_reflections_url)
+    return dict(get_reflections_url=get_reflections_url, get_journal_entry_by_day_url=get_journal_entry_by_day_url)
 
 
 @action("submit_journal_entry", method=["POST"])
 @action.uses(db, auth.user, url_signer.verify())
 def submit_journal_entry():
-    id = db.daily_journal.insert(entry=request.json.get("entry"))
+    day = request.data.day or get_today()
+    id = db.daily_journal.insert(entry=request.json.get("entry"), day=day)
     return dict(id=id)
 
 
@@ -234,14 +236,18 @@ def check_for_submitted_reflections():
     return dict(todays_reflections=todays_reflections)
 
 
-@action('get_journal_entry_by_day')
-@action.uses(db, auth.user, url_signer.verify())
+@action('get_journal_entry_by_day', method=["POST"])
+@action.uses(db, auth.user)
 def get_journal_entry_by_day():
+    print(request.json.get("day"))
     journal_day = request.json.get("day")
+    journal_datetime = datetime.datetime.strptime(journal_day, "%Y-%m-%d")
+    print(f"**********journal_datetime: {journal_datetime} **********")
     entries = db((db.daily_journal.user == get_user_id()) &
-               (db.task_reflections.day == journal_day)).select(db.daily_journal.entry).as_list()
+               (db.daily_journal.day == journal_datetime)).select(db.daily_journal.entry).as_list()
     
-    entry = "" if len(entries) <= 0 else entries[0]
+    print(f"*********{entries}*********")
+    entry = "" if len(entries) <= 0 else entries[0]["entry"]
     return dict(entry=entry)
 
 

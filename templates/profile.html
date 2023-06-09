@@ -48,6 +48,7 @@
                                         {'is-invisible': day.prod_lvl == null},
                                     ]"
               class="block button square m-2"
+              @click="open_journal_modal(day.day_datetime)"
             >
               <div class="container">
                 <span class="title"> {{day.day}} </span>
@@ -80,23 +81,14 @@
     </div>
   </nav>
 
-  <div id="calendar_journal_modal" class="modal is-active">
+  <div id="calendar_journal_modal" class="modal">
     <div
       class="modal-background"
       onclick="this.closest('.modal').classList.remove('is-active');"
     ></div>
     <div class="modal-content">
       <div class="box">
-        <p>
-          TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST
-          JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST
-          JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST
-          JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST
-          JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST
-          JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST
-          JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST
-          JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL TEST JOURNAL
-        </p>
+        <p>{{journal_entry}}</p>
       </div>
     </div>
     <button
@@ -109,6 +101,7 @@
   [[block page_scripts]]
   <script>
     let get_reflections_url = "[[=XML(get_reflections_url)]]";
+    let get_journal_entry_by_day_url = "[[=XML(get_journal_entry_by_day_url)]]";
   </script>
   <script src="js/profile.js"></script>
   [[end]]
