@@ -146,6 +146,7 @@ def get_reflections():
     year = arbitrary_day_in_month.year
 
     month_str = arbitrary_day_in_month.strftime("%B")
+    year_str = arbitrary_day_in_month.strftime("%Y")
 
     if last_of_month > today:
         last_of_month = today
@@ -158,6 +159,8 @@ def get_reflections():
         db(
             (db.task_reflections.day >= first_of_month)
             & (db.task_reflections.day <= last_of_month)
+            & (db.tasks.created_by == get_user_id())
+            & (db.task_reflections.task_id == db.tasks.id)
         )
         .select(
             db.task_reflections.id,
@@ -199,6 +202,7 @@ def get_reflections():
         reflections=reflections_in_month,
         start_of_month_offset=start_of_month_offset,
         month=month_str,
+        year=year_str,
     )
 
 
