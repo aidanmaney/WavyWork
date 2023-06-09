@@ -1,0 +1,89 @@
+[[extend 'layout.html']]
+
+<style>
+    [v-cloak] {
+        display: none;
+    }
+    .square {
+        width: 5em;
+        height: 5em;
+    }
+    .table.is-borderless td,
+	/* References https://github.com/jmaczan/bulma-helpers/issues/3 */
+	.table.is-borderless th {
+        border: 0;
+    }
+    /* References https://github.com/jgthms/bulma/issues/1513 */
+    .table {
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+
+<div class="section" id="vue-target">
+    <nav class="level container">
+        <div class="level-item has-text-left"></div>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="title">{{month}}</p>
+            </div>
+        </div>
+        <div class="level-item"></div>
+    </nav>
+    <div class="container is-centered">
+        <table class="table is-borderless is-narrow has-text-centered">
+            <thead>
+                <tr>
+                    <th v-for="day in daysOfTheWeek">{{day}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="week in [week1, week2, week3, week4, week5, week6]">
+                    <td v-for="day in week">
+                        <div
+                            :class="[
+                                        {'has-background-danger' : day.prod_lvl == 1}, 
+                                        {'has-background-warning': day.prod_lvl == 2}, 
+                                        {'has-background-success': day.prod_lvl == 3},
+                                        {'is-invisible': day.prod_lvl == null},
+                                    ]"
+                            class="block button square m-2"
+                        >
+                            <div class="container">
+                                <span class="title"> {{day.day}} </span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <nav class="level container">
+        <div class="level-item has-text-centered mt-3">
+            <span class="button is-link icon-text" @click="goBackMonth()">
+                <span class="icon">
+                    <i class="fa fa-arrow-left"></i>
+                </span>
+                <span> Prior month </span>
+            </span>
+            <div class="is-invisible">--</div>
+            <span
+                class="button icon-text"
+                :class="[(prevMonthOffset == 0) ? 'has-background-light' : 'is-link']"
+                @click="goForwardMonth()"
+            >
+                <span> Next month </span>
+                <span class="icon">
+                    <i class="fa fa-arrow-right"></i>
+                </span>
+            </span>
+        </div>
+    </nav>
+
+    [[block page_scripts]]
+    <script>
+        let get_reflections_url = "[[=XML(get_reflections_url)]]";
+    </script>
+    <script src="js/profile.js"></script>
+    [[end]]
+</div>

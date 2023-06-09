@@ -21,21 +21,38 @@ The path follows the bottlepy syntax.
 @action.uses(auth.user)       indicates that the action requires a logged in user
 @action.uses(auth)            indicates that the action requires the auth object
 
-session, db, T, auth, and tempates are examples of Fixtures.
+session, db, T, auth, and templates are examples of Fixtures.
 Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app will result in undefined behavior
 """
 
+import datetime
+import random
+import math
+from .dateutil.relativedelta import relativedelta
+
 from py4web import action, request, abort, redirect, URL
-from yatl.helpers import A
-from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
+from itertools import groupby
+from yatl.helpers import *
+from .common import (
+    db,
+    session,
+    T,
+    cache,
+    auth,
+    logger,
+    authenticated,
+    unauthenticated,
+    flash,
+)
 from py4web.utils.url_signer import URLSigner
 import datetime
 from .models import get_user_email, get_user_id, get_time, get_today
 
 url_signer = URLSigner(session)
 
-@action('index')
-@action.uses('index.html', db, auth, auth.user, url_signer)
+
+@action("index")
+@action.uses("index.html", db, auth, auth.user, url_signer)
 def index():
     return dict(
         add_task_url = URL('add_task', signer=url_signer),
@@ -47,62 +64,139 @@ def index():
     )
 
 
-@action('get_users')
+@action("get_users")
 @action.uses(db, auth.user, url_signer.verify())
 def get_users():
-    all_users = db(db.auth_user.id != get_user_id()).select(orderby=db.auth_user.first_name).as_list()
+    all_users = (
+        db(db.auth_user.id != get_user_id())
+        .select(orderby=db.auth_user.first_name)
+        .as_list()
+    )
     return dict(all_users=all_users)
 
 
-@action('add_task', method=["GET", "POST"])
+@action("add_task", method=["GET", "POST"])
 @action.uses(db, url_signer.verify(), auth.user)
 def add_task():
     if request.json.get("is_group") and len(request.json.get("members")) > 0:
         members = request.json.get("members") + [get_user_id()]
         group_id = db.groups.insert(
-            group_name = request.json.get("group_name"),
-            members = members
+            group_name=request.json.get("group_name"), members=members
         )
 
-    date_str_start_time = request.json.get('start_time')
-    datetime_start_time = datetime.datetime.strptime(date_str_start_time, '%Y-%m-%d')
+    date_str_start_time = request.json.get("start_time")
+    datetime_start_time = datetime.datetime.strptime(date_str_start_time, "%Y-%m-%d")
 
-    date_str_end_time = request.json.get('end_time')
-    datetime_end_time = datetime.datetime.strptime(date_str_end_time, '%Y-%m-%d')
+    date_str_end_time = request.json.get("end_time")
+    datetime_end_time = datetime.datetime.strptime(date_str_end_time, "%Y-%m-%d")
 
     id = db.tasks.insert(
-        label = request.json.get("label"),
-        description = request.json.get("description"),
-        categorization = request.json.get("categorization"),
-        is_group = request.json.get("is_group"),
-        start_time = datetime_start_time,
-        end_time = datetime_end_time,
-        group_id = group_id
+        label=request.json.get("label"),
+        description=request.json.get("description"),
+        categorization=request.json.get("categorization"),
+        is_group=request.json.get("is_group"),
+        start_time=datetime_start_time,
+        end_time=datetime_end_time,
+        group_id=group_id,
     )
     return dict(id=id, created_by=get_user_id())
 
 
-@action('get_active_tasks')
-@action.uses(db, url_signer.verify(), auth.user)
-def get_active_tasks():
-    active_tasks = db((db.tasks.start_time <= get_today()) &
-                      (db.tasks.end_time >= get_today()) & 
-                      (db.tasks.created_by == get_user_id())).select().as_list()
-    
-    return dict(active_tasks=active_tasks)
+counts = [0, 0]
 
 
-@action('submit_task_reflection', method=["POST"])
-@action.uses(db, auth.user, url_signer.verify())
-def submit_task_reflection():
-    id = db.task_reflections.insert(
-        task_id = request.json.get("task_id"),
-        attentiveness = request.json.get("attentiveness"),
-        emotion = request.json.get("emotion"),
-        efficiency = request.json.get("efficiency")
+@action("get_reflections")
+@action.uses(db, auth.user, session, url_signer.verify())
+def get_reflections():
+    prev_month_offset = int(request.params.get("pmo"))
+
+    def day_n_months_ago(day, n):
+        return day + relativedelta(months=(-1 * n))
+
+    def productivity_metric(ref):
+        # Sum across constituents
+        productivity_level = ref["attentiveness"] + ref["efficiency"] + ref["emotion"]
+        # Normalize to percentage
+        productivity_level /= 30
+
+        # Range from [0, 4]
+        productivity_level *= 4
+
+        # First quartile
+        if productivity_level < 1:
+            productivity_level = 1
+        # Second quartile
+        elif productivity_level >= 1 and productivity_level < 2:
+            productivity_level = 2
+        # Third and fourth quartile
+        else:
+            productivity_level = 3
+
+        return productivity_level
+
+    def calendar_day_in_month(day):
+        return int(day.strftime("%d"))
+
+    today = datetime.datetime.today()
+    arbitrary_day_in_month = day_n_months_ago(day=today, n=prev_month_offset)
+    # The plus (+) denotes an update operation rather than summing
+    first_of_month = arbitrary_day_in_month + relativedelta(day=1)
+    last_of_month = arbitrary_day_in_month + relativedelta(day=31)
+
+    if last_of_month > today:
+        last_of_month = today
+
+    n_days_in_month = 1 + (
+        calendar_day_in_month(last_of_month) - calendar_day_in_month(first_of_month)
     )
-    return dict(id=id)
 
+    reflections_in_month_rows = (
+        db(
+            (db.task_reflections.day >= first_of_month)
+            & (db.task_reflections.day <= last_of_month)
+        )
+        .select(
+            db.task_reflections.id,
+            db.task_reflections.day,
+            db.task_reflections.attentiveness,
+            db.task_reflections.emotion,
+            db.task_reflections.efficiency,
+            orderby=db.task_reflections.day,
+        )
+        .as_list()
+    )
+    
+    reflections_in_month = [dict(day=i + 1, prod_lvl=0) for i in range(n_days_in_month)]
+
+    groups = groupby(
+        reflections_in_month_rows, lambda x: calendar_day_in_month(x["day"])
+    )
+
+    for group in groups:
+        day_idx = group[0] - 1
+
+        prod_metrics_for_day = [productivity_metric(x) for x in group[1]]
+        day_avg_productivity = round(
+            sum(prod_metrics_for_day) / len(prod_metrics_for_day)
+        )
+        reflections_in_month[day_idx]["prod_lvl"] = day_avg_productivity
+
+    month_str = arbitrary_day_in_month.strftime("%B")
+    start_of_month_offset = first_of_month.weekday()
+
+    return dict(
+        reflections=reflections_in_month,
+        start_of_month_offset=start_of_month_offset,
+        month=month_str,
+    )
+
+
+@action("profile")
+@action.uses("profile.html", db, auth.user, session, url_signer)
+def profile():
+    get_reflections_url = URL("get_reflections", signer=url_signer)
+    # print(get_reflections_url)
+    return dict(get_reflections_url=get_reflections_url)
 
 @action('submit_journal_entry', method=["POST"])
 @action.uses(db, auth.user, url_signer.verify())
