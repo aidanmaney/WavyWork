@@ -36,7 +36,7 @@ let init = (app) => {
         reflection_efficiency: 1,
         reflections_available: false,
         reflections_done: false,
-        TEST_current_reflections: []
+        reflection_journal: "",
         // END REFLECTION DATA
     };    
     
@@ -112,6 +112,9 @@ let init = (app) => {
         } else {
             app.vue.reflections_done = true;
             app.vue.reflection_modal_tasks = [];
+            let today = new Date().toLocaleDateString();
+            document.getElementById("journal_modal").classList.add("is-active");
+            document.getElementById("journal_modal_title").innerHTML += today;
         }
     }
 
@@ -181,12 +184,17 @@ let init = (app) => {
         let time = today.getHours();
         console.log(time)
         axios.get(check_for_submitted_reflections_url).then( (res) => {
-            app.vue.TEST_current_reflections = res.data.todays_reflections
             if ((time >= 18 || time < 8) && res.data.todays_reflections.length <= 0) {
                 app.vue.reflections_available = true;
             } else {
                 app.vue.reflections_available = false;
             }
+        })
+    }
+
+    app.submit_journal_entry = () => {
+        axios.post(submit_journal_entry_url, {entry: app.vue.reflection_journal}).then( () => {
+            app.vue.reflection_journal = "";
         })
     }
 
@@ -196,6 +204,7 @@ let init = (app) => {
         add_task: app.add_task,
         get_active_tasks: app.get_active_tasks,
         submit_task_reflection: app.submit_task_reflection,
+        submit_journal_entry: app.submit_journal_entry,
         search: app.search,
         clear: app.clear,
         add_to_group: app.add_to_group,

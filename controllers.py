@@ -42,7 +42,8 @@ def index():
         get_active_tasks_url = URL('get_active_tasks', signer=url_signer),
         submit_task_reflection_url = URL('submit_task_reflection', signer=url_signer),
         get_users_url = URL('get_users', signer=url_signer),
-        check_for_submitted_reflections_url = URL('check_for_submitted_reflections', signer=url_signer)
+        check_for_submitted_reflections_url = URL('check_for_submitted_reflections', signer=url_signer),
+        submit_journal_entry_url = URL('submit_journal_entry', signer=url_signer)
     )
 
 
@@ -103,6 +104,15 @@ def submit_task_reflection():
     return dict(id=id)
 
 
+@action('submit_journal_entry', method=["POST"])
+@action.uses(db, auth.user, url_signer.verify())
+def submit_journal_entry():
+    id = db.daily_journal.insert(
+        entry = request.json.get("entry")
+    )
+    return dict(id=id)
+
+
 @action('check_for_submitted_reflections')
 @action.uses(db, auth.user, url_signer.verify())
 def check_for_submitted_reflections():
@@ -120,6 +130,12 @@ def check_for_submitted_reflections():
 # If instead I wanted to access the time the reflection was created, is ask for row.task_reflections.day
 # Below is another example that gets all in progress kanban cards that are associated with the logged in user
 
-#test_query = db((db.tasks.created_by == get_user_id()) &
-#                (db.kanban_cards.task_id == db.tasks.id) &
-#                (db.kanban_cards.column == "in_progress")).select()
+# test_query = db((db.tasks.created_by == get_user_id()) &
+#                 (db.kanban_cards.task_id == db.tasks.id) &
+#                 (db.kanban_cards.column == "in_progress")).select()
+
+# all_tasks = db((db.tasks.created_by == get_user_id()) | 
+#              ( (db.tasks.created_by != get_user_id()) &
+#                (db.groups.members.contains(get_user_id())) &
+#                (db.groups.id == db.tasks.id) )
+#                )
