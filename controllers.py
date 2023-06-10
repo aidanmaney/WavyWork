@@ -34,7 +34,7 @@ import datetime
 from .models import get_user_email, get_user_id, get_time, get_today
 import random
 from itertools import groupby
-from .dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta
 import math
 
 url_signer = URLSigner(session)
@@ -220,7 +220,7 @@ def check_for_submitted_reflections():
 
     print(todays_reflections)
     return dict(todays_reflections=todays_reflections)
-    )
+    
 
 @action("get_tasks")
 @action.uses(db, auth.user, url_signer.verify())
