@@ -410,100 +410,35 @@
 
 
 
-  <section class="section">
-    <div class="container">
-      <div class="columns is-centered">
-        <div class="column is-four-fifths">
-          <table class="table is-no-lines is-fullwidth">
-            <thead>
-              <tr>
-                <th>{{today}}</th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th>{{twoWeeksLater}}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div class="timeline">
-                    <div class="timeline-circle-grey"></div>
-                    <div class="timeline-circle-green"></div>
-                  </div>
-                </td>
 
-              </tr>
-            </tbody>
-            <!-- <tbody>
-              <tr> 
-                  <div class="container">
-                    <div class="timeline">
-                      <div class="timeline-circle-grey"></div>
-                      <div class="timeline-circle-green"></div>
-                    </div>
-                  </div>
-              </tr>
-            </tbody> -->
-            
-          </table>
+  <!-- Timeline & Button for each task -->
+  <div class="columns is-centered">
+    <div class="column is-three-quarters">
+      <div class="columns is-centered">
+        <div class="column is-1">
+          <b>
+            {{today}}
+          </b>
+        </div>
+        <div class="column"><!-- AUTO --></div>
+        <div class="column is-1">
+          <b>
+            {{twoWeeksLater}}
+          </b>
         </div>
       </div>
-    </div>
-  </section>
-  ================================
-  <!-- I THINK THIS IS BEST WAY -->
-<div class="columns is-centered">
-  <div class="column is-three-quarters">
-    <div class="columns is-centered">
-      <div class="column is-1">
-        {{today}}
-      </div>
-      <div class="column"><!-- AUTO --></div>
-      <div class="column is-1">{{twoWeeksLater}}</div>
-    </div>
-    <div class="container">
-      <div class="timeline">
-        <div class="timeline-circle-green"></div>
-        <div class="timeline-circle-green"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-  <div class="columns is-centered">
-    <div class="column is-four-fifths">
-      <div class="column is is-one-fifth">
-        <button class="button is-danger">
-          Task 1
+      <div v-for="task,i in sub_tasks">
+        <button class="button is-success">
+          Task {{i+1}}
         </button>
-      </div>
-      <div class="column">
-        <div class="container">
-          <div class="timeline">
-            <div class="timeline-circle-green"></div>
-            <div class="timeline-circle-green"></div>
+        <div class="timeline">
+          <div v-for="subtask in task">
+            <div v-if="subtask['is_complete']">
+              <div class="timeline-circle-green"></div>
+            </div>
+            <div v-else>
+              <div class="timeline-circle-grey"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -512,22 +447,14 @@
 
 
 
+  
+</div>
+
+
+
   <!-- TIMELINE -->
 
-	<!-- <div class="columns">
-		<div class="column is-one-fifth p-6">
-			<div class="button-column">
-				<div v-for="(task, index) in sub_tasks">
-					<button class="button is-primary">
-					Task {{index+1}}
-					</button>
-				</div>
-
-			</div>
-		</div> -->
-
-		<div class="column is-one-fifth p-3">
-			<!-- Iterate over each task for user, and create timeline for each task -->
+		<!-- <div class="column is-one-fifth p-3">
 			<div v-for="task in sub_tasks">
 				<div class="container">
 					<div class="timeline">
@@ -544,10 +471,9 @@
 			</div>
 
 		</div>
-	</div>
+	</div> -->
 
 
-</div>
 
 [[block page_scripts]]
 <!-- Loads the index-specific js for Vue -->
