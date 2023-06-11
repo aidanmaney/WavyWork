@@ -94,6 +94,18 @@
 	}
 </style>
 
+<style>
+  .timeline-table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .timeline-table th,
+  .timeline-table td {
+    padding: 10px;
+    text-align: center;
+  }
+</style>
 
 
 
@@ -420,57 +432,83 @@
                 <th></th>
                 <th></th>
                 <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
                 <th>{{twoWeeksLater}}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>
-                  <tr>
-                    <button class="button is-link">
-                      Task
-                    </button>
-                  </tr>
+                  <div class="timeline">
+                    <div class="timeline-circle-grey"></div>
+                    <div class="timeline-circle-green"></div>
+                  </div>
+                </td>
 
-                  
+              </tr>
+            </tbody>
+            <!-- <tbody>
+              <tr> 
                   <div class="container">
                     <div class="timeline">
                       <div class="timeline-circle-grey"></div>
                       <div class="timeline-circle-green"></div>
                     </div>
                   </div>
-                </td>
               </tr>
-            </tbody>
+            </tbody> -->
+            
           </table>
         </div>
       </div>
     </div>
   </section>
+  ================================
+  <!-- I THINK THIS IS BEST WAY -->
+<div class="columns is-centered">
+  <div class="column is-three-quarters">
+    <div class="columns is-centered">
+      <div class="column is-1">
+        {{today}}
+      </div>
+      <div class="column"><!-- AUTO --></div>
+      <div class="column is-1">{{twoWeeksLater}}</div>
+    </div>
+    <div class="container">
+      <div class="timeline">
+        <div class="timeline-circle-green"></div>
+        <div class="timeline-circle-green"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
-
-
-  <!-- <table class="table is-centered">
-    <thead>
-      <tr>
-        <th>{{today}}</th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th>{{twoWeeksLater}}</th>
-      </tr>
-    </thead>
-  </table> -->
-
+  <div class="columns is-centered">
+    <div class="column is-four-fifths">
+      <div class="column is is-one-fifth">
+        <button class="button is-danger">
+          Task 1
+        </button>
+      </div>
+      <div class="column">
+        <div class="container">
+          <div class="timeline">
+            <div class="timeline-circle-green"></div>
+            <div class="timeline-circle-green"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -487,7 +525,6 @@
 
 			</div>
 		</div> -->
-
 
 		<div class="column is-one-fifth p-3">
 			<!-- Iterate over each task for user, and create timeline for each task -->
