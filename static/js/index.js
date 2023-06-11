@@ -38,6 +38,22 @@ let init = (app) => {
         reflections_done: false,
         reflection_journal: "",
         // END REFLECTION DATA
+
+        // TIMELINE DATA
+        next_10_days: [],
+        all_user_tasks: [],
+        // END TIMELINE DATA
+
+        // EXPANDED TASK VIEW DATA
+        current_task: null,
+        task_view_subtasks: [],
+        task_view_group_members: [],
+        task_view_label: "",
+        task_view_description: "",
+        task_view_is_group: "",
+        is_adding_subtask: false,
+        new_subtask_description: "",
+        // END EXPANDED TASK VIEW DATA
     };    
     
     app.enumerate = (a) => {
@@ -198,10 +214,86 @@ let init = (app) => {
         })
     }
 
+    app.toggle_substask_complete = (t_idx) => {
+        app.vue.task_view_subtasks[t_idx].is_complete = !app.vue.task_view_subtasks[t_idx].is_complete;
+        //Need to reflect this in backend once Evin merges
+    }
+
+    app.add_subtask = () => {
+        app.vue.task_view_subtasks.push({"is_complete": false, "description": app.vue.new_subtask_description});
+        app.enumerate(app.vue.task_view_subtasks);
+        app.vue.is_adding_subtask = false;
+        app.vue.new_subtask_description = "";
+    }
+
     app.get_next_10_days = () => {
-        let date = new Date()
-        let format_date = date.toDateString().slice(3, -5)
-        console.log(format_date)
+        let date = new Date();
+        let format_date;
+        for (let i = 0; i < 10; i++) {
+            format_date = date.toDateString().slice(3, -5);
+            app.vue.next_10_days.push(format_date)
+            date.setDate(date.getDate() + 1);
+        }
+        console.log(app.vue.next_10_days);
+    }
+
+    app.days_between_dates = (d1, d2) => {
+        return Math.round((d2.getTime() - d1.getTime()) / (1000 * 3600 * 24)) + 1;
+    }
+
+    app.apply_date_data_to_tasks = (all_tasks) => {
+        date_info_for_tasks = []
+
+        let days_between;
+        let start_date;
+        let end_date;
+        let start_relative_to_today;
+        let end_relative_to_today;
+        let column_class;
+
+        for (task of all_tasks) {
+            start_date = new Date(task.start_time)
+            end_date = new Date(task.end_time)
+            today = new Date()
+            days_between = app.days_between_dates(start_date, end_date)
+            start_relative_to_today = app.days_between_dates(today, start_date)
+            end_relative_to_today = app.days_between_dates(today, end_date)
+            overflows_left = start_relative_to_today < 0 ? true : false
+            overflows_right = end_relative_to_today > 10 ? true : false
+
+            if (overflows_left && overflows_right) {
+                column_class = "is-10"
+            }
+            else if (overflows_left) {
+                column_class = "is-" + (end_relative_to_today + 1)
+            }
+            else if (overflows_right) {
+                column_class = "is-" + ((days_between - start_relative_to_today) + 1)
+            }
+            else {
+                column_class = "is-" + days_between
+            }
+
+            date_info_for_tasks.push({
+                days_between: days_between,
+                start_relative_to_today: start_relative_to_today >= 0 ? start_relative_to_today : 0,
+                end_relative_to_today: end_relative_to_today,
+                overflows_left: overflows_left,
+                overflows_right: overflows_right,
+                column_class: column_class
+            });
+        }
+
+        let k = 0;
+        all_tasks.map((e) => {Vue.set(e, 'date_data', date_info_for_tasks[k++]);})
+        return all_tasks
+    }
+
+    app.get_all_users_tasks = () => {
+        axios.get(get_all_users_tasks_url).then( (res) => {
+            console.log("all tasks", res.data.all_users_tasks);
+            app.vue.all_user_tasks = app.apply_date_data_to_tasks(app.enumerate(res.data.all_users_tasks))
+        });
     }
 
     // This contains all the methods.
@@ -214,7 +306,9 @@ let init = (app) => {
         search: app.search,
         clear: app.clear,
         add_to_group: app.add_to_group,
-        remove_from_group: app.remove_from_group
+        remove_from_group: app.remove_from_group,
+        toggle_substask_complete: app.toggle_substask_complete,
+        add_subtask: app.add_subtask
     };
 
     // This creates the Vue instance.
@@ -228,6 +322,8 @@ let init = (app) => {
     app.init = () => {
         app.get_users();
         app.check_if_reflections_available();
+        app.get_next_10_days();
+        app.get_all_users_tasks();
     };
 
     // Call to the initializer.

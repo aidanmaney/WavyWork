@@ -62,6 +62,7 @@ def index():
             "check_for_submitted_reflections", signer=url_signer
         ),
         submit_journal_entry_url=URL("submit_journal_entry", signer=url_signer),
+        get_all_users_tasks_url=URL("get_all_users_tasks", signer=url_signer)
     )
 
 
@@ -79,6 +80,7 @@ def get_users():
 @action("add_task", method=["GET", "POST"])
 @action.uses(db, url_signer.verify(), auth.user)
 def add_task():
+    group_id = None
     if request.json.get("is_group") and len(request.json.get("members")) > 0:
         members = request.json.get("members") + [get_user_id()]
         group_id = db.groups.insert(
@@ -98,7 +100,7 @@ def add_task():
         is_group=request.json.get("is_group"),
         start_time=datetime_start_time,
         end_time=datetime_end_time,
-        group_id=group_id,
+        group_id=group_id
     )
     return dict(id=id, created_by=get_user_id())
 
@@ -280,3 +282,20 @@ def update_kanban():
     db(db.kanban_cards.task_id == task_id).validate_and_update(column=new_column)
 
     return dict()
+
+@action("get_all_users_tasks")
+@action.uses(db, auth.user, url_signer.verify())
+def get_all_users_tasks():
+    tasks_by_user = db(db.tasks.created_by == get_user_id()).select().as_list()
+
+    tasks_from_groups_tuple = db((db.tasks.created_by != get_user_id()) &
+                                (db.groups.members.contains(get_user_id())) &
+                                (db.groups.id == db.tasks.group_id)).select().as_list()
+    
+    tasks_from_group = [row["tasks"] for row in tasks_from_groups_tuple]
+    
+    print(tasks_by_user)
+    print(tasks_from_group)
+    all_users_tasks = tasks_by_user + tasks_from_group
+    return dict(all_users_tasks=all_users_tasks)
+    
