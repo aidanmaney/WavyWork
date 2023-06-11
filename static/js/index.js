@@ -198,6 +198,12 @@ let init = (app) => {
         })
     }
 
+    app.get_next_10_days = () => {
+        let date = new Date()
+        let format_date = date.toDateString().slice(3, -5)
+        console.log(format_date)
+    }
+
     // This contains all the methods.
     app.methods = {
         set_adding_task: app.set_adding_task,

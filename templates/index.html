@@ -9,13 +9,22 @@
 </style>
 
 <div class="section" id="vue-target" v-cloak>
-  <button class="button is-success is-outlined" @click="set_adding_task(true)">
-    <span class="icon is-small">
-      <i class="fa fa-check"></i>
-    </span>
-    <span>Add Task</span>
-  </button>
+  <div class="columns">
+    <div class="column is-2">
+      <button
+        class="button is-success is-outlined"
+        @click="set_adding_task(true)"
+      >
+        <span class="icon is-small">
+          <i class="fa fa-check"></i>
+        </span>
+        <span>Add Task</span>
+      </button>
+    </div>
+    <div class="column is-1" v-for="d in next_10_days">{{d}}</div>
+  </div>
 
+  <!--
   <button
     class="button is-warning is-outlined"
     @click="get_active_tasks"
@@ -26,6 +35,13 @@
     </span>
     <span>Daily Reflections</span>
   </button>
+-->
+
+  <!------------------------------------------------>
+  <!------------------------------------------------>
+  <!-------------------- MODALS -------------------->
+  <!------------------------------------------------>
+  <!------------------------------------------------>
 
   <div id="add_task_modal" class="modal">
     <div class="modal-background"></div>
