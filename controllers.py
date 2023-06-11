@@ -25,17 +25,28 @@ session, db, T, auth, and tempates are examples of Fixtures.
 Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app will result in undefined behavior
 """
 
+import datetime
+import random
+import math
+from .dateutil.relativedelta import relativedelta
+
 from py4web import action, request, abort, redirect, URL
-from yatl.helpers import A
+from itertools import groupby
 from yatl.helpers import *
-from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
+from .common import (
+    db,
+    session,
+    T,
+    cache,
+    auth,
+    logger,
+    authenticated,
+    unauthenticated,
+    flash,
+)
 from py4web.utils.url_signer import URLSigner
 import datetime
 from .models import get_user_email, get_user_id, get_time, get_today
-import random
-from itertools import groupby
-from dateutil.relativedelta import relativedelta
-import math
 
 url_signer = URLSigner(session)
 
@@ -134,6 +145,7 @@ def get_reflections():
     year = arbitrary_day_in_month.year
 
     month_str = arbitrary_day_in_month.strftime("%B")
+    year_str = arbitrary_day_in_month.strftime("%Y")
 
     if last_of_month > today:
         last_of_month = today
@@ -146,6 +158,8 @@ def get_reflections():
         db(
             (db.task_reflections.day >= first_of_month)
             & (db.task_reflections.day <= last_of_month)
+            & (db.tasks.created_by == get_user_id())
+            & (db.task_reflections.task_id == db.tasks.id)
         )
         .select(
             db.task_reflections.id,
@@ -187,6 +201,7 @@ def get_reflections():
         reflections=reflections_in_month,
         start_of_month_offset=start_of_month_offset,
         month=month_str,
+        year=year_str,
     )
 
 
