@@ -44,6 +44,7 @@ import datetime
 from .models import get_user_email, get_user_id, get_time, get_today
 import random
 from itertools import groupby
+
 import dateutil.relativedelta as relativedelta
 import math
 
@@ -231,7 +232,6 @@ def check_for_submitted_reflections():
 
     print(todays_reflections)
     return dict(todays_reflections=todays_reflections)
-
 
 @action("get_tasks")
 @action.uses(db, auth.user, url_signer.verify())
