@@ -17,6 +17,7 @@ const init = (app) => {
         week5: [],
         week6: [],
         month: "",
+        journal_entry: "",
         year: "",
     };
 
@@ -76,6 +77,13 @@ const init = (app) => {
             app.get_reflections();
         }
     };
+  
+    app.open_journal_modal = (day) => {
+        axios.post(get_journal_entry_by_day_url, {day:day}).then( (res) => {
+            app.vue.journal_entry = res.data.entry
+            document.getElementById("calendar_journal_modal").classList.add("is-active");
+        })
+    }
 
     app.goCurrentMonth = () => {
         app.data.prevMonthOffset = 0;
@@ -87,6 +95,7 @@ const init = (app) => {
         goBackMonth: app.goBackMonth,
         goCurrentMonth: app.goCurrentMonth,
         get_reflections: app.get_reflections,
+        open_journal_modal: app.open_journal_modal
     };
 
     app.vue = new Vue({

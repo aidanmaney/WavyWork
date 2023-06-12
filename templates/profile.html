@@ -1,23 +1,23 @@
 [[extend 'layout.html']]
 
 <style>
-    [v-cloak] {
-        display: none;
-    }
-    .square {
-        width: 5em;
-        height: 5em;
-    }
-    .table.is-borderless td,
+  [v-cloak] {
+    display: none;
+  }
+  .square {
+    width: 5em;
+    height: 5em;
+  }
+  .table.is-borderless td,
 	/* References https://github.com/jmaczan/bulma-helpers/issues/3 */
 	.table.is-borderless th {
-        border: 0;
-    }
-    /* References https://github.com/jgthms/bulma/issues/1513 */
-    .table {
-        margin-left: auto;
-        margin-right: auto;
-    }
+    border: 0;
+  }
+  /* References https://github.com/jgthms/bulma/issues/1513 */
+  .table {
+    margin-left: auto;
+    margin-right: auto;
+  }
 </style>
 
 <div class="section" id="vue-target">
@@ -42,12 +42,14 @@
                     <td v-for="day in week">
                         <div
                             :class="[
+
                                         {'has-background-danger' : day.prod_lvl == 1}, 
                                         {'has-background-warning': day.prod_lvl == 2}, 
                                         {'has-background-success': day.prod_lvl == 3},
                                         {'is-invisible': day.prod_lvl == null},
                                     ]"
                             class="block button square m-2"
+                            @click="open_journal_modal(day.day_datetime)"
                         >
                             <div class="container">
                                 <span class="title"> {{day.day}} </span>
@@ -89,10 +91,28 @@
         </div>
     </nav>
 
-    [[block page_scripts]]
-    <script>
-        let get_reflections_url = "[[=XML(get_reflections_url)]]";
-    </script>
-    <script src="js/profile.js"></script>
-    [[end]]
+  <div id="calendar_journal_modal" class="modal">
+    <div
+      class="modal-background"
+      onclick="this.closest('.modal').classList.remove('is-active');"
+    ></div>
+    <div class="modal-content">
+      <div class="box">
+        <p>{{journal_entry}}</p>
+      </div>
+    </div>
+    <button
+      class="modal-close is-large"
+      aria-label="close"
+      onclick="this.closest('.modal').classList.remove('is-active');"
+    ></button>
+  </div>
+
+  [[block page_scripts]]
+  <script>
+    let get_reflections_url = "[[=XML(get_reflections_url)]]";
+    let get_journal_entry_by_day_url = "[[=XML(get_journal_entry_by_day_url)]]";
+  </script>
+  <script src="js/profile.js"></script>
+  [[end]]
 </div>
