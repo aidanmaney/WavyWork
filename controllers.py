@@ -373,7 +373,7 @@ def get_journal_entry_by_day():
     entry = "" if len(entries) <= 0 else entries[0]["entry"]
     return dict(entry=entry)
   
- @action('get_active_tasks')
+@action('get_active_tasks')
 @action.uses(db, url_signer.verify(), auth.user)
 def get_active_tasks():
     active_user_tasks = db((db.tasks.start_time <= get_today()) &
