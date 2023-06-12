@@ -45,7 +45,7 @@ from .models import get_user_email, get_user_id, get_time, get_today
 import random
 from itertools import groupby
 
-import dateutil.relativedelta as relativedelta
+from dateutil.relativedelta import relativedelta
 import math
 
 url_signer = URLSigner(session)
@@ -197,6 +197,8 @@ def get_reflections():
         reflections_in_month[day_idx]["prod_lvl"] = day_avg_productivity
 
     start_of_month_offset = first_of_month.weekday()
+
+    print(reflections_in_month)
 
     return dict(
         reflections=reflections_in_month,
