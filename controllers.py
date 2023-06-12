@@ -51,9 +51,15 @@ import math
 url_signer = URLSigner(session)
 
 
+def enforce_account():
+    if not get_user_id():
+        redirect("auth/login")
+
+
 @action("index")
 @action.uses("index.html", db, auth, auth.user, url_signer)
 def index():
+    enforce_account()
     return dict(
         add_task_url=URL("add_task", signer=url_signer),
         get_active_tasks_url=URL("get_active_tasks", signer=url_signer),
@@ -208,13 +214,23 @@ def get_reflections():
     )
 
 
+@action("about")
+@action.uses("about.html", auth.user)
+def about():
+    return dict()
+
+
 @action("profile")
 @action.uses("profile.html", db, auth.user, session, url_signer)
 def profile():
+    enforce_account()
     get_reflections_url = URL("get_reflections", signer=url_signer)
     get_journal_entry_by_day_url = URL("get_journal_entry_by_day", signer=url_signer)
     # print(get_reflections_url)
-    return dict(get_reflections_url=get_reflections_url, get_journal_entry_by_day_url=get_journal_entry_by_day_url)
+    return dict(
+        get_reflections_url=get_reflections_url,
+        get_journal_entry_by_day_url=get_journal_entry_by_day_url,
+    )
 
 
 @action("submit_journal_entry", method=["POST"])
@@ -323,6 +339,7 @@ def get_tasks():
 @action("kanban")
 @action.uses("kanban.html", db, auth.user, url_signer)
 def kanban():
+    enforce_account()
     return dict(
         get_tasks_url=URL("get_tasks", signer=url_signer),
         update_kanban_url=URL("update_kanban", signer=url_signer),
@@ -339,18 +356,24 @@ def update_kanban():
     db(db.kanban_cards.task_id == task_id).validate_and_update(column=new_column)
 
     return dict()
-  
- 
-@action('get_journal_entry_by_day', method=["POST"])
+
+
+@action("get_journal_entry_by_day", method=["POST"])
 @action.uses(db, auth.user)
 def get_journal_entry_by_day():
     print(request.json.get("day"))
     journal_day = request.json.get("day")
     journal_datetime = datetime.datetime.strptime(journal_day, "%Y-%m-%d")
     print(f"**********journal_datetime: {journal_datetime} **********")
-    entries = db((db.daily_journal.user == get_user_id()) &
-               (db.daily_journal.day == journal_datetime)).select(db.daily_journal.entry).as_list()
-    
+    entries = (
+        db(
+            (db.daily_journal.user == get_user_id())
+            & (db.daily_journal.day == journal_datetime)
+        )
+        .select(db.daily_journal.entry)
+        .as_list()
+    )
+
     print(f"*********{entries}*********")
     entry = "" if len(entries) <= 0 else entries[0]["entry"]
     return dict(entry=entry)
