@@ -17,8 +17,8 @@ const init = (app) => {
         week5: [],
         week6: [],
         month: "",
-
         journal_entry: "",
+        year: "",
     };
 
     app.enumerate = (a) => {
@@ -62,6 +62,7 @@ const init = (app) => {
                 app.data.week6 = app.data.reflection_blocks.slice(35);
 
                 app.data.month = response.data.month;
+                app.data.year = response.data.year;
             });
     };
 
@@ -76,7 +77,7 @@ const init = (app) => {
             app.get_reflections();
         }
     };
-
+  
     app.open_journal_modal = (day) => {
         axios.post(get_journal_entry_by_day_url, {day:day}).then( (res) => {
             app.vue.journal_entry = res.data.entry
@@ -84,9 +85,15 @@ const init = (app) => {
         })
     }
 
+    app.goCurrentMonth = () => {
+        app.data.prevMonthOffset = 0;
+        app.get_reflections();
+    };
+
     app.methods = {
         goForwardMonth: app.goForwardMonth,
         goBackMonth: app.goBackMonth,
+        goCurrentMonth: app.goCurrentMonth,
         get_reflections: app.get_reflections,
         open_journal_modal: app.open_journal_modal
     };
@@ -102,6 +109,7 @@ const init = (app) => {
     app.init = () => {
         app.data.prevMonthOffset = 0;
         app.data.month = "";
+        app.data.year = "";
         app.data.reflection_blocks = [];
         app.get_reflections();
     };
