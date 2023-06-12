@@ -21,17 +21,12 @@ The path follows the bottlepy syntax.
 @action.uses(auth.user)       indicates that the action requires a logged in user
 @action.uses(auth)            indicates that the action requires the auth object
 
-session, db, T, auth, and templates are examples of Fixtures.
+session, db, T, auth, and tempates are examples of Fixtures.
 Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app will result in undefined behavior
 """
 
-import datetime
-import random
-import math
-from .dateutil.relativedelta import relativedelta
-
 from py4web import action, request, abort, redirect, URL
-from itertools import groupby
+from yatl.helpers import A
 from yatl.helpers import *
 from .common import (
     db,
@@ -47,6 +42,11 @@ from .common import (
 from py4web.utils.url_signer import URLSigner
 import datetime
 from .models import get_user_email, get_user_id, get_time, get_today
+import random
+from itertools import groupby
+
+import dateutil.relativedelta as relativedelta
+import math
 
 url_signer = URLSigner(session)
 
@@ -62,7 +62,7 @@ def index():
         check_for_submitted_reflections_url=URL(
             "check_for_submitted_reflections", signer=url_signer
         ),
-        submit_journal_entry_url=URL("submit_journal_entry", signer=url_signer)
+        submit_journal_entry_url=URL("submit_journal_entry", signer=url_signer),
     )
 
 
@@ -206,16 +206,14 @@ def get_reflections():
 @action.uses("profile.html", db, auth.user, session, url_signer)
 def profile():
     get_reflections_url = URL("get_reflections", signer=url_signer)
-    get_journal_entry_by_day_url=URL("get_journal_entry_by_day", signer=url_signer)
     # print(get_reflections_url)
-    return dict(get_reflections_url=get_reflections_url, get_journal_entry_by_day_url=get_journal_entry_by_day_url)
+    return dict(get_reflections_url=get_reflections_url)
 
 
 @action("submit_journal_entry", method=["POST"])
 @action.uses(db, auth.user, url_signer.verify())
 def submit_journal_entry():
-    day = request.data.day or get_today()
-    id = db.daily_journal.insert(entry=request.json.get("entry"), day=day)
+    id = db.daily_journal.insert(entry=request.json.get("entry"))
     return dict(id=id)
 
 
@@ -235,7 +233,106 @@ def check_for_submitted_reflections():
     print(todays_reflections)
     return dict(todays_reflections=todays_reflections)
 
+@action("get_tasks")
+@action.uses(db, auth.user, url_signer.verify())
+def get_tasks():
+    board_query = request.params.get("board")
 
+    personal_todo_query = (
+        (db.kanban_cards.task_id == db.tasks.id)
+        & (db.tasks.categorization == board_query)
+        & (db.kanban_cards.column == "todo")
+        & (db.tasks.created_by == get_user_id())
+    )
+    group_todo_query = (
+        (db.kanban_cards.task_id == db.tasks.id)
+        & (db.tasks.categorization == board_query)
+        & (db.kanban_cards.column == "todo")
+        & (db.tasks.created_by != get_user_id())
+        & (db.groups.members.contains(get_user_id()))
+        & (db.groups.id == db.tasks.group_id)
+    )
+    todo_tasks = db(personal_todo_query | group_todo_query).select().as_list()
+
+    personal_inprog_query = (
+        (db.kanban_cards.task_id == db.tasks.id)
+        & (db.tasks.categorization == board_query)
+        & (db.kanban_cards.column == "in_progress")
+        & (db.tasks.created_by == get_user_id())
+    )
+    group_inprog_query = (
+        (db.kanban_cards.task_id == db.tasks.id)
+        & (db.tasks.categorization == board_query)
+        & (db.kanban_cards.column == "in_progress")
+        & (db.tasks.created_by != get_user_id())
+        & (db.groups.members.contains(get_user_id()))
+        & (db.groups.id == db.tasks.group_id)
+    )
+    in_progress_tasks = (
+        db(personal_inprog_query | group_inprog_query).select().as_list()
+    )
+
+    personal_stuck_query = (
+        (db.kanban_cards.task_id == db.tasks.id)
+        & (db.tasks.categorization == board_query)
+        & (db.kanban_cards.column == "stuck")
+        & (db.tasks.created_by == get_user_id())
+    )
+    group_stuck_query = (
+        (db.kanban_cards.task_id == db.tasks.id)
+        & (db.tasks.categorization == board_query)
+        & (db.kanban_cards.column == "stuck")
+        & (db.tasks.created_by != get_user_id())
+        & (db.groups.members.contains(get_user_id()))
+        & (db.groups.id == db.tasks.group_id)
+    )
+    stuck_tasks = db(personal_stuck_query | group_stuck_query).select().as_list()
+
+    personal_done_query = (
+        (db.kanban_cards.task_id == db.tasks.id)
+        & (db.tasks.categorization == board_query)
+        & (db.kanban_cards.column == "done")
+        & (db.tasks.created_by == get_user_id())
+    )
+    group_done_query = (
+        (db.kanban_cards.task_id == db.tasks.id)
+        & (db.tasks.categorization == board_query)
+        & (db.kanban_cards.column == "done")
+        & (db.tasks.created_by != get_user_id())
+        & (db.groups.members.contains(get_user_id()))
+        & (db.groups.id == db.tasks.group_id)
+    )
+    done_tasks = db(personal_done_query | group_done_query).select().as_list()
+
+    return dict(
+        todo_tasks=todo_tasks,
+        in_progress_tasks=in_progress_tasks,
+        stuck_tasks=stuck_tasks,
+        done_tasks=done_tasks,
+    )
+
+
+@action("kanban")
+@action.uses("kanban.html", db, auth.user, url_signer)
+def kanban():
+    return dict(
+        get_tasks_url=URL("get_tasks", signer=url_signer),
+        update_kanban_url=URL("update_kanban", signer=url_signer),
+    )
+
+
+@action("update_kanban", method="POST")
+@action.uses(db, auth.user, url_signer.verify())
+def update_kanban():
+    task_id = request.params.get("task_id")
+    new_column = request.params.get("new_column")
+
+    kanban_task = db.kanban_cards[task_id]
+    db(db.kanban_cards.task_id == task_id).validate_and_update(column=new_column)
+
+    return dict()
+  
+  
 @action('get_journal_entry_by_day', method=["POST"])
 @action.uses(db, auth.user)
 def get_journal_entry_by_day():
@@ -249,22 +346,3 @@ def get_journal_entry_by_day():
     print(f"*********{entries}*********")
     entry = "" if len(entries) <= 0 else entries[0]["entry"]
     return dict(entry=entry)
-
-
-
-# NOTES ON JOIN QUERIES (like above)
-# This is technically a query on two separate db tables, so rows will have the data from both tables include
-# This means that, in this case, each element in todays_reflections will have access to all task attributes and all task_reflection attributes
-# For example, if I wanted the creator, that is stored in the tasks db, so I would write row.tasks.created_by
-# If instead I wanted to access the time the reflection was created, is ask for row.task_reflections.day
-# Below is another example that gets all in progress kanban cards that are associated with the logged in user
-
-# test_query = db((db.tasks.created_by == get_user_id()) &
-#                 (db.kanban_cards.task_id == db.tasks.id) &
-#                 (db.kanban_cards.column == "in_progress")).select()
-
-# all_tasks = db((db.tasks.created_by == get_user_id()) |
-#              ( (db.tasks.created_by != get_user_id()) &
-#                (db.groups.members.contains(get_user_id())) &
-#                (db.groups.id == db.tasks.id) )
-#                )

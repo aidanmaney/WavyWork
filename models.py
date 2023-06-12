@@ -131,6 +131,6 @@ db.define_table(
     Field("entry"),
 )
 
-#populate_sample_DB()
+populate_sample_DB()
 
 db.commit()

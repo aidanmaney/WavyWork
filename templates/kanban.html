@@ -1,0 +1,180 @@
+[[extend 'layout.html']]
+
+<style>
+   .kanban_col {
+    height: 90vh;
+    overflow-y: scroll;
+   }
+
+   .kanban_title {
+      justify-content: center;
+   }
+   [v-cloak] {
+     display: none;
+    }
+</style>
+
+<section class="hero has-background-grey-light is-fullheight" id="vue-target" v-cloak>
+   <div class="hero-head">
+      <nav class="tabs is-boxed is-fullwidth is-large">
+         <div class="container">
+           <ul>
+             <li :class="{'is-active': current_board == 'personal'}" @click="set_board('personal')"><a>Personal</a></li>
+             <li :class="{'is-active': current_board == 'school'}" @click="set_board('school')"><a>School</a></li>
+             <li :class="{'is-active': current_board == 'work'}" @click="set_board('work')"><a>Work</a></li>
+           </ul>
+         </div>
+      </nav>
+      <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+   </div>
+   <div class="hero-body">
+      <div class="columns is-mobile is-variable is-4"  style="width: 100%">
+         <div class="column">
+            <h1 class="title kanban_title">To-Do</h1>
+            <div class="box kanban_col">
+              <div class="card has-background-success pt-3 pb-3 mb-3" v-if="show_new_column" @click="move_task_2('todo')">
+                <div class="card-content ">
+                  <p class="columns is-centered">
+                    Move here
+                  </p>
+                </div>
+              </div>
+
+               <div class="card block" v-for="obj in task_arrays['todo']">
+                  <header class="card-header">
+                    <p class="card-header-title">
+                      {{obj["tasks"]["label"]}}
+                    </p>
+                    <button class="card-header-icon" aria-label="more options" @click="move_task_1(obj._idx, obj.kanban_cards.column)">
+                      <span class="icon">
+                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                    </button>
+                  </header>
+                  <div class="card-content">
+                    <div class="content $card-content-padding">
+                      {{obj["tasks"]["description"]}}
+                      
+                      <br>
+                      <time>{{obj["tasks"]["start_time"]}} - {{obj["tasks"]["end_time"]}}</time>
+                    </div>
+                  </div>
+               </div>
+               
+
+            </div>
+         </div>
+         <div class="column">
+            <h1 class="title kanban_title">In Progress</h1>
+            <div class="box kanban_col">
+              <div class="card has-background-success pt-3 pb-3 mb-3" v-if="show_new_column" @click="move_task_2('in_progress')">
+                <div class="card-content">
+                  <p class="columns is-centered">
+                    Move here
+                  </p>
+                </div>
+              </div>
+              
+              <div class="card block" v-for="obj in task_arrays['in_progress']">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    {{obj["tasks"]["label"]}}
+                  </p>
+                  <button class="card-header-icon clickable" aria-label="more options" @click="move_task_1(obj._idx, obj.kanban_cards.column)">
+                    <span class="icon">
+                      <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </header>
+                <div class="card-content">
+                  <div class="content $card-content-padding">
+                    {{obj["tasks"]["description"]}}
+                    
+                    <br>
+                    <time>{{obj["tasks"]["start_time"]}} - {{obj["tasks"]["end_time"]}}</time>
+                  </div>
+                </div>
+             </div>
+
+            </div>
+         </div>
+         <div class="column">
+            <h1 class="title kanban_title">Stuck</h1>
+            <div class="box kanban_col">
+              <div class="card has-background-success pt-3 pb-3 mb-3" v-if="show_new_column" @click="move_task_2('stuck')">
+                <div class="card-content">
+                  <p class="columns is-centered">
+                    Move here
+                  </p>
+                </div>
+              </div>
+
+              <div class="card block" v-for="obj in task_arrays['stuck']">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    {{obj["tasks"]["label"]}}
+                  </p>
+                  <button class="card-header-icon" aria-label="more options" @click="move_task_1(obj._idx, obj.kanban_cards.column)">
+                    <span class="icon">
+                      <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </header>
+                <div class="card-content">
+                  <div class="content $card-content-padding">
+                    {{obj["tasks"]["description"]}}
+                    
+                    <br>
+                    <time>{{obj["tasks"]["start_time"]}} - {{obj["tasks"]["end_time"]}}</time>
+                  </div>
+                </div>
+             </div>
+
+             
+            </div>
+         </div>
+         <div class="column">
+            <h1 class="title kanban_title">Done</h1>
+            <div class="box kanban_col">
+              <div class="card has-background-success pt-3 pb-3 mb-3" v-if="show_new_column" @click="move_task_2('done')">
+                <div class="card-content">
+                  <p class="columns is-centered">
+                    Move here
+                  </p>
+                </div>
+              </div>
+              <div class="card block" v-for="obj in task_arrays['done']">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    {{obj["tasks"]["label"]}}
+                  </p>
+                  <button class="card-header-icon" aria-label="more options" @click="move_task_1(obj._idx, obj.kanban_cards.column)">
+                    <span class="icon">
+                      <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </header>
+                <div class="card-content">
+                  <div class="content $card-content-padding">
+                    {{obj["tasks"]["description"]}}
+                    
+                    <br>
+                    <time>{{obj["tasks"]["start_time"]}} - {{obj["tasks"]["end_time"]}}</time>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+         </div>
+         
+      </div>
+   <div class="hero-foot"></div>
+</section>
+
+[[block page_scripts]]
+<script>
+  let get_tasks_url = "[[=XML(get_tasks_url)]]";
+  let update_kanban_url = "[[=XML(update_kanban_url)]]";
+</script>
+<script src="../static/js/kanban.js"></script>
+[[end]]
