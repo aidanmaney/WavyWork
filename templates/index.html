@@ -495,7 +495,7 @@
                       <button
                         class="button is-rounded is-small"
                         :class="{'is-success': s.is_complete}"
-                        @click="toggle_substask_complete(s._idx)"
+                        @click="toggle_subtask_complete(s._idx)"
                       >
                         <span class="icon is-large">
                           <i class="fa fa-check"></i>
@@ -598,7 +598,8 @@
   let get_all_users_tasks_url = "[[=XML(get_all_users_tasks_url)]]";
   let get_task_subtasks_url = "[[=XML(get_task_subtasks_url)]]";
   let get_group_members_url = "[[=XML(get_group_members_url)]]";
-  let toggle_substask_complete_url = "[[=XML(toggle_substask_complete_url)]]";
+  let toggle_subtask_complete_url = "[[=XML(toggle_subtask_complete_url)]]";
+  let add_new_subtask_url = "[[=XML(add_new_subtask_url)]]";
 </script>
 
 <script src="js/index.js"></script>

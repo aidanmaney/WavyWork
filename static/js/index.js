@@ -45,6 +45,8 @@ let init = (app) => {
         // END TIMELINE DATA
 
         // EXPANDED TASK VIEW DATA
+        current_task: null,
+        task_view_task_id: 0,
         task_view_subtasks: [],
         task_view_group_members: [],
         task_view_label: "",
@@ -213,17 +215,28 @@ let init = (app) => {
         })
     }
 
-    app.toggle_substask_complete = (t_idx) => {
-        axios.post(toggle_substask_complete_url, {subtask_id: app.vue.task_view_subtasks[t_idx].id}).then( () => {
+    app.toggle_subtask_complete = (t_idx) => {
+        axios.post(toggle_subtask_complete_url, {subtask_id: app.vue.task_view_subtasks[t_idx].id}).then( () => {
             app.vue.task_view_subtasks[t_idx].is_complete = !app.vue.task_view_subtasks[t_idx].is_complete;
         });
     }
 
     app.add_subtask = () => {
-        app.vue.task_view_subtasks.push({"is_complete": false, "description": app.vue.new_subtask_description});
-        app.enumerate(app.vue.task_view_subtasks);
-        app.vue.is_adding_subtask = false;
-        app.vue.new_subtask_description = "";
+        axios.post(add_new_subtask_url, {
+            task_id: app.vue.task_view_task_id,
+            description: app.vue.new_subtask_description
+        }).then( (res) => {
+            app.vue.task_view_subtasks.push({
+                "id": res.data.id,
+                "task_id": app.vue.task_view_task_id, 
+                "description": app.vue.new_subtask_description,
+                "is_complete": false
+            });
+
+            app.enumerate(app.vue.task_view_subtasks);
+            app.vue.is_adding_subtask = false;
+            app.vue.new_subtask_description = "";
+        });
     }
 
     app.get_next_10_days = () => {
@@ -298,6 +311,8 @@ let init = (app) => {
 
     app.open_expanded_task_view = (t_idx) => {
         let expanded_task = app.vue.all_user_tasks[t_idx];
+        app.vue.task_view_task_id = expanded_task.id
+        app.vue.current_task = expanded_task;
         app.vue.task_view_label = expanded_task.label;
         app.vue.task_view_description = expanded_task.description;
         app.vue.task_view_is_group = expanded_task.is_group;
@@ -328,7 +343,7 @@ let init = (app) => {
         clear: app.clear,
         add_to_group: app.add_to_group,
         remove_from_group: app.remove_from_group,
-        toggle_substask_complete: app.toggle_substask_complete,
+        toggle_subtask_complete: app.toggle_subtask_complete,
         add_subtask: app.add_subtask,
         open_expanded_task_view: app.open_expanded_task_view
     };

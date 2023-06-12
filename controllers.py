@@ -65,7 +65,8 @@ def index():
         get_all_users_tasks_url=URL("get_all_users_tasks", signer=url_signer),
         get_task_subtasks_url = URL("get_task_subtasks", signer=url_signer),
         get_group_members_url = URL("get_group_members", signer=url_signer),
-        toggle_substask_complete_url = URL("toggle_substask_complete", signer=url_signer)
+        toggle_subtask_complete_url = URL("toggle_subtask_complete", signer=url_signer),
+        add_new_subtask_url = URL("add_new_subtask", signer=url_signer)
     )
 
 
@@ -349,11 +350,24 @@ def get_group_members():
 
     return dict(group_members=group_members)
 
-@action("toggle_substask_complete", method=["POST"])
+
+@action("toggle_subtask_complete", method=["POST"])
 @action.uses(db, auth.user, url_signer.verify())
 def toggle_substask_complete():
     subtask = db.subtasks[request.json.get("subtask_id")]
+    print(request.json.get("subtask_id"))
     print(subtask)
     new_complete = not subtask.is_complete
     db(db.subtasks.id == request.json.get("subtask_id")).update(is_complete=new_complete)
+
+
+@action("add_new_subtask", method=["POST"])
+@action.uses(db, auth.user, url_signer.verify())
+def add_new_subtask():
+    id = db.subtasks.insert(
+        task_id=request.json.get("task_id"),
+        description=request.json.get("description")
+    )
+
+    return dict(id=id)
     
