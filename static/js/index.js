@@ -45,7 +45,6 @@ let init = (app) => {
         // END TIMELINE DATA
 
         // EXPANDED TASK VIEW DATA
-        current_task: null,
         task_view_subtasks: [],
         task_view_group_members: [],
         task_view_label: "",
@@ -130,7 +129,7 @@ let init = (app) => {
             app.vue.reflection_modal_tasks = [];
             let today = new Date().toLocaleDateString();
             document.getElementById("journal_modal").classList.add("is-active");
-            document.getElementById("journal_modal_title").innerHTML += today;
+            document.getElementById("journal_modal_title").innerHTML = "Daily Reflection for " + today;
         }
     }
 
@@ -215,8 +214,9 @@ let init = (app) => {
     }
 
     app.toggle_substask_complete = (t_idx) => {
-        app.vue.task_view_subtasks[t_idx].is_complete = !app.vue.task_view_subtasks[t_idx].is_complete;
-        //Need to reflect this in backend once Evin merges
+        axios.post(toggle_substask_complete_url, {subtask_id: app.vue.task_view_subtasks[t_idx].id}).then( () => {
+            app.vue.task_view_subtasks[t_idx].is_complete = !app.vue.task_view_subtasks[t_idx].is_complete;
+        });
     }
 
     app.add_subtask = () => {
@@ -296,6 +296,27 @@ let init = (app) => {
         });
     }
 
+    app.open_expanded_task_view = (t_idx) => {
+        let expanded_task = app.vue.all_user_tasks[t_idx];
+        app.vue.task_view_label = expanded_task.label;
+        app.vue.task_view_description = expanded_task.description;
+        app.vue.task_view_is_group = expanded_task.is_group;
+        app.vue.is_adding_subtask = false;
+
+        axios.get(get_task_subtasks_url, {params: {task_id: expanded_task.id}}).then( (res) => {
+            app.vue.task_view_subtasks = app.enumerate(res.data.subtasks);
+            console.log(app.vue.task_view_subtasks)
+        });
+
+        if (expanded_task.is_group) {
+            axios.get(get_group_members_url, {params: {group_id: expanded_task.group_id}}).then( (res) => {
+                app.vue.task_view_group_members = res.data.group_members
+            });
+        }
+
+        document.getElementById("expanded_task_view_modal").classList.add("is-active");
+    }
+
     // This contains all the methods.
     app.methods = {
         set_adding_task: app.set_adding_task,
@@ -308,7 +329,8 @@ let init = (app) => {
         add_to_group: app.add_to_group,
         remove_from_group: app.remove_from_group,
         toggle_substask_complete: app.toggle_substask_complete,
-        add_subtask: app.add_subtask
+        add_subtask: app.add_subtask,
+        open_expanded_task_view: app.open_expanded_task_view
     };
 
     // This creates the Vue instance.

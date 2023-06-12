@@ -20,7 +20,8 @@
     <div class="columns">
       <div class="column is-2 has-text-centered">
         <button
-          class="button is-success is-outlined"
+          class="button is-success is-outlined is-large"
+          style="width: 100%; height: 100%; white-space: normal"
           @click="set_adding_task(true)"
         >
           <span class="icon is-small">
@@ -44,6 +45,7 @@
       <button
         class="button"
         style="width: 100%; height: 100%; white-space: normal"
+        @click="open_expanded_task_view(t._idx)"
       >
         <p class="block" style="text-transform: capitalize">{{t.label}}</p>
       </button>
@@ -460,7 +462,7 @@
   <!------------- EXPANDED TASK MODAL -------------->
   <!------------------------------------------------>
 
-  <div id="expanded_task_view_modal" class="modal is-active">
+  <div id="expanded_task_view_modal" class="modal">
     <div class="modal-background"></div>
     <div class="modal-card" style="width: 80%">
       <header class="modal-card-head">
@@ -506,10 +508,7 @@
                   </div>
                 </div>
               </div>
-              <div
-                class="box"
-                style="background-color: #b0b0b0; position: sticky; bottom: 0"
-              >
+              <div class="box" style="background-color: #b0b0b0">
                 <textarea
                   class="textarea block"
                   placeholder="New Subtask..."
@@ -597,6 +596,9 @@
     "[[=XML(check_for_submitted_reflections_url)]]";
   let submit_journal_entry_url = "[[=XML(submit_journal_entry_url)]]";
   let get_all_users_tasks_url = "[[=XML(get_all_users_tasks_url)]]";
+  let get_task_subtasks_url = "[[=XML(get_task_subtasks_url)]]";
+  let get_group_members_url = "[[=XML(get_group_members_url)]]";
+  let toggle_substask_complete_url = "[[=XML(toggle_substask_complete_url)]]";
 </script>
 
 <script src="js/index.js"></script>
