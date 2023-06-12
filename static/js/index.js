@@ -9,7 +9,6 @@ let init = (app) => {
     // This is the Vue data.
     app.data = {
         // TASK DATA
-        tasks: [],
         task_label: "",
         task_description: "",
         task_start_time: "",
@@ -106,7 +105,7 @@ let init = (app) => {
                 group_name: app.vue.group_name,
                 members: member_ids
             }).then(function (response) {
-                app.vue.tasks.push({
+                app.vue.all_user_tasks.push({
                     id: response.data.id,
                     label: app.vue.task_label,
                     description: app.vue.task_description,
@@ -117,7 +116,7 @@ let init = (app) => {
                     end_time: app.vue.task_end_time,
                     group_id: response.data.group_id
                 })
-                app.enumerate(app.vue.tasks);
+                app.apply_date_data_to_tasks(app.enumerate(app.vue.all_user_tasks));
                 app.set_adding_task(false);
             })
     }; 

@@ -17,7 +17,7 @@
 
 <div class="section" id="vue-target" v-cloak>
   <div class="box" style="position: sticky; top: 0; z-index: 1">
-    <div class="columns">
+    <div class="columns is-mobile">
       <div class="column is-2 has-text-centered">
         <button
           class="button is-success is-outlined is-large"
@@ -40,7 +40,7 @@
   </div>
   <hr />
 
-  <div class="columns" v-for="t in all_user_tasks">
+  <div class="columns is-mobile" v-for="t in all_user_tasks">
     <div class="column is-2">
       <button
         class="button"
