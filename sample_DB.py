@@ -247,16 +247,16 @@ def add_task_reflections_for_testing(task_id_list):
     inserted_task_reflections = []
 
     # Arbitrary subset of tasks
-    reflecting_task_ids = task_id_list
+    reflecting_task_ids = task_id_list[0:len(task_id_list)//2]
 
     for task_id in reflecting_task_ids:
         db(db.tasks.id == task_id).update(is_complete=True)
-        for _ in range(0, 10):
+        for _ in range(0, 20):
             task_reflection_id = db.task_reflections.insert(
                 task_id=task_id,
-                attentiveness=random.randint(0, 10),
-                emotion=random.randint(0, 10),
-                efficiency=random.randint(0, 10),
+                attentiveness=random.randint(-2, 10),
+                emotion=random.randint(-2, 10),
+                efficiency=random.randint(-2, 10),
                 day=get_today()
                 + relativedelta(
                     day=(random.randrange(1, 32)), month=(random.randrange(5, 7))

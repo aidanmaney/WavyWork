@@ -267,12 +267,14 @@ def get_tasks():
     personal_todo_query = (
         (db.kanban_cards.task_id == db.tasks.id)
         & (db.tasks.categorization == board_query)
+        & (db.tasks.is_complete == False)
         & (db.kanban_cards.column == "todo")
         & (db.tasks.created_by == get_user_id())
     )
     group_todo_query = (
         (db.kanban_cards.task_id == db.tasks.id)
         & (db.tasks.categorization == board_query)
+        & (db.tasks.is_complete == False)
         & (db.kanban_cards.column == "todo")
         & (db.tasks.created_by != get_user_id())
         & (db.groups.members.contains(get_user_id()))
@@ -283,12 +285,14 @@ def get_tasks():
     personal_inprog_query = (
         (db.kanban_cards.task_id == db.tasks.id)
         & (db.tasks.categorization == board_query)
+        & (db.tasks.is_complete == False)
         & (db.kanban_cards.column == "in_progress")
         & (db.tasks.created_by == get_user_id())
     )
     group_inprog_query = (
         (db.kanban_cards.task_id == db.tasks.id)
         & (db.tasks.categorization == board_query)
+        & (db.tasks.is_complete == False)
         & (db.kanban_cards.column == "in_progress")
         & (db.tasks.created_by != get_user_id())
         & (db.groups.members.contains(get_user_id()))
@@ -301,12 +305,14 @@ def get_tasks():
     personal_stuck_query = (
         (db.kanban_cards.task_id == db.tasks.id)
         & (db.tasks.categorization == board_query)
+        & (db.tasks.is_complete == False)
         & (db.kanban_cards.column == "stuck")
         & (db.tasks.created_by == get_user_id())
     )
     group_stuck_query = (
         (db.kanban_cards.task_id == db.tasks.id)
         & (db.tasks.categorization == board_query)
+        & (db.tasks.is_complete == False)
         & (db.kanban_cards.column == "stuck")
         & (db.tasks.created_by != get_user_id())
         & (db.groups.members.contains(get_user_id()))
@@ -317,12 +323,14 @@ def get_tasks():
     personal_done_query = (
         (db.kanban_cards.task_id == db.tasks.id)
         & (db.tasks.categorization == board_query)
+        & (db.tasks.is_complete == False)
         & (db.kanban_cards.column == "done")
         & (db.tasks.created_by == get_user_id())
     )
     group_done_query = (
         (db.kanban_cards.task_id == db.tasks.id)
         & (db.tasks.categorization == board_query)
+        & (db.tasks.is_complete == False)
         & (db.kanban_cards.column == "done")
         & (db.tasks.created_by != get_user_id())
         & (db.groups.members.contains(get_user_id()))
