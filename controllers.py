@@ -209,7 +209,7 @@ def get_reflections():
 
 
 @action("profile")
-@action.uses("profile.html", db, auth.user, session, url_signer)
+@action.uses("profile.html", db, session, url_signer, auth.user)
 def profile():
     get_reflections_url = URL("get_reflections", signer=url_signer)
     # print(get_reflections_url)

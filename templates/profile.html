@@ -60,15 +60,15 @@
     </div>
     <nav class="level container">
         <div class="level-item has-text-centered mt-3">
-            <span class="button is-link icon-text" @click="goBackMonth()">
+            <span class="button is-link icon-text mx-2" @click="goBackMonth()">
                 <span class="icon">
                     <i class="fa fa-arrow-left"></i>
                 </span>
                 <span> Prior month </span>
             </span>
-            <div class="is-invisible">--</div>
+            <!-- <div class="is-invisible">--</div> -->
             <span
-                class="button icon-text"
+                class="button icon-text mx-2"
                 :class="[(prevMonthOffset == 0) ? 'has-background-light' : 'is-link']"
                 @click="goForwardMonth()"
             >
@@ -76,6 +76,15 @@
                 <span class="icon">
                     <i class="fa fa-arrow-right"></i>
                 </span>
+            </span>
+            <span
+                class="button is-link icon-text mx-2"
+                @click="goCurrentMonth()"
+            >
+                <span class="icon">
+                    <i class="fa fa-home"></i>
+                </span>
+                <span> Current Month </span>
             </span>
         </div>
     </nav>

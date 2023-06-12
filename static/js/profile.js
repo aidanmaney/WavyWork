@@ -77,9 +77,15 @@ const init = (app) => {
         }
     };
 
+    app.goCurrentMonth = () => {
+        app.data.prevMonthOffset = 0;
+        app.get_reflections();
+    };
+
     app.methods = {
         goForwardMonth: app.goForwardMonth,
         goBackMonth: app.goBackMonth,
+        goCurrentMonth: app.goCurrentMonth,
         get_reflections: app.get_reflections,
     };
 
