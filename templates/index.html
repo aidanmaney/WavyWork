@@ -8,14 +8,103 @@
   }
 </style>
 
-<div class="section" id="vue-target" v-cloak>
-  <button class="button is-success is-outlined" @click="set_adding_task(true)">
-    <span class="icon is-small">
-      <i class="fa fa-check"></i>
-    </span>
-    <span>Add Task</span>
-  </button>
+<style>
+  .vl {
+    border-left: 6px solid green;
+    height: 500px;
+  }
+</style>
 
+<div class="section" id="vue-target" v-cloak>
+  <div class="box" style="position: sticky; top: 0; z-index: 1">
+    <div class="columns is-mobile">
+      <div class="column is-2 has-text-centered">
+        <button
+          class="button is-success is-outlined is-large"
+          style="width: 100%; height: 100%; white-space: normal"
+          @click="set_adding_task(true)"
+        >
+          <span class="icon is-small">
+            <i class="fa fa-check"></i>
+          </span>
+          <span>Add Task</span>
+        </button>
+      </div>
+      <div
+        class="column is-1 has-text-centered is-vcentered"
+        v-for="d in next_10_days"
+      >
+        <p class="has-text-centered is-size-4">{{d}}</p>
+      </div>
+    </div>
+  </div>
+  <hr />
+
+  <div class="columns is-mobile" v-for="t in all_user_tasks">
+    <div class="column is-2">
+      <button
+        class="button"
+        style="width: 100%; height: 100%; white-space: normal"
+        @click="open_expanded_task_view(t._idx)"
+      >
+        <p class="block" style="text-transform: capitalize">{{t.label}}</p>
+      </button>
+    </div>
+    <div
+      class="column is-1 has-text-centered is-vcentered"
+      v-for="n in t.date_data.start_relative_to_today"
+    ></div>
+    <div
+      class="column"
+      :class="{
+      'is-1': t.date_data.column_class == 'is-1',
+      'is-2': t.date_data.column_class == 'is-2',
+      'is-3': t.date_data.column_class == 'is-3',
+      'is-4': t.date_data.column_class == 'is-4',
+      'is-5': t.date_data.column_class == 'is-5',
+      'is-6': t.date_data.column_class == 'is-6',
+      'is-7': t.date_data.column_class == 'is-7',
+      'is-8': t.date_data.column_class == 'is-8',
+      'is-9': t.date_data.column_class == 'is-9',
+      'is-10': t.date_data.column_class == 'is-10',
+      }"
+    >
+      <div class="box has-background-success">
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <span class="icon is-small">
+                <i
+                  class="fa fa-2x fa-circle-o"
+                  v-if="!t.date_data.overflows_left"
+                ></i>
+                <i
+                  class="fa fa-2x fa-chevron-left"
+                  v-if="t.date_data.overflows_left"
+                ></i>
+              </span>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <span class="icon is-small">
+                <i
+                  class="fa fa-2x fa-times"
+                  v-if="!t.date_data.overflows_right"
+                ></i>
+                <i
+                  class="fa fa-2x fa-chevron-right"
+                  v-if="t.date_data.overflows_right"
+                ></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--
   <button
     class="button is-warning is-outlined"
     @click="get_active_tasks"
@@ -26,7 +115,17 @@
     </span>
     <span>Daily Reflections</span>
   </button>
+-->
 
+  <!------------------------------------------------>
+  <!------------------------------------------------>
+  <!-------------------- MODALS -------------------->
+  <!------------------------------------------------>
+  <!------------------------------------------------>
+
+  <!------------------------------------------------>
+  <!--------------- ADD TASK MODAL ----------------->
+  <!------------------------------------------------>
   <div id="add_task_modal" class="modal">
     <div class="modal-background"></div>
     <div class="modal-card">
@@ -121,6 +220,10 @@
     </div>
   </div>
 
+  <!------------------------------------------------>
+  <!-------------- REFLECTION MODAL ---------------->
+  <!------------------------------------------------>
+
   <div
     id="reflection_modal"
     class="modal is-active"
@@ -206,6 +309,10 @@
     </div>
   </div>
 
+  <!------------------------------------------------>
+  <!---------------- JOURNAL MODAL ----------------->
+  <!------------------------------------------------>
+
   <div id="journal_modal" class="modal">
     <div class="modal-background"></div>
     <div class="modal-card">
@@ -246,6 +353,10 @@
       </footer>
     </div>
   </div>
+
+  <!------------------------------------------------>
+  <!-------------- ADD GROUP MODAL ----------------->
+  <!------------------------------------------------>
 
   <div id="add_group_modal" v-if="task_is_group" class="modal is-active">
     <div class="modal-background"></div>
@@ -346,6 +457,132 @@
       onclick="app.vue.task_is_group=false"
     ></button>
   </div>
+
+  <!------------------------------------------------>
+  <!------------- EXPANDED TASK MODAL -------------->
+  <!------------------------------------------------>
+
+  <div id="expanded_task_view_modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card" style="width: 80%">
+      <header class="modal-card-head">
+        <p class="modal-card-title is-1" style="text-align: center">
+          <b style="text-transform: capitalize">{{task_view_label}}</b>
+        </p>
+      </header>
+      <section class="modal-card-body">
+        <div class="columns">
+          <div class="column">
+            <div class="box" style="background-color: #b0b0b0">
+              <b>Task Description:</b>
+              <p>{{task_view_description}}</p>
+            </div>
+            <div
+              class="box"
+              style="
+                background-color: #b0b0b0;
+                height: 40.5vh;
+                overflow-y: scroll;
+              "
+            >
+              <b class="block">Subtasks:</b>
+              <br />
+              <br />
+              <div class="box" v-for="s in task_view_subtasks">
+                <div class="level">
+                  <div class="level-left">
+                    <div class="level-item">
+                      <button
+                        class="button is-rounded is-small"
+                        :class="{'is-success': s.is_complete}"
+                        @click="toggle_subtask_complete(s._idx)"
+                      >
+                        <span class="icon is-large">
+                          <i class="fa fa-check"></i>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="level-item">
+                      <span><p class="block">{{s.description}}</p></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="box" style="background-color: #b0b0b0">
+                <textarea
+                  class="textarea block"
+                  placeholder="New Subtask..."
+                  rows="2"
+                  v-model="new_subtask_description"
+                  v-if="is_adding_subtask"
+                ></textarea>
+                <div style="text-align: center">
+                  <button
+                    class="button is-success block"
+                    style="width: 100%"
+                    v-if="!is_adding_subtask"
+                    onclick="app.vue.is_adding_subtask = true"
+                  >
+                    <span class="icon is-large">
+                      <i class="fa fa-plus"></i>
+                    </span>
+                    <span><p>New Subtask</p></span>
+                  </button>
+                  <button
+                    class="button is-success block"
+                    style="width: 100%"
+                    v-if="is_adding_subtask"
+                    @click="add_subtask"
+                  >
+                    <span class="icon is-large">
+                      <i class="fa fa-check"></i>
+                    </span>
+                    <span><p>Add Subtask</p></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="column is-4" v-if="task_view_is_group">
+            <div
+              class="box"
+              style="
+                background-color: #b0b0b0;
+                height: 63.8vh;
+                overflow-y: scroll;
+              "
+            >
+              <p class="title is-4">Collaborators:</p>
+              <div class="box" v-for="m in task_view_group_members">
+                <div class="level">
+                  <div class="level-left">
+                    <div class="level-item">
+                      <span class="icon">
+                        <i class="fa fa-user"></i>
+                      </span>
+                    </div>
+                    <div class="level-item">
+                      <span>
+                        <p>{{m.first_name}} {{m.last_name}}</p>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-success">Complete Task!</button>
+      </footer>
+    </div>
+    <button
+      class="modal-close is-large"
+      aria-label="close"
+      onclick="this.closest('.modal').classList.remove('is-active')"
+    ></button>
+  </div>
 </div>
 
 [[block page_scripts]]
@@ -358,6 +595,11 @@
   let check_for_submitted_reflections_url =
     "[[=XML(check_for_submitted_reflections_url)]]";
   let submit_journal_entry_url = "[[=XML(submit_journal_entry_url)]]";
+  let get_all_users_tasks_url = "[[=XML(get_all_users_tasks_url)]]";
+  let get_task_subtasks_url = "[[=XML(get_task_subtasks_url)]]";
+  let get_group_members_url = "[[=XML(get_group_members_url)]]";
+  let toggle_subtask_complete_url = "[[=XML(toggle_subtask_complete_url)]]";
+  let add_new_subtask_url = "[[=XML(add_new_subtask_url)]]";
 </script>
 
 <script src="js/index.js"></script>

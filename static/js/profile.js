@@ -17,6 +17,7 @@ const init = (app) => {
         week5: [],
         week6: [],
         month: "",
+      
         journal_entry: "",
         year: "",
     };
