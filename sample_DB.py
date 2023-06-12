@@ -3,12 +3,19 @@ import datetime
 
 # References hw5 start code (Credit: Luca de Alfaro)
 from py4web.utils.populate import FIRST_NAMES, LAST_NAMES
+from dateutil.relativedelta import relativedelta
 from .common import db, Field, auth
+
+
+def get_today():
+    dt = datetime.datetime.utcnow().today()
+    return datetime.datetime(dt.year, dt.month, dt.day)
+
 
 sample_tasks = [
     {
         "task_label": "finish my history essay",
-        "task_category": "personal",
+        "task_category": "school",
         "task_subtasks": [
             "read chapter 5",
             "find good quotes",
@@ -40,7 +47,7 @@ sample_tasks = [
     },
     {
         "task_label": "prep for the accounting interview",
-        "task_category": "personal",
+        "task_category": "work",
         "task_subtasks": [
             "email my boss",
             "email the potential new hire",
@@ -49,12 +56,12 @@ sample_tasks = [
     },
     {
         "task_label": "do a grocery run",
-        "task_category": "school",
+        "task_category": "personal",
         "task_subtasks": ["buy apples", "buy oranges", "buy milk", "buy bread"],
     },
     {
         "task_label": "open an ice-cream shop",
-        "task_category": "work",
+        "task_category": "personal",
         "task_subtasks": [
             "get a restaurant license",
             "find lease",
@@ -113,6 +120,7 @@ group_tasks = [
     },
 ]
 
+
 # References hw5 starter code (Credit: Luca de Alfaro)
 def add_users_for_testing(num_users):
     # Test user names begin with "_".
@@ -153,6 +161,7 @@ def add_users_for_testing(num_users):
     auth.register(user_3, send=False)
     db.commit()
 
+
 def add_group_tasks_for_testing():
     db(db.groups).delete()
 
@@ -167,15 +176,14 @@ def add_group_tasks_for_testing():
     )
 
     group_id = db.groups.insert(
-        group_name="test_group",
-        members=[id_user_1, id_user_2, id_user_3]
+        group_name="test_group", members=[id_user_1, id_user_2, id_user_3]
     )
 
     inserted_tasks = []
     for t in group_tasks:
         task_id = db.tasks.insert(
-            label = t["task_label"],
-            description = "I need to " + t["task_label"],
+            label=t["task_label"],
+            description="I need to " + t["task_label"],
             end_time=datetime.datetime.today() + datetime.timedelta(days=1),
             categorization=t["task_category"],
             is_group=True,
@@ -185,6 +193,7 @@ def add_group_tasks_for_testing():
         inserted_tasks.append(task_id)
     db.commit()
     return inserted_tasks
+
 
 def add_tasks_for_testing():
     db(db.tasks).delete()
@@ -202,7 +211,7 @@ def add_tasks_for_testing():
         task_id = db.tasks.insert(
             label=label,
             description="I need to " + label,
-            end_time=datetime.datetime.today() + datetime.timedelta(days=1),
+            end_time=get_today() + relativedelta(day=random.randrange(1, 32)),
             categorization=task_category,
             is_group=False,
             created_by=id_user_johndoe,
@@ -238,42 +247,45 @@ def add_task_reflections_for_testing(task_id_list):
     inserted_task_reflections = []
 
     # Arbitrary subset of tasks
-    reflecting_task_ids = task_id_list[:3]
+    reflecting_task_ids = task_id_list
 
     for task_id in reflecting_task_ids:
         db(db.tasks.id == task_id).update(is_complete=True)
-        task_reflection_id = db.task_reflections.insert(
-            task_id=task_id,
-            attentiveness=random.randint(1, 10),
-            emotion=random.randint(1, 10),
-            efficiency=random.randint(1, 10),
-        )
-        inserted_task_reflections = task_reflection_id
+        for _ in range(0, 10):
+            task_reflection_id = db.task_reflections.insert(
+                task_id=task_id,
+                attentiveness=random.randint(0, 10),
+                emotion=random.randint(0, 10),
+                efficiency=random.randint(0, 10),
+                day=get_today()
+                + relativedelta(
+                    day=(random.randrange(1, 32)), month=(random.randrange(5, 7))
+                ),
+            )
+            inserted_task_reflections = task_reflection_id
 
     db.commit()
     return inserted_task_reflections
 
 
 def add_kanban_cards_for_testing(task_id_list, delete=True):
-    if delete: 
+    if delete:
         db(db.kanban_cards).delete()
 
     kanban_categories = ["todo", "in_progress", "stuck", "done"]
     i = 0
 
     # Arbitrary subset of tasks
-    # kanban_tasks = task_id_list[2:5]
     kanban_tasks = task_id_list
 
     inserted_kanban_card_ids = []
 
     for task_id in kanban_tasks:
         kanban_task_id = db.kanban_cards.insert(
-            # task_id=task_id, column=kanban_categories[random.randint(0, 4)]
             task_id=task_id, column=kanban_categories[i]
         )
         inserted_kanban_card_ids.append(kanban_task_id)
-        i = (i+1)%4
+        i = (i + 1) % 4
 
     db.commit()
     return inserted_kanban_card_ids

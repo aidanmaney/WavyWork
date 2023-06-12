@@ -17,6 +17,7 @@ const init = (app) => {
         week5: [],
         week6: [],
         month: "",
+        year: "",
     };
 
     app.enumerate = (a) => {
@@ -60,6 +61,7 @@ const init = (app) => {
                 app.data.week6 = app.data.reflection_blocks.slice(35);
 
                 app.data.month = response.data.month;
+                app.data.year = response.data.year;
             });
     };
 
@@ -75,9 +77,15 @@ const init = (app) => {
         }
     };
 
+    app.goCurrentMonth = () => {
+        app.data.prevMonthOffset = 0;
+        app.get_reflections();
+    };
+
     app.methods = {
         goForwardMonth: app.goForwardMonth,
         goBackMonth: app.goBackMonth,
+        goCurrentMonth: app.goCurrentMonth,
         get_reflections: app.get_reflections,
     };
 
@@ -92,6 +100,7 @@ const init = (app) => {
     app.init = () => {
         app.data.prevMonthOffset = 0;
         app.data.month = "";
+        app.data.year = "";
         app.data.reflection_blocks = [];
         app.get_reflections();
     };

@@ -45,7 +45,7 @@ from .models import get_user_email, get_user_id, get_time, get_today
 import random
 from itertools import groupby
 
-import dateutil.relativedelta as relativedelta
+from dateutil.relativedelta import relativedelta
 import math
 
 url_signer = URLSigner(session)
@@ -146,6 +146,7 @@ def get_reflections():
     year = arbitrary_day_in_month.year
 
     month_str = arbitrary_day_in_month.strftime("%B")
+    year_str = arbitrary_day_in_month.strftime("%Y")
 
     if last_of_month > today:
         last_of_month = today
@@ -158,6 +159,8 @@ def get_reflections():
         db(
             (db.task_reflections.day >= first_of_month)
             & (db.task_reflections.day <= last_of_month)
+            & (db.tasks.created_by == get_user_id())
+            & (db.task_reflections.task_id == db.tasks.id)
         )
         .select(
             db.task_reflections.id,
@@ -195,15 +198,18 @@ def get_reflections():
 
     start_of_month_offset = first_of_month.weekday()
 
+    print(reflections_in_month)
+
     return dict(
         reflections=reflections_in_month,
         start_of_month_offset=start_of_month_offset,
         month=month_str,
+        year=year_str,
     )
 
 
 @action("profile")
-@action.uses("profile.html", db, auth.user, session, url_signer)
+@action.uses("profile.html", db, session, url_signer, auth.user)
 def profile():
     get_reflections_url = URL("get_reflections", signer=url_signer)
     # print(get_reflections_url)
@@ -232,6 +238,7 @@ def check_for_submitted_reflections():
 
     print(todays_reflections)
     return dict(todays_reflections=todays_reflections)
+
 
 @action("get_tasks")
 @action.uses(db, auth.user, url_signer.verify())
