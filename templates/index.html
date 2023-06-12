@@ -410,7 +410,6 @@
 
 
 
-
   <!-- Timeline & Button for each task -->
   <div class="columns is-centered">
     <div class="column is-three-quarters">
@@ -432,7 +431,13 @@
           Task {{i+1}}
         </button>
         <div class="timeline">
-          <div v-for="subtask in task">
+          <div v-for="subtask,st in task">
+            <!-- <div v-if>
+              {{twoWeeks}}
+            </div> -->
+            <!-- <div v-if="st == task.length - 1">
+              ARROW HERE
+            </div> -->
             <div v-if="subtask['is_complete']">
               <div class="timeline-circle-green"></div>
             </div>

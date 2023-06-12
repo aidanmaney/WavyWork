@@ -131,6 +131,7 @@ def timeline_stage():
     print('timeline controller')
     
     users_tasks = db(db.tasks.created_by == get_user_id()).select().as_list()
+    print("TASKS:", users_tasks)
 
 
     subtasks_list = []
@@ -158,4 +159,5 @@ def timeline_stage():
 
     print('DEBUG')
     print(subtasks_list)
-    return dict(subtasks_list=subtasks_list)
+    print(users_tasks)
+    return dict(users_tasks=users_tasks, subtasks_list=subtasks_list)

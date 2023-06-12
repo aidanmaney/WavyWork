@@ -46,6 +46,8 @@ let init = (app) => {
         today: "",
         twoWeeksLater: "",
         // END DATE DATA
+
+        users_tasks: [],
     };    
     
     app.enumerate = (a) => {
@@ -204,9 +206,11 @@ let init = (app) => {
 
         axios.get(timeline_stage_url).then(
             function(response) {
-                console.log('in then')
-                app.data.sub_tasks = response.data.subtasks_list
-                console.log(app.data.sub_tasks)
+                console.log('in then');
+                app.data.users_tasks = response.data.users_tasks;
+                app.data.sub_tasks = response.data.subtasks_list;
+                console.log('TASKS:', app.data.users_tasks);
+                console.log(app.data.sub_tasks);
             });
     }
 
