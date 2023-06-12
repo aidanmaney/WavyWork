@@ -207,7 +207,7 @@ def get_reflections():
 def profile():
     get_reflections_url = URL("get_reflections", signer=url_signer)
     # print(get_reflections_url)
-    return dict(get_reflections_url=get_reflections_url)
+    return dict(get_reflections_url=get_reflections_url, get_journal_entry_by_day_url=get_journal_entry_by_day_url))
 
 
 @action("submit_journal_entry", method=["POST"])
