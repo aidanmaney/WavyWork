@@ -253,6 +253,10 @@ let init = (app) => {
         return Math.round((d2.getTime() - d1.getTime()) / (1000 * 3600 * 24)) + 1;
     }
 
+    app.days_between_dates = (d1, d2) => {
+        return Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 3600 * 24));
+    }
+
     app.apply_date_data_to_tasks = (all_tasks) => {
         date_info_for_tasks = []
 
@@ -271,7 +275,7 @@ let init = (app) => {
             start_relative_to_today = app.days_between_dates(today, start_date)
             end_relative_to_today = app.days_between_dates(today, end_date)
             overflows_left = start_relative_to_today < 0 ? true : false
-            overflows_right = end_relative_to_today > 10 ? true : false
+            overflows_right = end_relative_to_today >= 10 ? true : false
 
             if (overflows_left && overflows_right) {
                 column_class = "is-10"
@@ -280,10 +284,10 @@ let init = (app) => {
                 column_class = "is-" + (end_relative_to_today + 1)
             }
             else if (overflows_right) {
-                column_class = "is-" + ((days_between - start_relative_to_today) + 1)
+                column_class = "is-" + (10 - start_relative_to_today)
             }
             else {
-                column_class = "is-" + days_between
+                column_class = "is-" + (days_between + 1)
             }
 
             date_info_for_tasks.push({
