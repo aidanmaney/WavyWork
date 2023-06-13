@@ -446,11 +446,8 @@ def toggle_substask_complete():
 @action("toggle_task_complete", method="POST")
 @action.uses(db, auth.user, url_signer.verify())
 def toggle_task_complete():
-    print(request.json.get("task_id"))
     task_id = request.json.get("task_id")
-    task = db(db.tasks.id == task_id).update(is_complete=True)
-    # task = db.tasks
-    # return dict()
+    db(db.tasks.id == task_id).update(is_complete=True)
 
 
 @action("add_new_subtask", method=["POST"])

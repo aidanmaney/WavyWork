@@ -226,13 +226,8 @@ let init = (app) => {
             {
                 task_id: task_id
             }).then(function (response) {
-                console.log(app.data.all_user_tasks)
-                console.log('Setting task to complete');
                 ind = app.data.all_user_tasks.findIndex(i => i.id == task_id);
                 app.data.all_user_tasks[ind]['is_complete'] = true;
-                console.log(app.data.all_user_tasks[ind]['is_complete']);
-
-                // app.data.all_user_tasks
             });
     }
 
