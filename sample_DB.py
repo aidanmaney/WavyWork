@@ -332,9 +332,6 @@ Overall, it was a rewarding day as a software engineer, filled with problem-solv
         )
 
 
-# TODO add sample journal entries
-
-
 def populate_sample_DB():
     stock_user_ids = add_users_for_testing(5)
 
