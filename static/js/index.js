@@ -250,10 +250,6 @@ let init = (app) => {
     }
 
     app.days_between_dates = (d1, d2) => {
-        return Math.round((d2.getTime() - d1.getTime()) / (1000 * 3600 * 24)) + 1;
-    }
-
-    app.days_between_dates = (d1, d2) => {
         return Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 3600 * 24));
     }
 
