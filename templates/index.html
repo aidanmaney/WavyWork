@@ -36,12 +36,12 @@
 
   <div class="columns is-mobile" v-for="t in all_user_tasks">
     <div class="column is-2">
-      <div v-if="!t['is_complete']">
+      <!-- <div v-if="!t['is_complete']"> -->
         <button class="button" style="width: 100%; height: 100%; white-space: normal"
           @click="open_expanded_task_view(t._idx)">
           <p class="block" style="text-transform: capitalize">{{t.label}}</p>
         </button>
-      </div>
+      <!-- </div> -->
     </div>
 
     <div class="column is-1 has-text-centered is-vcentered" v-for="n in t.date_data.start_relative_to_today"></div>
@@ -58,7 +58,7 @@
         'is-9': t.date_data.column_class == 'is-9',
         'is-10': t.date_data.column_class == 'is-10',
         }">
-      <div v-if="!(t['is_complete'])">
+      <!-- <div v-if="!(t['is_complete'])"> -->
         <div class="box has-background-success">
           <div class="level">
             <div class="level-left">
@@ -79,7 +79,7 @@
             </div>
           </div>
         </div>
-      </div>
+      <!-- </div> -->
     </div>
   </div>
 
