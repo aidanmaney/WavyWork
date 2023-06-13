@@ -414,7 +414,7 @@
         </div>
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-success" @click="toggle_task_complete(task_view_task_id)">
+        <button class="button is-success" @click="toggle_task_complete(task_view_task_id)" onclick="this.closest('.modal').classList.remove('is-active')">
           Complete Task!
         </button>
       </footer>
