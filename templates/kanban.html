@@ -14,18 +14,18 @@
     }
 </style>
 
-<section class="hero has-background-grey-light is-fullheight" id="vue-target" v-cloak>
+<section class="hero is-fullheight" id="vue-target" v-cloak>
    <div class="hero-head">
-      <nav class="tabs is-boxed is-fullwidth is-large">
+      <nav class="tabs is-boxed is-fullwidth is-large mt-4">
          <div class="container">
-           <ul>
-             <li :class="{'is-active': current_board == 'personal'}" @click="set_board('personal')"><a>Personal</a></li>
-             <li :class="{'is-active': current_board == 'school'}" @click="set_board('school')"><a>School</a></li>
-             <li :class="{'is-active': current_board == 'work'}" @click="set_board('work')"><a>Work</a></li>
+           <ul >
+             <li class="mx-4" :class="{'is-active': current_board == 'personal'}" @click="set_board('personal')"><a>Personal</a></li>
+             <li class="mx-4" :class="{'is-active': current_board == 'school'}" @click="set_board('school')"><a>School</a></li>
+             <li class="mx-4" :class="{'is-active': current_board == 'work'}" @click="set_board('work')"><a>Work</a></li>
            </ul>
          </div>
       </nav>
-      <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+      <hr style="height:2px;border-width:0;">
    </div>
    <div class="hero-body">
       <div class="columns is-mobile is-variable is-4"  style="width: 100%">
