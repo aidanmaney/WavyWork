@@ -222,16 +222,20 @@ let init = (app) => {
 
 
     app.toggle_task_complete = function (task_id) {
+        console.log('BEFORE:', app.data.all_user_tasks);
         axios.post(toggle_task_complete_url,
             {
                 task_id: task_id
-            }).then(function (response) {
-                ind = app.data.all_user_tasks.findIndex(i => i.id == task_id);
-                console.log('BEFORE:', app.data.all_user_tasks);
-                app.data.all_user_tasks[ind]['is_complete'] = true;
-                app.data.all_user_tasks = app.data.all_user_tasks.filter(i => i.is_complete == false);
-                app.data.all_user_tasks = app.apply_date_data_to_tasks(app.enumerate(app.data.all_user_tasks));
-                // app.data.all_user_tasks = app.data.all_user_tasks.filter(i => i.id !== task_id);
+            }).then(function () {
+                // ind = app.data.all_user_tasks.findIndex(i => i.id == task_id);
+                
+                // app.data.all_user_tasks[ind]['is_complete'] = true;
+                // app.data.all_user_tasks = app.data.all_user_tasks.filter(i => i.is_complete == false);
+
+                // app.data.all_user_tasks = app.get_all_users_tasks();
+                app.get_all_users_tasks();
+
+                // app.data.all_user_tasks = app.apply_date_data_to_tasks(app.enumerate(app.data.all_user_tasks));
                 console.log("AFTER:", app.data.all_user_tasks);
             });
     }

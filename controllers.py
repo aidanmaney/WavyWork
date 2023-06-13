@@ -404,7 +404,7 @@ def get_active_tasks():
 @action("get_all_users_tasks")
 @action.uses(db, auth.user, url_signer.verify())
 def get_all_users_tasks():
-    tasks_by_user = db(db.tasks.created_by == get_user_id()).select().as_list()
+    tasks_by_user = db(db.tasks.created_by == get_user_id() and db.tasks.is_complete == False).select().as_list()
 
     tasks_from_groups_tuple = db((db.tasks.created_by != get_user_id()) &
                                 (db.groups.members.contains(get_user_id())) &
