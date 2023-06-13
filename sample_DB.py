@@ -4,7 +4,6 @@ import datetime
 # References hw5 start code (Credit: Luca de Alfaro)
 from py4web.utils.populate import FIRST_NAMES, LAST_NAMES
 from dateutil.relativedelta import relativedelta
-from itertools import groupby
 from .common import db, Field, auth
 
 
