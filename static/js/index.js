@@ -227,16 +227,8 @@ let init = (app) => {
             {
                 task_id: task_id
             }).then(function () {
-                // ind = app.data.all_user_tasks.findIndex(i => i.id == task_id);
-                
-                // app.data.all_user_tasks[ind]['is_complete'] = true;
-                // app.data.all_user_tasks = app.data.all_user_tasks.filter(i => i.is_complete == false);
-
-                // app.data.all_user_tasks = app.get_all_users_tasks();
+                // Update app.data.all_user_tasks
                 app.get_all_users_tasks();
-
-                // app.data.all_user_tasks = app.apply_date_data_to_tasks(app.enumerate(app.data.all_user_tasks));
-                console.log("AFTER:", app.data.all_user_tasks);
             });
     }
 
