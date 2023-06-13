@@ -220,6 +220,16 @@ let init = (app) => {
         });
     }
 
+
+    app.toggle_task_complete = function (task_id) {
+        axios.post(toggle_task_complete_url,
+            {
+                task_id: task_id
+            }).then(function (response) {
+                console.log('Setting task to complete');
+            });
+    }
+
     app.add_subtask = () => {
         axios.post(add_new_subtask_url, {
             task_id: app.vue.task_view_task_id,
@@ -331,9 +341,7 @@ let init = (app) => {
         document.getElementById("expanded_task_view_modal").classList.add("is-active");
     }
 
-    app.toggle_task_complete = (task_id) => {
-        console.log('Going to complete task for', task_id);
-    }
+
 
     // This contains all the methods.
     app.methods = {
