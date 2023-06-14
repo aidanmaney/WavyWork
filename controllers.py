@@ -64,10 +64,10 @@ def index():
         ),
         submit_journal_entry_url=URL("submit_journal_entry", signer=url_signer),
         get_all_users_tasks_url=URL("get_all_users_tasks", signer=url_signer),
-        get_task_subtasks_url = URL("get_task_subtasks", signer=url_signer),
-        get_group_members_url = URL("get_group_members", signer=url_signer),
-        toggle_subtask_complete_url = URL("toggle_subtask_complete", signer=url_signer),
-        add_new_subtask_url = URL("add_new_subtask", signer=url_signer)
+        get_task_subtasks_url=URL("get_task_subtasks", signer=url_signer),
+        get_group_members_url=URL("get_group_members", signer=url_signer),
+        toggle_subtask_complete_url=URL("toggle_subtask_complete", signer=url_signer),
+        add_new_subtask_url=URL("add_new_subtask", signer=url_signer),
     )
 
 
@@ -105,7 +105,7 @@ def add_task():
         is_group=request.json.get("is_group"),
         start_time=datetime_start_time,
         end_time=datetime_end_time,
-        group_id=group_id
+        group_id=group_id,
     )
     return dict(id=id, created_by=get_user_id())
 
@@ -161,6 +161,21 @@ def get_reflections():
         calendar_day_in_month(last_of_month) - calendar_day_in_month(first_of_month)
     )
 
+    first_ref_day = (
+        db(db.task_reflections)
+        .select(db.task_reflections.day, orderby=db.task_reflections.day)
+        .first()
+    )
+
+    first_journal_day = (
+        db(db.daily_journal)
+        .select(db.daily_journal.day, orderby=db.daily_journal.day)
+        .first()
+    )
+
+    first_log = min(first_journal_day.day, first_ref_day.day)
+    max_pmo = relativedelta(get_today(), first_log).months
+
     reflections_in_month_rows = (
         db(
             (db.task_reflections.day >= first_of_month)
@@ -211,6 +226,7 @@ def get_reflections():
         start_of_month_offset=start_of_month_offset,
         month=month_str,
         year=year_str,
+        max_pmo=max_pmo,
     )
 
 
@@ -219,21 +235,25 @@ def get_reflections():
 def profile():
     get_reflections_url = URL("get_reflections", signer=url_signer)
     get_journal_entry_by_day_url = URL("get_journal_entry_by_day", signer=url_signer)
-    # print(get_reflections_url)
-    return dict(get_reflections_url=get_reflections_url, get_journal_entry_by_day_url=get_journal_entry_by_day_url)
 
-  
-@action('submit_task_reflection', method=["POST"])
+    # print(get_reflections_url)
+    return dict(
+        get_reflections_url=get_reflections_url,
+        get_journal_entry_by_day_url=get_journal_entry_by_day_url,
+    )
+
+
+@action("submit_task_reflection", method=["POST"])
 @action.uses(db, auth.user, url_signer.verify())
 def submit_task_reflection():
     id = db.task_reflections.insert(
-        task_id = request.json.get("task_id"),
-        attentiveness = request.json.get("attentiveness"),
-        emotion = request.json.get("emotion"),
-        efficiency = request.json.get("efficiency")
+        task_id=request.json.get("task_id"),
+        attentiveness=request.json.get("attentiveness"),
+        emotion=request.json.get("emotion"),
+        efficiency=request.json.get("efficiency"),
     )
     return dict(id=id)
-  
+
 
 @action("submit_journal_entry", method=["POST"])
 @action.uses(db, auth.user, url_signer.verify())
@@ -365,38 +385,57 @@ def update_kanban():
     db(db.kanban_cards.task_id == task_id).validate_and_update(column=new_column)
 
     return dict()
-  
- 
-@action('get_journal_entry_by_day', method=["POST"])
+
+
+@action("get_journal_entry_by_day", method=["POST"])
 @action.uses(db, auth.user)
 def get_journal_entry_by_day():
     print(request.json.get("day"))
     journal_day = request.json.get("day")
     journal_datetime = datetime.datetime.strptime(journal_day, "%Y-%m-%d")
     print(f"**********journal_datetime: {journal_datetime} **********")
-    entries = db((db.daily_journal.user == get_user_id()) &
-               (db.daily_journal.day == journal_datetime)).select(db.daily_journal.entry).as_list()
-    
+    entries = (
+        db(
+            (db.daily_journal.user == get_user_id())
+            & (db.daily_journal.day == journal_datetime)
+        )
+        .select(db.daily_journal.entry)
+        .as_list()
+    )
+
     print(f"*********{entries}*********")
     entry = "" if len(entries) <= 0 else entries[0]["entry"]
     return dict(entry=entry)
-  
-@action('get_active_tasks')
+
+
+@action("get_active_tasks")
 @action.uses(db, url_signer.verify(), auth.user)
 def get_active_tasks():
-    active_user_tasks = db((db.tasks.start_time <= get_today()) &
-                           (db.tasks.end_time >= get_today()) & 
-                           (db.tasks.created_by == get_user_id())).select().as_list()
-    
-    active_group_tasks_tuple = db((db.tasks.created_by != get_user_id()) &
-                                  (db.groups.members.contains(get_user_id())) &
-                                  (db.groups.id == db.tasks.group_id) &
-                                  (db.tasks.start_time <= get_today()) &
-                                  (db.tasks.end_time >= get_today())).select().as_list()
-    
+    active_user_tasks = (
+        db(
+            (db.tasks.start_time <= get_today())
+            & (db.tasks.end_time >= get_today())
+            & (db.tasks.created_by == get_user_id())
+        )
+        .select()
+        .as_list()
+    )
+
+    active_group_tasks_tuple = (
+        db(
+            (db.tasks.created_by != get_user_id())
+            & (db.groups.members.contains(get_user_id()))
+            & (db.groups.id == db.tasks.group_id)
+            & (db.tasks.start_time <= get_today())
+            & (db.tasks.end_time >= get_today())
+        )
+        .select()
+        .as_list()
+    )
+
     active_group_tasks = [row["tasks"] for row in active_group_tasks_tuple]
     active_tasks = active_user_tasks + active_group_tasks
-    
+
     return dict(active_tasks=active_tasks)
 
 
@@ -405,14 +444,21 @@ def get_active_tasks():
 def get_all_users_tasks():
     tasks_by_user = db(db.tasks.created_by == get_user_id()).select().as_list()
 
-    tasks_from_groups_tuple = db((db.tasks.created_by != get_user_id()) &
-                                (db.groups.members.contains(get_user_id())) &
-                                (db.groups.id == db.tasks.group_id)).select().as_list()
-    
+    tasks_from_groups_tuple = (
+        db(
+            (db.tasks.created_by != get_user_id())
+            & (db.groups.members.contains(get_user_id()))
+            & (db.groups.id == db.tasks.group_id)
+        )
+        .select()
+        .as_list()
+    )
+
     tasks_from_group = [row["tasks"] for row in tasks_from_groups_tuple]
     all_users_tasks = tasks_by_user + tasks_from_group
 
     return dict(all_users_tasks=all_users_tasks)
+
 
 @action("get_task_subtasks")
 @action.uses(db, auth.user, url_signer.verify())
@@ -426,7 +472,11 @@ def get_task_subtasks():
 @action("get_group_members")
 @action.uses(db, auth.user, url_signer.verify())
 def get_group_members():
-    group_members_ids = db(db.groups.id == request.params.get("group_id")).select(db.groups.members).as_list()[0]["members"]
+    group_members_ids = (
+        db(db.groups.id == request.params.get("group_id"))
+        .select(db.groups.members)
+        .as_list()[0]["members"]
+    )
     group_members = db(db.auth_user.id.belongs(group_members_ids)).select().as_list()
 
     return dict(group_members=group_members)
@@ -439,15 +489,16 @@ def toggle_substask_complete():
     print(request.json.get("subtask_id"))
     print(subtask)
     new_complete = not subtask.is_complete
-    db(db.subtasks.id == request.json.get("subtask_id")).update(is_complete=new_complete)
+    db(db.subtasks.id == request.json.get("subtask_id")).update(
+        is_complete=new_complete
+    )
 
 
 @action("add_new_subtask", method=["POST"])
 @action.uses(db, auth.user, url_signer.verify())
 def add_new_subtask():
     id = db.subtasks.insert(
-        task_id=request.json.get("task_id"),
-        description=request.json.get("description")
+        task_id=request.json.get("task_id"), description=request.json.get("description")
     )
 
     return dict(id=id)

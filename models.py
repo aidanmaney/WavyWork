@@ -19,6 +19,7 @@ def get_user_id():
 def get_time():
     return datetime.datetime.utcnow()
 
+
 def get_today():
     dt = datetime.datetime.utcnow().today()
     return datetime.datetime(dt.year, dt.month, dt.day)
@@ -27,12 +28,14 @@ def get_today():
 db.define_table(
     "groups",
     Field("group_name", required=True),
-    Field("members", "list:reference auth_user")
+    Field("members", "list:reference auth_user"),
 )
 
 db.define_table(
     "tasks",
-    Field("created_by", "integer", "reference auth_user", default=get_user_id),
+    Field(
+        "created_by", "integer", "reference auth_user", default=lambda: get_user_id()
+    ),
     Field("start_time", "datetime", default=get_today()),
     Field("end_time", "datetime", default=get_today()),
     Field("label"),
@@ -121,7 +124,7 @@ db.define_table(
         "user",
         "integer",
         "reference auth_user",
-        default=get_user_id,
+        default=lambda: get_user_id(),
     ),
     Field(
         "day",

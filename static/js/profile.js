@@ -17,7 +17,7 @@ const init = (app) => {
         week5: [],
         week6: [],
         month: "",
-      
+        max_pmo: 0,
         journal_entry: "",
         year: "",
     };
@@ -36,6 +36,8 @@ const init = (app) => {
                 params: { pmo: app.data.prevMonthOffset },
             })
             .then(function (response) {
+                app.data.max_pmo = response.data.max_pmo;
+
                 app.data.reflection_blocks = response.data.reflections;
 
                 for (var i = 0; i < response.data.start_of_month_offset; i++) {
@@ -68,8 +70,10 @@ const init = (app) => {
     };
 
     app.goBackMonth = () => {
-        app.data.prevMonthOffset += 1;
-        app.get_reflections();
+        if (app.data.prevMonthOffset < app.data.max_pmo) {
+            app.data.prevMonthOffset += 1;
+            app.get_reflections();
+        }
     };
 
     app.goForwardMonth = () => {
@@ -78,13 +82,15 @@ const init = (app) => {
             app.get_reflections();
         }
     };
-  
+
     app.open_journal_modal = (day) => {
-        axios.post(get_journal_entry_by_day_url, {day:day}).then( (res) => {
-            app.vue.journal_entry = res.data.entry
-            document.getElementById("calendar_journal_modal").classList.add("is-active");
-        })
-    }
+        axios.post(get_journal_entry_by_day_url, { day: day }).then((res) => {
+            app.vue.journal_entry = res.data.entry;
+            document
+                .getElementById("calendar_journal_modal")
+                .classList.add("is-active");
+        });
+    };
 
     app.goCurrentMonth = () => {
         app.data.prevMonthOffset = 0;
@@ -96,7 +102,7 @@ const init = (app) => {
         goBackMonth: app.goBackMonth,
         goCurrentMonth: app.goCurrentMonth,
         get_reflections: app.get_reflections,
-        open_journal_modal: app.open_journal_modal
+        open_journal_modal: app.open_journal_modal,
     };
 
     app.vue = new Vue({
