@@ -19,21 +19,15 @@
   <div class="box" style="position: sticky; top: 0; z-index: 1">
     <div class="columns is-mobile">
       <div class="column is-2 has-text-centered">
-        <button
-          class="button is-success is-outlined is-large"
-          style="width: 100%; height: 100%; white-space: normal"
-          @click="set_adding_task(true)"
-        >
+        <button class="button is-success is-outlined is-large" style="width: 100%; height: 100%; white-space: normal"
+          @click="set_adding_task(true)">
           <span class="icon is-small">
             <i class="fa fa-check"></i>
           </span>
           <span>Add Task</span>
         </button>
       </div>
-      <div
-        class="column is-1 has-text-centered is-vcentered"
-        v-for="d in next_10_days"
-      >
+      <div class="column is-1 has-text-centered is-vcentered" v-for="d in next_10_days">
         <p class="has-text-centered is-size-4">{{d}}</p>
       </div>
     </div>
@@ -42,80 +36,50 @@
 
   <div class="columns is-mobile" v-for="t in all_user_tasks">
     <div class="column is-2">
-      <button
-        class="button"
-        style="width: 100%; height: 100%; white-space: normal"
-        @click="open_expanded_task_view(t._idx)"
-      >
-        <p class="block" style="text-transform: capitalize">{{t.label}}</p>
-      </button>
+        <button class="button" style="width: 100%; height: 100%; white-space: normal"
+          @click="open_expanded_task_view(t._idx)">
+          <p class="block" style="text-transform: capitalize">{{t.label}}</p>
+        </button>
     </div>
-    <div
-      class="column is-1 has-text-centered is-vcentered"
-      v-for="n in t.date_data.start_relative_to_today"
-    ></div>
-    <div
-      class="column"
-      :class="{
-      'is-1': t.date_data.column_class == 'is-1',
-      'is-2': t.date_data.column_class == 'is-2',
-      'is-3': t.date_data.column_class == 'is-3',
-      'is-4': t.date_data.column_class == 'is-4',
-      'is-5': t.date_data.column_class == 'is-5',
-      'is-6': t.date_data.column_class == 'is-6',
-      'is-7': t.date_data.column_class == 'is-7',
-      'is-8': t.date_data.column_class == 'is-8',
-      'is-9': t.date_data.column_class == 'is-9',
-      'is-10': t.date_data.column_class == 'is-10',
-      }"
-    >
-      <div class="box has-background-success">
-        <div class="level">
-          <div class="level-left">
-            <div class="level-item">
-              <span class="icon is-small">
-                <i
-                  class="fa fa-2x fa-circle-o"
-                  v-if="!t.date_data.overflows_left"
-                ></i>
-                <i
-                  class="fa fa-2x fa-chevron-left"
-                  v-if="t.date_data.overflows_left"
-                ></i>
-              </span>
+
+    <div class="column is-1 has-text-centered is-vcentered" v-for="n in t.date_data.start_relative_to_today"></div>
+
+    <div class="column" :class="{
+        'is-1': t.date_data.column_class == 'is-1',
+        'is-2': t.date_data.column_class == 'is-2',
+        'is-3': t.date_data.column_class == 'is-3',
+        'is-4': t.date_data.column_class == 'is-4',
+        'is-5': t.date_data.column_class == 'is-5',
+        'is-6': t.date_data.column_class == 'is-6',
+        'is-7': t.date_data.column_class == 'is-7',
+        'is-8': t.date_data.column_class == 'is-8',
+        'is-9': t.date_data.column_class == 'is-9',
+        'is-10': t.date_data.column_class == 'is-10',
+        }">
+        <div class="box has-background-success">
+          <div class="level">
+            <div class="level-left">
+              <div class="level-item">
+                <span class="icon is-small">
+                  <i class="fa fa-2x fa-circle-o" v-if="!t.date_data.overflows_left"></i>
+                  <i class="fa fa-2x fa-chevron-left" v-if="t.date_data.overflows_left"></i>
+                </span>
+              </div>
             </div>
-          </div>
-          <div class="level-right">
-            <div class="level-item">
-              <span class="icon is-small">
-                <i
-                  class="fa fa-2x fa-times"
-                  v-if="!t.date_data.overflows_right"
-                ></i>
-                <i
-                  class="fa fa-2x fa-chevron-right"
-                  v-if="t.date_data.overflows_right"
-                ></i>
-              </span>
+            <div class="level-right">
+              <div class="level-item">
+                <span class="icon is-small">
+                  <i class="fa fa-2x fa-times" v-if="!t.date_data.overflows_right"></i>
+                  <i class="fa fa-2x fa-chevron-right" v-if="t.date_data.overflows_right"></i>
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
     </div>
   </div>
 
-  <!--
-  <button
-    class="button is-warning is-outlined"
-    @click="get_active_tasks"
-    v-if="reflections_available"
-  >
-    <span class="icon is-small">
-      <i class="fa fa-plus"></i>
-    </span>
-    <span>Daily Reflections</span>
-  </button>
--->
+  
 
   <!------------------------------------------------>
   <!------------------------------------------------>
@@ -131,23 +95,11 @@
     <div class="modal-card">
       <header class="modal-card-head">
         <p class="modal-card-title" style="text-align: center">Add a Task</p>
-        <button
-          class="modal-close is-large"
-          @click="set_adding_task(false)"
-        ></button>
+        <button class="modal-close is-large" @click="set_adding_task(false)"></button>
       </header>
       <section class="modal-card-body">
-        <input
-          class="input block"
-          type="text"
-          placeholder="Task Label"
-          v-model="task_label"
-        />
-        <textarea
-          class="textarea block"
-          placeholder="Task Description"
-          v-model="task_description"
-        ></textarea>
+        <input class="input block" type="text" placeholder="Task Label" v-model="task_label" />
+        <textarea class="textarea block" placeholder="Task Description" v-model="task_description"></textarea>
         <input class="input block" type="date" v-model="task_start_time" />
         <input class="input block" type="date" v-model="task_end_time" />
 
@@ -164,13 +116,10 @@
             <div class="container has-text-right">
               <div class="dropdown is-hoverable is-up block">
                 <div class="dropdown-trigger">
-                  <button
-                    class="button"
+                  <button class="button"
                     onclick="javascript:document.querySelector('.dropdown').classList.toggle('is-active')"
                     onblur="javascript:document.querySelector('.dropdown').classList.toggle('is-active')"
-                    aria-haspopup="true"
-                    aria-controls="dropdown-menu"
-                  >
+                    aria-haspopup="true" aria-controls="dropdown-menu">
                     <span id="drop_label">Category</span>
                     <span class="icon is-small">
                       <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -179,25 +128,16 @@
                 </div>
                 <div class="dropdown-menu" id="dropdown-menu" role="menu">
                   <div class="dropdown-content">
-                    <a
-                      onmousedown="app.vue.task_category = 'school'; document.getElementById('drop_label').innerHTML = 'School';"
-                      href="javascript:void(0);"
-                      class="dropdown-item"
-                    >
+                    <a onmousedown="app.vue.task_category = 'school'; document.getElementById('drop_label').innerHTML = 'School';"
+                      href="javascript:void(0);" class="dropdown-item">
                       <div class="container has-text-left">School</div>
                     </a>
-                    <a
-                      onmousedown="app.vue.task_category = 'work'; document.getElementById('drop_label').innerHTML = 'Work';"
-                      href="javascript:void(0);"
-                      class="dropdown-item"
-                    >
+                    <a onmousedown="app.vue.task_category = 'work'; document.getElementById('drop_label').innerHTML = 'Work';"
+                      href="javascript:void(0);" class="dropdown-item">
                       <div class="container has-text-left">Work</div>
                     </a>
-                    <a
-                      onmousedown="app.vue.task_category = 'personal'; document.getElementById('drop_label').innerHTML = 'Personal';"
-                      href="javascript:void(0);"
-                      class="dropdown-item"
-                    >
+                    <a onmousedown="app.vue.task_category = 'personal'; document.getElementById('drop_label').innerHTML = 'Personal';"
+                      href="javascript:void(0);" class="dropdown-item">
                       <div class="container has-text-left">Personal</div>
                     </a>
                   </div>
@@ -224,33 +164,20 @@
   <!-------------- REFLECTION MODAL ---------------->
   <!------------------------------------------------>
 
-  <div
-    id="reflection_modal"
-    class="modal is-active"
-    v-for="t in reflection_modal_tasks"
-  >
+  <div id="reflection_modal" class="modal is-active" v-for="t in reflection_modal_tasks">
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head" style="background-color: #b0b0b0">
         <p class="modal-card-title is-1" style="text-align: center">
           <b style="text-transform: capitalize">{{t.label}}</b>
         </p>
-        <button
-          class="modal-close is-large"
-          onclick="this.closest('.modal').classList.remove('is-active')"
-        ></button>
+        <button class="modal-close is-large" onclick="this.closest('.modal').classList.remove('is-active')"></button>
       </header>
       <section class="modal-card-body" style="background-color: #d5d5d5">
         <div class="section">
           <p class="title block" style="text-align: center">Attentiveness</p>
           <div class="slider block">
-            <input
-              type="range"
-              min="1"
-              max="10"
-              value="1"
-              v-model="reflection_attentiveness"
-            />
+            <input type="range" min="1" max="10" value="1" v-model="reflection_attentiveness" />
             <p>{{reflection_attentiveness}}</p>
           </div>
         </div>
@@ -258,13 +185,7 @@
         <div class="section">
           <p class="title block" style="text-align: center">Emotion</p>
           <div class="slider block">
-            <input
-              type="range"
-              min="1"
-              max="10"
-              value="1"
-              v-model="reflection_emotion"
-            />
+            <input type="range" min="1" max="10" value="1" v-model="reflection_emotion" />
             <p>{{reflection_emotion}}</p>
           </div>
         </div>
@@ -272,33 +193,23 @@
         <div class="section">
           <p class="title block" style="text-align: center">Efficiency</p>
           <div class="slider block">
-            <input
-              type="range"
-              min="1"
-              max="10"
-              value="1"
-              v-model="reflection_efficiency"
-            />
+            <input type="range" min="1" max="10" value="1" v-model="reflection_efficiency" />
             <p>{{reflection_efficiency}}</p>
           </div>
         </div>
       </section>
       <footer class="modal-card-foot" style="background-color: #b0b0b0">
         <div class="container has-text-centered">
-          <button
-            class="button is-success block"
+          <button class="button is-success block"
             onclick="this.closest('.modal').classList.toggle('is-active'); app.spawn_next_reflection_modal();"
-            @click="submit_task_reflection(t.id)"
-          >
+            @click="submit_task_reflection(t.id)">
             <span class="icon is-small">
               <i class="fa fa-check"></i>
             </span>
             <span>Submit Reflection</span>
           </button>
-          <button
-            class="button is-danger block"
-            onclick="this.closest('.modal').classList.remove('is-active'); app.spawn_next_reflection_modal();"
-          >
+          <button class="button is-danger block"
+            onclick="this.closest('.modal').classList.remove('is-active'); app.spawn_next_reflection_modal();">
             <span>Did not work on Task</span>
             <span class="icon is-right">
               <i class="fa fa-times"></i>
@@ -317,33 +228,19 @@
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head" style="background-color: #b0b0b0">
-        <p
-          id="journal_modal_title"
-          class="modal-card-title"
-          style="text-align: center"
-        >
+        <p id="journal_modal_title" class="modal-card-title" style="text-align: center">
           Daily Reflection for
         </p>
-        <button
-          class="modal-close is-large"
-          onclick="this.closest('.modal').classList.remove('is-active')"
-        ></button>
+        <button class="modal-close is-large" onclick="this.closest('.modal').classList.remove('is-active')"></button>
       </header>
       <section class="modal-card-body" style="background-color: #d5d5d5">
-        <textarea
-          class="textarea block"
-          placeholder="Daily Journal Entry..."
-          v-model="reflection_journal"
-          rows="10"
-        ></textarea>
+        <textarea class="textarea block" placeholder="Daily Journal Entry..." v-model="reflection_journal"
+          rows="10"></textarea>
       </section>
       <footer class="modal-card-foot" style="background-color: #b0b0b0">
         <div class="container has-text-centered">
-          <button
-            class="button is-success block"
-            onclick="this.closest('.modal').classList.toggle('is-active');"
-            @click="submit_journal_entry"
-          >
+          <button class="button is-success block" onclick="this.closest('.modal').classList.toggle('is-active');"
+            @click="submit_journal_entry">
             <span class="icon is-small">
               <i class="fa fa-check"></i>
             </span>
@@ -364,72 +261,37 @@
       <div class="box">
         <div class="field">
           <p class="control">
-            <input
-              class="input"
-              type="text"
-              placeholder="Enter Group Name"
-              v-model="group_name"
-            />
+            <input class="input" type="text" placeholder="Enter Group Name" v-model="group_name" />
           </p>
         </div>
       </div>
       <div class="box">
         <div class="field">
           <p class="control has-icons-right">
-            <input
-              class="input"
-              type="text"
-              placeholder="Search users"
-              v-model="search_query"
-              @keyup="search"
-            />
+            <input class="input" type="text" placeholder="Search users" v-model="search_query" @keyup="search" />
             <span class="icon is-small is-right clickable" @click="clear">
               <i class="fa fa-times-circle"></i>
             </span>
           </p>
         </div>
-        <div
-          class="field has-addons"
-          v-if="!is_displaying_search"
-          v-for="u in all_users"
-        >
+        <div class="field has-addons" v-if="!is_displaying_search" v-for="u in all_users">
           <p class="control">
-            <button
-              class="button"
-              v-if="!u.is_group_member"
-              @click="add_to_group(u._idx)"
-            >
+            <button class="button" v-if="!u.is_group_member" @click="add_to_group(u._idx)">
               <span>{{u.first_name}} {{u.last_name}}</span>
             </button>
 
-            <button
-              class="button is-success"
-              v-if="u.is_group_member"
-              @click="remove_from_group(u._idx)"
-            >
+            <button class="button is-success" v-if="u.is_group_member" @click="remove_from_group(u._idx)">
               <span>{{u.first_name}} {{u.last_name}}</span>
             </button>
           </p>
         </div>
-        <div
-          class="field has-addons"
-          v-if="is_displaying_search"
-          v-for="u in search_users"
-        >
+        <div class="field has-addons" v-if="is_displaying_search" v-for="u in search_users">
           <p class="control">
-            <button
-              class="button"
-              v-if="!u.is_group_member"
-              @click="add_to_group(u._idx)"
-            >
+            <button class="button" v-if="!u.is_group_member" @click="add_to_group(u._idx)">
               <span>{{u.first_name}} {{u.last_name}}</span>
             </button>
 
-            <button
-              class="button is-success"
-              v-if="u.is_group_member"
-              @click="remove_from_group(u._idx)"
-            >
+            <button class="button is-success" v-if="u.is_group_member" @click="remove_from_group(u._idx)">
               <span>{{u.first_name}} {{u.last_name}}</span>
             </button>
           </p>
@@ -438,10 +300,8 @@
       <div class="box" style="position: sticky; bottom: 0">
         <div class="level">
           <div class="level-item has-text-centered">
-            <button
-              class="button is-success is-centered"
-              onclick="this.closest('.modal').classList.toggle('is-active')"
-            >
+            <button class="button is-success is-centered"
+              onclick="this.closest('.modal').classList.toggle('is-active')">
               <span class="icon is-small">
                 <i class="fa fa-plus"></i>
               </span>
@@ -451,11 +311,7 @@
         </div>
       </div>
     </div>
-    <button
-      class="modal-close is-large"
-      aria-label="close"
-      onclick="app.vue.task_is_group=false"
-    ></button>
+    <button class="modal-close is-large" aria-label="close" onclick="app.vue.task_is_group=false"></button>
   </div>
 
   <!------------------------------------------------>
@@ -477,14 +333,11 @@
               <b>Task Description:</b>
               <p>{{task_view_description}}</p>
             </div>
-            <div
-              class="box"
-              style="
+            <div class="box" style="
                 background-color: #b0b0b0;
                 height: 40.5vh;
                 overflow-y: scroll;
-              "
-            >
+              ">
               <b class="block">Subtasks:</b>
               <br />
               <br />
@@ -492,66 +345,53 @@
                 <div class="level">
                   <div class="level-left">
                     <div class="level-item">
-                      <button
-                        class="button is-rounded is-small"
-                        :class="{'is-success': s.is_complete}"
-                        @click="toggle_subtask_complete(s._idx)"
-                      >
+                      <button class="button is-rounded is-small" :class="{'is-success': s.is_complete}"
+                        @click="toggle_subtask_complete(s._idx)">
                         <span class="icon is-large">
                           <i class="fa fa-check"></i>
                         </span>
                       </button>
                     </div>
                     <div class="level-item">
-                      <span><p class="block">{{s.description}}</p></span>
+                      <span>
+                        <p class="block">{{s.description}}</p>
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="box" style="background-color: #b0b0b0">
-                <textarea
-                  class="textarea block"
-                  placeholder="New Subtask..."
-                  rows="2"
-                  v-model="new_subtask_description"
-                  v-if="is_adding_subtask"
-                ></textarea>
+                <textarea class="textarea block" placeholder="New Subtask..." rows="2" v-model="new_subtask_description"
+                  v-if="is_adding_subtask"></textarea>
                 <div style="text-align: center">
-                  <button
-                    class="button is-success block"
-                    style="width: 100%"
-                    v-if="!is_adding_subtask"
-                    onclick="app.vue.is_adding_subtask = true"
-                  >
+                  <button class="button is-success block" style="width: 100%" v-if="!is_adding_subtask"
+                    onclick="app.vue.is_adding_subtask = true">
                     <span class="icon is-large">
                       <i class="fa fa-plus"></i>
                     </span>
-                    <span><p>New Subtask</p></span>
+                    <span>
+                      <p>New Subtask</p>
+                    </span>
                   </button>
-                  <button
-                    class="button is-success block"
-                    style="width: 100%"
-                    v-if="is_adding_subtask"
-                    @click="add_subtask"
-                  >
+                  <button class="button is-success block" style="width: 100%" v-if="is_adding_subtask"
+                    @click="add_subtask">
                     <span class="icon is-large">
                       <i class="fa fa-check"></i>
                     </span>
-                    <span><p>Add Subtask</p></span>
+                    <span>
+                      <p>Add Subtask</p>
+                    </span>
                   </button>
                 </div>
               </div>
             </div>
           </div>
           <div class="column is-4" v-if="task_view_is_group">
-            <div
-              class="box"
-              style="
+            <div class="box" style="
                 background-color: #b0b0b0;
                 height: 63.8vh;
                 overflow-y: scroll;
-              "
-            >
+              ">
               <p class="title is-4">Collaborators:</p>
               <div class="box" v-for="m in task_view_group_members">
                 <div class="level">
@@ -574,14 +414,13 @@
         </div>
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-success">Complete Task!</button>
+        <button class="button is-success" @click="toggle_task_complete(task_view_task_id)" onclick="this.closest('.modal').classList.remove('is-active')">
+          Complete Task!
+        </button>
       </footer>
     </div>
-    <button
-      class="modal-close is-large"
-      aria-label="close"
-      onclick="this.closest('.modal').classList.remove('is-active')"
-    ></button>
+    <button class="modal-close is-large" aria-label="close"
+      onclick="this.closest('.modal').classList.remove('is-active')"></button>
   </div>
 </div>
 
@@ -598,6 +437,7 @@
   let get_all_users_tasks_url = "[[=XML(get_all_users_tasks_url)]]";
   let get_task_subtasks_url = "[[=XML(get_task_subtasks_url)]]";
   let get_group_members_url = "[[=XML(get_group_members_url)]]";
+  let toggle_task_complete_url = "[[=XML(toggle_task_complete_url)]]";
   let toggle_subtask_complete_url = "[[=XML(toggle_subtask_complete_url)]]";
   let add_new_subtask_url = "[[=XML(add_new_subtask_url)]]";
 </script>

@@ -66,6 +66,7 @@ def index():
         get_all_users_tasks_url=URL("get_all_users_tasks", signer=url_signer),
         get_task_subtasks_url = URL("get_task_subtasks", signer=url_signer),
         get_group_members_url = URL("get_group_members", signer=url_signer),
+        toggle_task_complete_url = URL("toggle_task_complete", signer=url_signer),
         toggle_subtask_complete_url = URL("toggle_subtask_complete", signer=url_signer),
         add_new_subtask_url = URL("add_new_subtask", signer=url_signer)
     )
@@ -412,6 +413,9 @@ def get_all_users_tasks():
     tasks_from_group = [row["tasks"] for row in tasks_from_groups_tuple]
     all_users_tasks = tasks_by_user + tasks_from_group
 
+    # Filter out any tasks that are not complete
+    all_users_tasks = [t for t in all_users_tasks if not t.get('is_complete', True)]
+
     return dict(all_users_tasks=all_users_tasks)
 
 @action("get_task_subtasks")
@@ -440,6 +444,13 @@ def toggle_substask_complete():
     print(subtask)
     new_complete = not subtask.is_complete
     db(db.subtasks.id == request.json.get("subtask_id")).update(is_complete=new_complete)
+
+
+@action("toggle_task_complete", method="POST")
+@action.uses(db, auth.user, url_signer.verify())
+def toggle_task_complete():
+    task_id = request.json.get("task_id")
+    db(db.tasks.id == task_id).update(is_complete=True)
 
 
 @action("add_new_subtask", method=["POST"])

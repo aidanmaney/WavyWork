@@ -220,6 +220,18 @@ let init = (app) => {
         });
     }
 
+
+    app.toggle_task_complete = function (task_id) {
+        console.log('BEFORE:', app.data.all_user_tasks);
+        axios.post(toggle_task_complete_url,
+            {
+                task_id: task_id
+            }).then(function () {
+                // Update app.data.all_user_tasks
+                app.get_all_users_tasks();
+            });
+    }
+
     app.add_subtask = () => {
         axios.post(add_new_subtask_url, {
             task_id: app.vue.task_view_task_id,
@@ -331,10 +343,13 @@ let init = (app) => {
         document.getElementById("expanded_task_view_modal").classList.add("is-active");
     }
 
+
+
     // This contains all the methods.
     app.methods = {
         set_adding_task: app.set_adding_task,
         add_task: app.add_task,
+        toggle_task_complete: app.toggle_task_complete,
         get_active_tasks: app.get_active_tasks,
         submit_task_reflection: app.submit_task_reflection,
         submit_journal_entry: app.submit_journal_entry,
