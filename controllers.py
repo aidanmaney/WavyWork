@@ -42,11 +42,10 @@ from .common import (
 from py4web.utils.url_signer import URLSigner
 import datetime
 from .models import get_user_email, get_user_id, get_time, get_today
-import random
+from py4web.utils.form import Form, FormStyleBulma
 from itertools import groupby
 
 from dateutil.relativedelta import relativedelta
-import math
 
 url_signer = URLSigner(session)
 
@@ -230,16 +229,27 @@ def get_reflections():
     )
 
 
-@action("profile")
+@action("profile", method=["GET", "POST"])
 @action.uses("profile.html", db, auth.user, session, url_signer)
 def profile():
     get_reflections_url = URL("get_reflections", signer=url_signer)
     get_journal_entry_by_day_url = URL("get_journal_entry_by_day", signer=url_signer)
 
-    # print(get_reflections_url)
+    user_goals_record = db(db.high_level_goals.user == get_user_id()).select().first()
+
+    form = Form(
+        db.high_level_goals,
+        record=user_goals_record,
+        csrf_session=session,
+        formstyle=FormStyleBulma,
+        keep_values=True,
+        submit_value="Save",
+    )
+
     return dict(
         get_reflections_url=get_reflections_url,
         get_journal_entry_by_day_url=get_journal_entry_by_day_url,
+        form=form,
     )
 
 
@@ -252,7 +262,9 @@ def submit_task_reflection():
         emotion=request.json.get("emotion"),
         efficiency=request.json.get("efficiency"),
     )
-    return dict(id=id)
+    return dict(
+        id=id,
+    )
 
 
 @action("submit_journal_entry", method=["POST"])

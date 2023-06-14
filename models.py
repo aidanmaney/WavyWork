@@ -134,6 +134,48 @@ db.define_table(
     Field("entry"),
 )
 
+db.define_table(
+    "high_level_goals",
+    Field(
+        "user",
+        "integer",
+        "reference auth_user",
+        default=lambda: get_user_id(),
+        readable=False,
+        writable=False,
+    ),
+    Field(
+        "goal1",
+        # label="",
+        requires=[
+            IS_ALPHANUMERIC(error_message="Invalid character(s in goal)"),
+            IS_LENGTH(
+                maxsize=100,
+            ),
+        ],
+    ),
+    Field(
+        "goal2",
+        # label="",
+        requires=[
+            IS_ALPHANUMERIC(error_message="Invalid character(s in goal)"),
+            IS_LENGTH(
+                maxsize=100,
+            ),
+        ],
+    ),
+    Field(
+        "goal3",
+        # label="",
+        requires=[
+            IS_ALPHANUMERIC(error_message="Invalid character(s in goal)"),
+            IS_LENGTH(
+                maxsize=100,
+            ),
+        ],
+    ),
+)
+
 populate_sample_DB()
 
 db.commit()
