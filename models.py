@@ -70,12 +70,6 @@ db.define_table(
 )
 
 db.define_table(
-    "task_comments",
-    Field("task_id", "reference tasks"),
-    Field("comment", required=True),
-)
-
-db.define_table(
     "subtasks",
     Field("task_id", "reference tasks"),
     Field("description"),
