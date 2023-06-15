@@ -227,7 +227,7 @@ def profile():
 @action('submit_task_reflection', method=["POST"])
 @action.uses(db, auth.user, url_signer.verify())
 def submit_task_reflection():
-    id = db.task_reflections.insert(
+    id = db.task_reflections.update_or_insert(
         task_id = request.json.get("task_id"),
         attentiveness = request.json.get("attentiveness"),
         emotion = request.json.get("emotion"),

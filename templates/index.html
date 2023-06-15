@@ -79,7 +79,16 @@
     </div>
   </div>
 
-  
+  <button
+    class="button is-warning is-outlined"
+    @click="get_active_tasks"
+    v-if="reflections_available"
+  >
+    <span class="icon is-small">
+      <i class="fa fa-plus"></i>
+    </span>
+    <span>Daily Reflections</span>
+  </button>
 
   <!------------------------------------------------>
   <!------------------------------------------------>
