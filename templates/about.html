@@ -1,0 +1,37 @@
+[[extend 'layout.html']]
+
+<style>
+    [v-cloak] {
+        display: none;
+    }
+    .square {
+        width: 5em;
+        height: 5em;
+    }
+    .table.is-borderless td,
+	/* References https://github.com/jmaczan/bulma-helpers/issues/3 */
+	.table.is-borderless th {
+        border: 0;
+    }
+    /* References https://github.com/jgthms/bulma/issues/1513 */
+    .table {
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+
+<div class="section">
+    <div class="container">
+        <div class="title mx-5">Mission Statement</div>
+        <p class="mx-5">
+            WavyWork is a personal productivity tracker and task management tool
+            designed for minimal friction logging and group accountability. As
+            students, we tried every way to stay on top of our work and to stay
+            conscious of how we feel during our efforts. The minimal interface
+            creates a low-stakes, low-stress environment to keep users engaged
+            day after day. Through gentle reminders, we encourage users to
+            review their contributions, cultivating mindfulness and forming
+            helpful habits day after day.
+        </p>
+    </div>
+</div>
