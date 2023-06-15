@@ -6,6 +6,7 @@ This is an optional file that defined app level settings such as:
 This file is provided as an example:
 """
 import os
+from apps.WavyWork.private.secret_settings import *
 from py4web.core import required_folder
 
 # db settings
