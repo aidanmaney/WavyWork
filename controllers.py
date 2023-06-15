@@ -63,11 +63,12 @@ def index():
         ),
         submit_journal_entry_url=URL("submit_journal_entry", signer=url_signer),
         get_all_users_tasks_url=URL("get_all_users_tasks", signer=url_signer),
+
         get_task_subtasks_url=URL("get_task_subtasks", signer=url_signer),
         get_group_members_url=URL("get_group_members", signer=url_signer),
+        toggle_task_complete_url = URL("toggle_task_complete", signer=url_signer),
         toggle_subtask_complete_url=URL("toggle_subtask_complete", signer=url_signer),
         add_new_subtask_url=URL("add_new_subtask", signer=url_signer),
-    )
 
 
 @action("get_users")
@@ -272,7 +273,7 @@ def profile():
 @action("submit_task_reflection", method=["POST"])
 @action.uses(auth.user, url_signer.verify())
 def submit_task_reflection():
-    id = db.task_reflections.insert(
+    id = db.task_reflections.update_or_insert(
         task_id=request.json.get("task_id"),
         attentiveness=request.json.get("attentiveness"),
         emotion=request.json.get("emotion"),
@@ -485,6 +486,9 @@ def get_all_users_tasks():
     tasks_from_group = [row["tasks"] for row in tasks_from_groups_tuple]
     all_users_tasks = tasks_by_user + tasks_from_group
 
+    # Filter out any tasks that are not complete
+    all_users_tasks = [t for t in all_users_tasks if not t.get('is_complete', True)]
+
     return dict(all_users_tasks=all_users_tasks)
 
 
@@ -520,6 +524,13 @@ def toggle_substask_complete():
     db(db.subtasks.id == request.json.get("subtask_id")).update(
         is_complete=new_complete
     )
+
+
+@action("toggle_task_complete", method="POST")
+@action.uses(db, auth.user, url_signer.verify())
+def toggle_task_complete():
+    task_id = request.json.get("task_id")
+    db(db.tasks.id == task_id).update(is_complete=True)
 
 
 @action("add_new_subtask", method=["POST"])
