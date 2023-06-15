@@ -176,6 +176,9 @@ db.define_table(
     ),
 )
 
+db.high_level_goals.user.readable = False
+
+
 populate_sample_DB()
 
 db.commit()

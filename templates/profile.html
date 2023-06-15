@@ -22,17 +22,10 @@
 
 <div class="section" id="vue-target">
     <div class="container mb-5">
-        <div class="columns">
-            <div class="column is-3">
-                <img src="images/profile_placeholder.png" class="mt-auto" />
-            </div>
-            <div class="column">
-                [[=form.custom.begin ]] [[for field in ["goal1", "goal2",
-                "goal3"]:]]
-                <div class="field">[[=form.custom.widgets[field] ]]</div>
-                [[pass ]]
-                <div style="float: right">[[=form.custom.submit ]]</div>
-                [[=form.custom.end ]]
+        <div class="columns is-centered">
+            <div class="column is-6">
+                <div class="label">My high-level goals</div>
+                [[=form]]
             </div>
         </div>
         <nav class="level container">
@@ -76,36 +69,32 @@
         </div>
         <nav class="level container">
             <div class="level-item has-text-centered mt-1">
-                <span
-                    class="button icon-text mx-2"
+                <div
+                    class="button icon-text mx-2 px-5"
                     :class="[(prevMonthOffset == max_pmo) ? 'has-background-light' : 'is-link']"
                     @click="goBackMonth()"
                 >
                     <span class="icon">
                         <i class="fa fa-arrow-left"></i>
                     </span>
-                    <span> Prior month </span>
-                </span>
-                <!-- <div class="is-invisible">--</div> -->
+                </div>
                 <span
-                    class="button icon-text mx-2"
-                    :class="[(prevMonthOffset == 0) ? 'has-background-light' : 'is-link']"
-                    @click="goForwardMonth()"
-                >
-                    <span> Next month </span>
-                    <span class="icon">
-                        <i class="fa fa-arrow-right"></i>
-                    </span>
-                </span>
-                <span
-                    class="button is-link icon-text mx-2"
+                    class="button is-link icon-text"
                     @click="goCurrentMonth()"
                 >
                     <span class="icon">
-                        <i class="fa fa-home"></i>
+                        <i class="fa fa-circle"></i>
                     </span>
-                    <span> Current Month </span>
                 </span>
+                <div
+                    class="button icon-text mx-2 px-5"
+                    :class="[(prevMonthOffset == 0) ? 'has-background-light' : 'is-link']"
+                    @click="goForwardMonth()"
+                >
+                    <span class="icon">
+                        <i class="fa fa-arrow-right"></i>
+                    </span>
+                </div>
             </div>
         </nav>
 

@@ -22,9 +22,12 @@
             aria-label="main navigation"
         >
             <div class="navbar-brand">
-                <a class="navbar-item" href="[[=URL('index')]]"> WavyWork </a>
+                <a class="navbar-item" href="[[=URL('about')]]"> About </a>
+                [[ if globals().get('user'): ]]
+                <a class="navbar-item" href="[[=URL('index')]]"> Timeline </a>
                 <a class="navbar-item" href="[[=URL('profile')]]"> Profile </a>
                 <a class="navbar-item" href="[[=URL('kanban')]]"> Kanban </a>
+                [[pass]]
 
                 <a
                     role="button"
