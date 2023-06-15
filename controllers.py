@@ -26,7 +26,7 @@ Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app w
 """
 
 from py4web import action, request, abort, redirect, URL
-from yatl.helpers import A
+import yatl.helpers
 from yatl.helpers import *
 from .common import (
     db,
@@ -42,17 +42,16 @@ from .common import (
 from py4web.utils.url_signer import URLSigner
 import datetime
 from .models import get_user_email, get_user_id, get_time, get_today
-import random
+from py4web.utils.form import Form, FormStyleBulma
 from itertools import groupby
 
 from dateutil.relativedelta import relativedelta
-import math
 
 url_signer = URLSigner(session)
 
 
 @action("index")
-@action.uses("index.html", db, auth, auth.user, url_signer)
+@action.uses("index.html", auth.user, url_signer)
 def index():
     return dict(
         add_task_url=URL("add_task", signer=url_signer),
@@ -64,16 +63,16 @@ def index():
         ),
         submit_journal_entry_url=URL("submit_journal_entry", signer=url_signer),
         get_all_users_tasks_url=URL("get_all_users_tasks", signer=url_signer),
-        get_task_subtasks_url = URL("get_task_subtasks", signer=url_signer),
-        get_group_members_url = URL("get_group_members", signer=url_signer),
+
+        get_task_subtasks_url=URL("get_task_subtasks", signer=url_signer),
+        get_group_members_url=URL("get_group_members", signer=url_signer),
         toggle_task_complete_url = URL("toggle_task_complete", signer=url_signer),
-        toggle_subtask_complete_url = URL("toggle_subtask_complete", signer=url_signer),
-        add_new_subtask_url = URL("add_new_subtask", signer=url_signer)
-    )
+        toggle_subtask_complete_url=URL("toggle_subtask_complete", signer=url_signer),
+        add_new_subtask_url=URL("add_new_subtask", signer=url_signer),
 
 
 @action("get_users")
-@action.uses(db, auth.user, url_signer.verify())
+@action.uses(auth.user, url_signer.verify())
 def get_users():
     all_users = (
         db(db.auth_user.id != get_user_id())
@@ -84,7 +83,7 @@ def get_users():
 
 
 @action("add_task", method=["GET", "POST"])
-@action.uses(db, url_signer.verify(), auth.user)
+@action.uses(url_signer.verify(), auth.user)
 def add_task():
     group_id = None
     if request.json.get("is_group") and len(request.json.get("members")) > 0:
@@ -106,13 +105,13 @@ def add_task():
         is_group=request.json.get("is_group"),
         start_time=datetime_start_time,
         end_time=datetime_end_time,
-        group_id=group_id
+        group_id=group_id,
     )
     return dict(id=id, created_by=get_user_id())
 
 
 @action("get_reflections")
-@action.uses(db, auth.user, session, url_signer.verify())
+@action.uses(auth.user, url_signer.verify())
 def get_reflections():
     prev_month_offset = int(request.params.get("pmo"))
 
@@ -162,11 +161,34 @@ def get_reflections():
         calendar_day_in_month(last_of_month) - calendar_day_in_month(first_of_month)
     )
 
+    first_ref_day = (
+        db(db.task_reflections)
+        .select(db.task_reflections.day, orderby=db.task_reflections.day)
+        .first()
+    )
+
+    first_journal_day = (
+        db(db.daily_journal)
+        .select(db.daily_journal.day, orderby=db.daily_journal.day)
+        .first()
+    )
+
+    first_log = min(first_journal_day.day, first_ref_day.day)
+    max_pmo = relativedelta(get_today(), first_log).months
+
     reflections_in_month_rows = (
         db(
             (db.task_reflections.day >= first_of_month)
             & (db.task_reflections.day <= last_of_month)
-            & (db.tasks.created_by == get_user_id())
+            & (
+                (db.tasks.created_by == get_user_id())
+                | (
+                    db.tasks.created_by
+                    != get_user_id()
+                    & (db.groups.members.contains(get_user_id()))
+                    & (db.groups.id == db.tasks.group_id)
+                )
+            )
             & (db.task_reflections.task_id == db.tasks.id)
         )
         .select(
@@ -212,39 +234,65 @@ def get_reflections():
         start_of_month_offset=start_of_month_offset,
         month=month_str,
         year=year_str,
+        max_pmo=max_pmo,
     )
 
 
-@action("profile")
-@action.uses("profile.html", db, auth.user, session, url_signer)
+@action("profile", method=["GET", "POST"])
+@action.uses("profile.html", url_signer, auth.user)
 def profile():
     get_reflections_url = URL("get_reflections", signer=url_signer)
     get_journal_entry_by_day_url = URL("get_journal_entry_by_day", signer=url_signer)
-    # print(get_reflections_url)
-    return dict(get_reflections_url=get_reflections_url, get_journal_entry_by_day_url=get_journal_entry_by_day_url)
 
-  
-@action('submit_task_reflection', method=["POST"])
-@action.uses(db, auth.user, url_signer.verify())
+    user_goals_record = (
+        db(db.high_level_goals.user == get_user_id()).select().first() or None
+    )
+
+    form = Form(
+        db.high_level_goals,
+        record=user_goals_record,
+        deletable=False,
+        keep_values=True,
+        csrf_session=session,
+        formstyle=FormStyleBulma,
+        submit_value="Save",
+        show_id=False,
+    )
+
+    form.structure.find("[class=label]")[0]["_class"] = "is-hidden"
+    form.structure.find("[class=label]")[0]["_class"] = "is-hidden"
+    form.structure.find("[class=label]")[0]["_class"] = "is-hidden"
+
+    return dict(
+        get_reflections_url=get_reflections_url,
+        get_journal_entry_by_day_url=get_journal_entry_by_day_url,
+        form=form,
+    )
+
+
+@action("submit_task_reflection", method=["POST"])
+@action.uses(auth.user, url_signer.verify())
 def submit_task_reflection():
     id = db.task_reflections.update_or_insert(
-        task_id = request.json.get("task_id"),
-        attentiveness = request.json.get("attentiveness"),
-        emotion = request.json.get("emotion"),
-        efficiency = request.json.get("efficiency")
+        task_id=request.json.get("task_id"),
+        attentiveness=request.json.get("attentiveness"),
+        emotion=request.json.get("emotion"),
+        efficiency=request.json.get("efficiency"),
     )
-    return dict(id=id)
-  
+    return dict(
+        id=id,
+    )
+
 
 @action("submit_journal_entry", method=["POST"])
-@action.uses(db, auth.user, url_signer.verify())
+@action.uses(auth.user, url_signer.verify())
 def submit_journal_entry():
     id = db.daily_journal.insert(entry=request.json.get("entry"))
     return dict(id=id)
 
 
 @action("check_for_submitted_reflections")
-@action.uses(db, auth.user, url_signer.verify())
+@action.uses(auth.user, url_signer.verify())
 def check_for_submitted_reflections():
     todays_reflections = (
         db(
@@ -261,7 +309,7 @@ def check_for_submitted_reflections():
 
 
 @action("get_tasks")
-@action.uses(db, auth.user, url_signer.verify())
+@action.uses(auth.user, url_signer.verify())
 def get_tasks():
     board_query = request.params.get("board")
 
@@ -348,7 +396,7 @@ def get_tasks():
 
 
 @action("kanban")
-@action.uses("kanban.html", db, auth.user, url_signer)
+@action.uses("kanban.html", auth.user, url_signer)
 def kanban():
     return dict(
         get_tasks_url=URL("get_tasks", signer=url_signer),
@@ -357,7 +405,7 @@ def kanban():
 
 
 @action("update_kanban", method="POST")
-@action.uses(db, auth.user, url_signer.verify())
+@action.uses(auth.user, url_signer.verify())
 def update_kanban():
     task_id = request.params.get("task_id")
     new_column = request.params.get("new_column")
@@ -366,50 +414,75 @@ def update_kanban():
     db(db.kanban_cards.task_id == task_id).validate_and_update(column=new_column)
 
     return dict()
-  
- 
-@action('get_journal_entry_by_day', method=["POST"])
-@action.uses(db, auth.user)
+
+
+@action("get_journal_entry_by_day", method=["POST"])
+@action.uses(auth.user)
 def get_journal_entry_by_day():
     print(request.json.get("day"))
     journal_day = request.json.get("day")
     journal_datetime = datetime.datetime.strptime(journal_day, "%Y-%m-%d")
     print(f"**********journal_datetime: {journal_datetime} **********")
-    entries = db((db.daily_journal.user == get_user_id()) &
-               (db.daily_journal.day == journal_datetime)).select(db.daily_journal.entry).as_list()
-    
+    entries = (
+        db(
+            (db.daily_journal.user == get_user_id())
+            & (db.daily_journal.day == journal_datetime)
+        )
+        .select(db.daily_journal.entry)
+        .as_list()
+    )
+
     print(f"*********{entries}*********")
     entry = "" if len(entries) <= 0 else entries[0]["entry"]
     return dict(entry=entry)
-  
-@action('get_active_tasks')
-@action.uses(db, url_signer.verify(), auth.user)
+
+
+@action("get_active_tasks")
+@action.uses(url_signer.verify(), auth.user)
 def get_active_tasks():
-    active_user_tasks = db((db.tasks.start_time <= get_today()) &
-                           (db.tasks.end_time >= get_today()) & 
-                           (db.tasks.created_by == get_user_id())).select().as_list()
-    
-    active_group_tasks_tuple = db((db.tasks.created_by != get_user_id()) &
-                                  (db.groups.members.contains(get_user_id())) &
-                                  (db.groups.id == db.tasks.group_id) &
-                                  (db.tasks.start_time <= get_today()) &
-                                  (db.tasks.end_time >= get_today())).select().as_list()
-    
+    active_user_tasks = (
+        db(
+            (db.tasks.start_time <= get_today())
+            & (db.tasks.end_time >= get_today())
+            & (db.tasks.created_by == get_user_id())
+        )
+        .select()
+        .as_list()
+    )
+
+    active_group_tasks_tuple = (
+        db(
+            (db.tasks.created_by != get_user_id())
+            & (db.groups.members.contains(get_user_id()))
+            & (db.groups.id == db.tasks.group_id)
+            & (db.tasks.start_time <= get_today())
+            & (db.tasks.end_time >= get_today())
+        )
+        .select()
+        .as_list()
+    )
+
     active_group_tasks = [row["tasks"] for row in active_group_tasks_tuple]
     active_tasks = active_user_tasks + active_group_tasks
-    
+
     return dict(active_tasks=active_tasks)
 
 
 @action("get_all_users_tasks")
-@action.uses(db, auth.user, url_signer.verify())
+@action.uses(url_signer.verify())
 def get_all_users_tasks():
     tasks_by_user = db(db.tasks.created_by == get_user_id()).select().as_list()
 
-    tasks_from_groups_tuple = db((db.tasks.created_by != get_user_id()) &
-                                (db.groups.members.contains(get_user_id())) &
-                                (db.groups.id == db.tasks.group_id)).select().as_list()
-    
+    tasks_from_groups_tuple = (
+        db(
+            (db.tasks.created_by != get_user_id())
+            & (db.groups.members.contains(get_user_id()))
+            & (db.groups.id == db.tasks.group_id)
+        )
+        .select()
+        .as_list()
+    )
+
     tasks_from_group = [row["tasks"] for row in tasks_from_groups_tuple]
     all_users_tasks = tasks_by_user + tasks_from_group
 
@@ -418,8 +491,9 @@ def get_all_users_tasks():
 
     return dict(all_users_tasks=all_users_tasks)
 
+
 @action("get_task_subtasks")
-@action.uses(db, auth.user, url_signer.verify())
+@action.uses(auth.user, url_signer.verify())
 def get_task_subtasks():
     task_id = request.params.get("task_id")
     subtasks = db(db.subtasks.task_id == task_id).select().as_list()
@@ -428,22 +502,28 @@ def get_task_subtasks():
 
 
 @action("get_group_members")
-@action.uses(db, auth.user, url_signer.verify())
+@action.uses(auth.user, url_signer.verify())
 def get_group_members():
-    group_members_ids = db(db.groups.id == request.params.get("group_id")).select(db.groups.members).as_list()[0]["members"]
+    group_members_ids = (
+        db(db.groups.id == request.params.get("group_id"))
+        .select(db.groups.members)
+        .as_list()[0]["members"]
+    )
     group_members = db(db.auth_user.id.belongs(group_members_ids)).select().as_list()
 
     return dict(group_members=group_members)
 
 
 @action("toggle_subtask_complete", method=["POST"])
-@action.uses(db, auth.user, url_signer.verify())
+@action.uses(auth.user, url_signer.verify())
 def toggle_substask_complete():
     subtask = db.subtasks[request.json.get("subtask_id")]
     print(request.json.get("subtask_id"))
     print(subtask)
     new_complete = not subtask.is_complete
-    db(db.subtasks.id == request.json.get("subtask_id")).update(is_complete=new_complete)
+    db(db.subtasks.id == request.json.get("subtask_id")).update(
+        is_complete=new_complete
+    )
 
 
 @action("toggle_task_complete", method="POST")
@@ -454,11 +534,16 @@ def toggle_task_complete():
 
 
 @action("add_new_subtask", method=["POST"])
-@action.uses(db, auth.user, url_signer.verify())
+@action.uses(auth.user, url_signer.verify())
 def add_new_subtask():
     id = db.subtasks.insert(
-        task_id=request.json.get("task_id"),
-        description=request.json.get("description")
+        task_id=request.json.get("task_id"), description=request.json.get("description")
     )
 
     return dict(id=id)
+
+
+@action("about")
+@action.uses("about.html", auth, session)
+def add_new_subtask():
+    return dict()
