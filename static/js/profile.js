@@ -84,12 +84,17 @@ const init = (app) => {
     };
 
     app.open_journal_modal = (day) => {
-        axios.post(get_journal_entry_by_day_url, { day: day }).then((res) => {
-            app.vue.journal_entry = res.data.entry;
-            document
-                .getElementById("calendar_journal_modal")
-                .classList.add("is-active");
-        });
+        console.log(day.prod_lvl);
+        if (day.prod_lvl != 0) {
+            axios
+                .post(get_journal_entry_by_day_url, { day: day.day_datetime })
+                .then((res) => {
+                    app.vue.journal_entry = res.data.entry;
+                    document
+                        .getElementById("calendar_journal_modal")
+                        .classList.add("is-active");
+                });
+        }
     };
 
     app.goCurrentMonth = () => {
