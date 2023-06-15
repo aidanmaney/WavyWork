@@ -108,6 +108,9 @@ def add_task():
         end_time=datetime_end_time,
         group_id=group_id,
     )
+    db.kanban_cards.insert(
+        task_id=id,
+    )
     return dict(id=id, created_by=get_user_id())
 
 
