@@ -69,6 +69,7 @@ def index():
         toggle_task_complete_url = URL("toggle_task_complete", signer=url_signer),
         toggle_subtask_complete_url=URL("toggle_subtask_complete", signer=url_signer),
         add_new_subtask_url=URL("add_new_subtask", signer=url_signer),
+    )
 
 
 @action("get_users")
